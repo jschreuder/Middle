@@ -9,10 +9,10 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class ControllerRunner implements ApplicationInterface
 {
-    /** @var  RendererInterface */
+    /** @var  ?RendererInterface */
     private $renderer;
 
-    public function __construct(RendererInterface $renderer)
+    public function __construct(RendererInterface $renderer = null)
     {
         $this->renderer = $renderer;
     }
@@ -26,7 +26,7 @@ class ControllerRunner implements ApplicationInterface
 
         // Generate & render response
         $response = $controller($request);
-        if ($response instanceof ViewInterface) {
+        if ($this->renderer && $response instanceof ViewInterface) {
             $response = $this->renderer->render($request, $response);
         }
 

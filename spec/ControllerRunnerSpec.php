@@ -67,4 +67,17 @@ class ControllerRunnerSpec extends ObjectBehavior
         $request->getAttribute('controller')->willReturn($controller);
         $this->shouldThrow(\TypeError::class)->duringExecute($request);
     }
+
+    public function it_will_error_on_invalid_response_on_views_with_no_renderer(
+        ServerRequestInterface $request,
+        ViewInterface $view
+    )
+    {
+        $controller = function () use ($view) {
+            return $view->getWrappedObject();
+        };
+        $request->getAttribute('controller')->willReturn($controller);
+        $this->beConstructedWith();
+        $this->shouldThrow(\TypeError::class)->duringExecute($request);
+    }
 }
