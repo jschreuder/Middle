@@ -11,40 +11,40 @@ class ZendSession implements SessionInterface
     private $sessionManager;
 
     /** @var  Container */
-    private $values;
+    private $container;
 
-    public function __construct(SessionManager $sessionManager, string $namespace)
+    public function __construct(SessionManager $sessionManager, Container $container)
     {
         $this->sessionManager = $sessionManager;
-        $this->values = new Container($namespace, $sessionManager);
+        $this->container = $container;
     }
 
     public function has(string $key) : bool
     {
-        return isset($this->values[$key]);
+        return isset($this->container[$key]);
     }
 
     public function get(string $key)
     {
-        return $this->values[$key];
+        return $this->container[$key];
     }
 
     /** @return  void */
     public function set(string $key, $value)
     {
-        $this->values[$key] = $value;
+        $this->container[$key] = $value;
     }
 
     public function getFlash(string $key)
     {
-        return $this->values[$key];
+        return $this->container[$key];
     }
 
     /** @return  void */
     public function setFlash(string $key, $value)
     {
-        $this->values[$key] = $value;
-        $this->values->setExpirationHops(1, [$key]);
+        $this->container[$key] = $value;
+        $this->container->setExpirationHops(1, [$key]);
     }
 
     /** @return  void */

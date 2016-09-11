@@ -6,6 +6,7 @@ use jschreuder\Middle\ApplicationInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Session\Config\StandardConfig;
+use Zend\Session\Container;
 use Zend\Session\SessionManager;
 
 class LoadZendSessionMiddleware implements ApplicationInterface
@@ -29,8 +30,9 @@ class LoadZendSessionMiddleware implements ApplicationInterface
             ->setCookieSecure(true)
             ->setCookieHttpOnly(true);
         $sessionManager = new SessionManager($config);
+        $container = new Container(str_replace('.', '_', $request->getUri()->getHost()), $sessionManager);
 
-        $session = new ZendSession($sessionManager, str_replace('.', '_', $request->getUri()->getHost()));
+        $session = new ZendSession($sessionManager, $container);
         return $this->application->execute($request->withAttribute('session', $session));
     }
 
