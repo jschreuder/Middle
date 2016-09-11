@@ -3,7 +3,7 @@
 namespace spec\jschreuder\Middle\Session;
 
 use jschreuder\Middle\ApplicationInterface;
-use jschreuder\Middle\Session\LoadSymfonySessionMiddleware;
+use jschreuder\Middle\Session\LoadZendSessionMiddleware;
 use jschreuder\Middle\Session\SessionInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -11,8 +11,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
-/** @mixin  LoadSymfonySessionMiddleware */
-class LoadSymfonySessionMiddlewareSpec extends ObjectBehavior
+/** @mixin  LoadZendSessionMiddleware */
+class LoadZendSessionMiddlewareSpec extends ObjectBehavior
 {
     /** @var  ApplicationInterface */
     private $application;
@@ -28,7 +28,7 @@ class LoadSymfonySessionMiddlewareSpec extends ObjectBehavior
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType(LoadSymfonySessionMiddleware::class);
+        $this->shouldHaveType(LoadZendSessionMiddleware::class);
     }
 
     public function it_can_execute_a_request(

@@ -8,7 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Zend\Session\Config\StandardConfig;
 use Zend\Session\SessionManager;
 
-class LoadSymfonySessionMiddleware implements ApplicationInterface
+class LoadZendSessionMiddleware implements ApplicationInterface
 {
     /** @var  ApplicationInterface */
     private $application;
@@ -30,7 +30,7 @@ class LoadSymfonySessionMiddleware implements ApplicationInterface
             ->setCookieHttpOnly(true);
         $sessionManager = new SessionManager($config);
 
-        $session = new ZendSession($sessionManager, $request->getUri()->getHost());
+        $session = new ZendSession($sessionManager, str_replace('.', '_', $request->getUri()->getHost()));
         return $this->application->execute($request->withAttribute('session', $session));
     }
 

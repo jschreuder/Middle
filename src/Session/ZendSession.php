@@ -16,7 +16,7 @@ class ZendSession implements SessionInterface
     public function __construct(SessionManager $sessionManager, string $namespace)
     {
         $this->sessionManager = $sessionManager;
-        $this->values = new Container(str_replace('.', '_', $namespace), $sessionManager);
+        $this->values = new Container($namespace, $sessionManager);
     }
 
     public function has(string $key) : bool
