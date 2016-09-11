@@ -15,14 +15,14 @@ class ErrorHandlerMiddleware implements ApplicationInterface
     /** @var  LoggerInterface */
     private $logger;
 
-    /** @var  \Twig_Environment */
-    private $twig;
+    /** @var  callable */
+    private $errorController;
 
-    public function __construct(ApplicationInterface $application, LoggerInterface $logger, \Twig_Environment $twig)
+    public function __construct(ApplicationInterface $application, LoggerInterface $logger, callable $errorController)
     {
         $this->application = $application;
         $this->logger = $logger;
-        $this->twig = $twig;
+        $this->errorController = $errorController;
     }
 
     public function execute(ServerRequestInterface $request) : ResponseInterface
@@ -35,7 +35,7 @@ class ErrorHandlerMiddleware implements ApplicationInterface
                 'file' => $exception->getFile(),
                 'backtrace' => $exception->getTrace()
             ]);
-            return new Response\HtmlResponse($this->twig->render('500.twig'), 500);
+            return ($this->errorController)($exception, $request);
         }
     }
 }
