@@ -29,7 +29,7 @@ class SymfonyRouter implements RouterInterface
         $this->generator = new SymfonyUrlGenerator(
             new UrlGenerator(
                 $this->router,
-                new RequestContext($this->baseUrl, 'GET', parse_url($this->baseUrl, PHP_URL_HOST))
+                new RequestContext($this->baseUrl, 'GET', parse_url($this->baseUrl, PHP_URL_HOST) ?: 'localhost')
             )
         );
     }
