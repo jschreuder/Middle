@@ -2,6 +2,13 @@
 Middle Framework
 ================
 
+.. image:: https://scrutinizer-ci.com/g/jschreuder/Middle/badges/quality-score.png?b=master
+   :target: https://scrutinizer-ci.com/g/jschreuder/Middle/?branch=master
+   :alt: Scrutinizer Code Quality
+.. image:: https://scrutinizer-ci.com/g/jschreuder/Middle/badges/coverage.png?b=master
+   :target: https://scrutinizer-ci.com/g/jschreuder/Middle/?branch=master
+   :alt: Scrutinizer Build Status
+
 A micro-framework build around the idea of middlewares, basicly: MIDDLEWARE ALL
 THE THINGS. What does that mean? Everything is based around simple interfaces
 for which the default implementation can can be either replaced or decorated.
