@@ -5,20 +5,21 @@ Middle Framework
 A micro-framework build around the idea of middlewares, basicly: MIDDLEWARE ALL
 THE THINGS. What does that mean? Everything is based around simple interfaces
 for which the default implementation can can be either replaced or decorated.
-Also every component is NIH, using PSR-1, PSR-2, PSR-3, PSR-4, PSR-7 based and
-only PHP 7.0 and higher (probably 7.1+ once that's released).
+Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4 and PSR-7; and PHP 7.0
+or higher (probably 7.1+ once that's released).
 
-The reason I prefer to use decoration is because it makes it more explicit.
-When using events the order in which the handlers are executed can get messy,
-and very hard to debug. Likewise here you'll have to be mindful of the order
-in which you add Middlewares, as some may depend on others. But you'll always
+The reason I prefer to use decoration is because it is far more explicit in how
+the application works than (for example) event-based programming. When using
+events, the order in which the handlers are executed can get messy and very
+hard to debug. With decoration you'll still have to be mindful of the order in
+which you add Middlewares (as some may depend on others). But you'll always
 have a useful backtrace telling you where things went wrong.
 
 ----------------------------
 Running a Middle application
 ----------------------------
 
-The heart of an application build with this is the ``ApplicationInterface``
+The heart of an application build with Middle is the ``ApplicationInterface``
 which just takes a PSR ``ServerRequestInterface`` and returns a
 ``ResponseInterface``. Running it, after having set it up, will look as
 follows (using Zend Diactoros as PSR-7 implementation):
@@ -39,8 +40,8 @@ follows (using Zend Diactoros as PSR-7 implementation):
 Minimal default setup
 ---------------------
 
-The following sets up the application with routing and a controller runner at
-its heart:
+The following sets up the application with routing middleware and a controller
+runner at its heart:
 
 .. code-block:: php
 
@@ -61,20 +62,26 @@ its heart:
         }
     );
 
-With that we can now add some routes (using the ``$router`` from above):
+With that setup we can now add some routes (using the ``$router`` from above):
 
 .. code-block:: php
 
     <?php
+    // Using the convenience method for GET request on '/'
     $router->get('home', '/', function () {
         return new Zend\Diactoros\Response\JsonResponse([
             'message' => 'Welcome to our homepage',
         ]);
     });
 
------------------------
-A more complex setup...
------------------------
+The included routing depends on Symfony's Routing component. In the path you
+can use the variable notation. The ``get()`` method also supports 2 additional
+arguments: the ``$defaults`` array and the ``$requirements`` array which are
+passed on to the Symfony routing.
+
+-----------------------------
+Decorating the app a bit more
+-----------------------------
 
 The example below builds an application using 2 additional middlewares that add
 sessions & error handling on top of the previous example.
@@ -84,12 +91,10 @@ sessions & error handling on top of the previous example.
     <?php
     // starting with the example above, let's add these before running the app.
 
-    // Now let's also support using sessions, a Session instance is registered
-    // to the Request's attributes with this Middleware.
+    // Now let's also make sessions available on the request
     $app = new jschreuder\Middle\Session\ZendSession($app, 0);
 
-    // And finally: make sure any errors are caught, passed on to a PSR-3
-    // compatible logger and return something readable to the end-user.
+    // And finally: make sure any errors are caught
     $app = new jschreuder\Middle\ErrorHandlerMiddleware(
         $app,
         new Monolog\Logger(...),
@@ -97,6 +102,15 @@ sessions & error handling on top of the previous example.
             return new Zend\Diactoros\Response\JsonResponse(['error'], 500);
         }
     );
+
+The session middleware adds a ``'session'`` attribute to the ServerRequest's
+attributes, which contains an instance of
+``jschreuder\Middle\Session\SessionInterface``.
+
+The error handler takes a PSR-3 ``LogerInterface`` instance to which it will
+log any uncaught Exceptions as ``alert``. The callable in the constructor will
+be called directly after that and is expected to return a ``ResponseInterface``
+that shows an error to the user.
 
 --------------------
 Also with templating
