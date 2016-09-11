@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace jschreuder\Middle;
+namespace jschreuder\Middle\Router;
 
-use jschreuder\Middle\Router\RouterInterface;
+use jschreuder\Middle\ApplicationInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

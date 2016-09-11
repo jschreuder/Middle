@@ -1,13 +1,12 @@
 <?php
 
-namespace spec\jschreuder\Middle;
+namespace spec\jschreuder\Middle\Router;
 
 use jschreuder\Middle\ApplicationInterface;
 use jschreuder\Middle\Router\RouteMatch;
 use jschreuder\Middle\Router\RouterInterface;
-use jschreuder\Middle\RoutingMiddleware;
+use jschreuder\Middle\Router\RoutingMiddleware;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
