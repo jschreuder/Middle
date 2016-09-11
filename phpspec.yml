@@ -1,0 +1,4 @@
+suites:
+    acme_suite:
+        namespace: jschreuder\Middle
+        psr4_prefix: jschreuder\Middle
