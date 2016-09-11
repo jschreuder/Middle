@@ -1,0 +1,38 @@
+{
+    "name": "jschreuder/middle",
+    "description": "Middleware based micro-framework build on components by everyone else",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jelmer Schreuder",
+            "email": "j.schreuder@mijnpraktijk.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "psr/log-implementation": "^1.0",
+        "psr/http-message-implementation": "^1.0"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "^3.0",
+        "monolog/monolog": "^1.21",
+        "zendframework/zend-diactoros": "^1.3",
+        "twig/twig": "^1.24",
+        "zendframework/zend-session": "^2.7",
+        "symfony/routing": "^3.1"
+    },
+    "suggests": {
+        "twig/twig": "Required when using the TwigRenderer view-engine implementation",
+        "symfony/routing": "Required when using the SymfonyRouter implementation",
+        "zendframework/zend-session": "Required when using the ZendSession implementation"
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "autoload": {
+        "psr-4": {
+            "jschreuder\\Middle\\": "src"
+        }
+    }
+}
