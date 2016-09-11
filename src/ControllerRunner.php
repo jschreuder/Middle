@@ -20,11 +20,6 @@ class ControllerRunner implements ApplicationInterface
     public function execute(ServerRequestInterface $request) : ResponseInterface
     {
         $controller = $request->getAttribute('controller');
-        if (is_string($controller) || !is_callable($controller)) {
-            throw new \RuntimeException('Controller must be callable object or closure');
-        }
-
-        // Generate & render response
         $response = $controller($request);
         if ($this->renderer && $response instanceof ViewInterface) {
             $response = $this->renderer->render($request, $response);
