@@ -20,7 +20,6 @@ class RoutingMiddleware implements ApplicationInterface
     public function __construct(
         ApplicationInterface $application,
         RouterInterface $router,
-        string $baseUrl,
         callable $fallbackController
     )
     {
