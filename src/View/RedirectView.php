@@ -27,7 +27,7 @@ class RedirectView implements ViewInterface
 
     public function getContentType() : string
     {
-        throw new \RuntimeException('No parameters allowed on RedirectView');
+        throw new \RuntimeException('No content-type allowed on RedirectView');
     }
 
     public function getHeaders() : array
@@ -42,7 +42,7 @@ class RedirectView implements ViewInterface
 
     public function getTemplate() : string
     {
-        throw new \RuntimeException('No parameters allowed on RedirectView');
+        throw new \RuntimeException('No template allowed on RedirectView');
     }
 
     public function getParameters() : array
