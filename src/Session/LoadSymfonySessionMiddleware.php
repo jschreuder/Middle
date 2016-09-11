@@ -1,14 +1,14 @@
 <?php declare(strict_types = 1);
 
-namespace jschreuder\Middle;
+namespace jschreuder\Middle\Session;
 
-use jschreuder\Middle\Session\ZendSession;
+use jschreuder\Middle\ApplicationInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Session\Config\StandardConfig;
 use Zend\Session\SessionManager;
 
-class LoadSessionMiddleware implements ApplicationInterface
+class LoadSymfonySessionMiddleware implements ApplicationInterface
 {
     /** @var  ApplicationInterface */
     private $application;
