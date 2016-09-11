@@ -53,12 +53,6 @@ class ControllerRunnerSpec extends ObjectBehavior
         $this->execute($request)->shouldReturn($response);
     }
 
-    public function it_will_error_on_invalid_controller(ServerRequestInterface $request)
-    {
-        $request->getAttribute('controller')->willReturn('trim');
-        $this->shouldThrow(\RuntimeException::class)->duringExecute($request);
-    }
-
     public function it_will_error_on_invalid_response(ServerRequestInterface $request)
     {
         $controller = function () {
