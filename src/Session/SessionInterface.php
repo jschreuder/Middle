@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace jschreuder\Middle\Application\Session;
+namespace jschreuder\Middle\Session;
 
 interface SessionInterface
 {

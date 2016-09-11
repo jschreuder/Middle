@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace jschreuder\Middle\Application;
+namespace jschreuder\Middle;
 
-use jschreuder\Middle\Application\Session\ZendSession;
+use jschreuder\Middle\Session\ZendSession;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Session\Config\StandardConfig;

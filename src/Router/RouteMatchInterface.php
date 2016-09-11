@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace jschreuder\Middle\Application\Router;
+namespace jschreuder\Middle\Router;
 
 interface RouteMatchInterface
 {

@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace jschreuder\Middle\Application;
+namespace jschreuder\Middle;
 
-use jschreuder\Middle\Application\View\RendererInterface;
-use jschreuder\Middle\Application\View\ViewInterface;
+use jschreuder\Middle\View\RendererInterface;
+use jschreuder\Middle\View\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
