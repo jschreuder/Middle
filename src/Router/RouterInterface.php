@@ -69,13 +69,4 @@ interface RouterInterface
         array $defaults = [],
         array $requirements = []
     );
-
-    /** Add route for HEAD request */
-    public function head(
-        string $name,
-        string $path,
-        callable $controller,
-        array $defaults = [],
-        array $requirements = []
-    );
 }

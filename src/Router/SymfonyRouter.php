@@ -78,22 +78,6 @@ class SymfonyRouter implements RouterInterface
         $routingProvider->registerRoutes($this);
     }
 
-    public function match(
-        string $name,
-        string $methods,
-        string $path,
-        callable $controller,
-        array $defaults = [],
-        array $requirements = []
-    ) : Route
-    {
-        $route = new Route($path, $defaults, $requirements);
-        $route->setMethods(explode('|', $methods))
-            ->setDefault('controller', $controller);
-        $this->router->add($name, $route);
-        return $route;
-    }
-
     public function get(
         string $name,
         string $path,
@@ -149,14 +133,19 @@ class SymfonyRouter implements RouterInterface
         return $this->match($name, 'DELETE', $path, $controller, $defaults, $requirements);
     }
 
-    public function head(
+    public function match(
         string $name,
+        string $methods,
         string $path,
         callable $controller,
         array $defaults = [],
         array $requirements = []
     ) : Route
     {
-        return $this->match($name, 'HEAD', $path, $controller, $defaults, $requirements);
+        $route = new Route($path, $defaults, $requirements);
+        $route->setMethods(explode('|', $methods))
+            ->setDefault('controller', $controller);
+        $this->router->add($name, $route);
+        return $route;
     }
 }
