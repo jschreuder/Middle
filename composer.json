@@ -26,7 +26,8 @@
     "suggests": {
         "twig/twig": "Required when using the TwigRenderer view-engine implementation",
         "symfony/routing": "Required when using the SymfonyRouter implementation",
-        "zendframework/zend-session": "Required when using the ZendSession implementation"
+        "zendframework/zend-session": "Required when using the ZendSession implementation",
+        "zendframework/zend-diactoros": "Required by the RedirectRendererMiddleware and TwigRenderer"
     },
     "config": {
         "bin-dir": "bin"
