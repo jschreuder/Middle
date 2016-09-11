@@ -21,6 +21,7 @@ class TwigRenderer implements RendererInterface
     {
         $response = $this->createResponse($view);
         $response->getBody()->write($this->twig->render($view->getTemplate(), $view->getParameters()));
+        $response->getBody()->rewind();
         return $response;
     }
 }
