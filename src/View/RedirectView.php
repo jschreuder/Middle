@@ -13,7 +13,7 @@ class RedirectView implements ViewInterface
     public function __construct(string $location, int $statusCode = 302)
     {
         if ($statusCode < 300 || $statusCode >= 400) {
-            throw new \InvalidArgumentException('Redirect must have statuscode between 300-399');
+            throw new \InvalidArgumentException('Redirect must have status code between 300-399');
         }
 
         $this->statusCode = $statusCode;

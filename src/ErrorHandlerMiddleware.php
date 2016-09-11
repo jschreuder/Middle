@@ -5,7 +5,6 @@ namespace jschreuder\Middle;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Zend\Diactoros\Response;
 
 class ErrorHandlerMiddleware implements ApplicationInterface
 {
