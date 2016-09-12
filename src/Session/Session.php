@@ -2,16 +2,10 @@
 
 namespace jschreuder\Middle\Session;
 
-class GenericSession implements SessionInterface
+class Session implements SessionInterface
 {
     const FLASH_DATA_KEY_PREFIX = '_flash_data.';
     const FLASH_DATA_META_KEY = '_flash_data_keys';
-
-    /** Ugly workaround as the JWT library decodes JSON as stdCLass tree */
-    public static function fromStdClass(\stdClass $sessionData)
-    {
-        return new self(json_decode(json_encode($sessionData), true));
-    }
 
     /** @var  array */
     private $sessionData;

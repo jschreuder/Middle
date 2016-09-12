@@ -115,21 +115,24 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         return $token;
     }
 
-    private function extractSessionContainer(Token $token = null) : GenericSession
+    private function extractSessionContainer(Token $token = null) : SessionInterface
     {
         try {
             if (is_null($token) || !$token->verify($this->signer, $this->verificationKey)) {
-                return new GenericSession();
+                return new Session();
             }
 
-            return GenericSession::fromStdClass($token->getClaim(self::SESSION_CLAIM, []));
+            // Re-encode the payload and decode as array to not get stdClass tree
+            return new Session(
+                json_decode(json_encode($token->getClaim(self::SESSION_CLAIM, [])), true)
+            );
         } catch (\BadMethodCallException $invalidToken) {
-            return new GenericSession();
+            return new Session();
         }
     }
 
     private function appendToken(
-        GenericSession $sessionContainer,
+        SessionInterface $sessionContainer,
         ResponseInterface $response,
         Token $token = null
     ) : ResponseInterface
@@ -160,7 +163,7 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         return time() >= ($token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime);
     }
 
-    private function getTokenCookie(GenericSession $sessionContainer) : SetCookie
+    private function getTokenCookie(SessionInterface $sessionContainer) : SetCookie
     {
         $timestamp = time();
         return $this
