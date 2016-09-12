@@ -15,15 +15,16 @@ Middle Framework
 A micro-framework build around the idea of middlewares, basicly: MIDDLEWARE ALL
 THE THINGS. What does that mean? Everything is based around simple interfaces
 for which the default implementation can can be either replaced or decorated.
-Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4 and PSR-7; and PHP 7.0
-or higher (probably 7.1+ once that's released).
+Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4, PSR-7 and inspired by
+the proposed PSR-15; and PHP 7.0 or higher (probably 7.1+ once that's released).
 
-The reason I prefer to use decoration is because it is far more explicit in how
-the application works than (for example) event-based programming. When using
-events, the order in which the handlers are executed can get messy and very
-hard to debug. With decoration you'll still have to be mindful of the order in
-which you add Middlewares (as some may depend on others). But you'll always
-have a useful backtrace telling you where things went wrong.
+The reason I prefer to use middleware approach is because it is far more
+explicit in how the application works than (for example) event-based
+programming. When using events, the order in which the handlers are executed
+can get messy and very hard to debug. With decoration you'll still have to be
+mindful of the order in which you add Middlewares (as some may depend on
+others). But you'll always have a useful backtrace telling you where things
+went wrong.
 
 ----------------------------
 Running a Middle application
@@ -41,7 +42,7 @@ follows (using Zend Diactoros as PSR-7 implementation):
     $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 
     // Render the response
-    $response = $app->execute($request);
+    $response = $app->process($request);
 
     // And output it
     (new \Zend\Diactoros\Response\SapiEmitter())->emit($response);
@@ -58,18 +59,21 @@ runner at its heart:
     <?php
     // This can only lookup request attribute 'controller' and execute it to
     // generate the Response
-    $app = new jschreuder\Middle\ControllerRunner();
+    $app = new jschreuder\Middle\ApplicationStack([
+        new jschreuder\Middle\ControllerRunner()
+    ]);
 
     // Let's add support for routing, which should add that controller
     // attribute. This also add a router which needs the base-URL, and a
     // handler for generating a response when no route is matched.
     $router = new jschreuder\Middle\Router\SymfonyRouter('http://localhost');
-    $app = new jschreuder\Middle\Router\RoutingMiddleware(
-        $app,
-        $router,
-        function () {
-            return new Zend\Diactoros\Response\JsonResponse(['error'], 400);
-        }
+    $app = $app->withMiddleware(
+        new jschreuder\Middle\Router\RoutingMiddleware(
+            $router,
+            function () {
+                return new Zend\Diactoros\Response\JsonResponse(['error'], 400);
+            }
+        )
     );
 
 With that setup we can now add some routes (using the ``$router`` from above):
@@ -102,15 +106,18 @@ sessions & error handling on top of the previous example.
     // starting with the example above, let's add these before running the app.
 
     // Now let's also make sessions available on the request
-    $app = new jschreuder\Middle\Session\ZendSession($app, 0);
+    $app = $app->withMiddleware(
+        new jschreuder\Middle\Session\ZendSession(7200)
+    );
 
     // And finally: make sure any errors are caught
-    $app = new jschreuder\Middle\ErrorHandlerMiddleware(
-        $app,
-        new Monolog\Logger(...),
-        function (ServerRequestInterface $request, \Throwable $exception) {
-            return new Zend\Diactoros\Response\JsonResponse(['error'], 500);
-        }
+    $app = $app->withMiddleware(
+        new jschreuder\Middle\ErrorHandlerMiddleware(
+            new Monolog\Logger(...),
+            function (ServerRequestInterface $request, \Throwable $exception) {
+                return new Zend\Diactoros\Response\JsonResponse(['error'], 500);
+            }
+        )
     );
 
 The session middleware adds a ``'session'`` attribute to the ServerRequest's
@@ -142,10 +149,12 @@ The example below uses the included Twig renderer:
     );
 
     // Now start with the ControllerRunner given the renderer:
-    $app = new jschreuder\Middle\ControllerRunner($renderer);
-    $app = new jschreuder\Middle\Router\RoutingMiddleware(
-        $app, $router, function () { ... }
-    );
+    $app = new jschreuder\Middle\ApplicationStack([
+        new jschreuder\Middle\ControllerRunner($renderer),
+        new jschreuder\Middle\Router\RoutingMiddleware(
+            $app, $router, function () { ... }
+        ),
+    ]);
 
     $router->get('home', '/', function () {
         // Should render template.twig and parameters with Twig and return
@@ -192,13 +201,17 @@ in other containers as well:
     <?php
     // First create the central app object in the container
     $container = Pimple\Container();
-    $container['app'] = new jschreuder\Middle\ControllerRunner();
+    $container['app'] = new jschreuder\Middle\ApplicationStack([
+        new jschreuder\Middle\ControllerRunner()
+    ]);
 
     // Now to add a middleware you can do this
     $container->extend('app',
-        function (jschreuder\Middle\ApplicationInterface $app, Pimple\Container $container) {
-            return new jschreuder\Middle\Router\RoutingMiddleware(
-                $app, $container['router'], $container['fallbackHandler']
+        function (jschreuder\Middle\ApplicationStack $app, Pimple\Container $container) {
+            return $app->withMiddleware(
+                new jschreuder\Middle\Router\RoutingMiddleware(
+                    $container['router'], $container['fallbackHandler']
+                )
             );
         }
     );
