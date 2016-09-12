@@ -12,7 +12,8 @@
     "minimum-stability": "stable",
     "require": {
         "psr/log-implementation": "^1.0",
-        "psr/http-message-implementation": "^1.0"
+        "psr/http-message-implementation": "^1.0",
+        "henrikbjorn/phpspec-code-coverage": "^3.0"
     },
     "require-dev": {
         "php": ">=7.0",
