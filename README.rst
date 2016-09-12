@@ -226,9 +226,12 @@ Included services
 There's a few services included that all have their default implementations
 and may be replaced or decorated as you wish:
 
-* ``SessionInterface`` with its default depending on Zend-Session. It allows
-  for setting & getting values, destroying the session or rotating its ID. It
-  can be loaded using the ``LoadZendSessionMiddleware``.
+* ``SessionInterface`` with its default option depending on either
+  ``zendframework/zend-session`` or a combination of ``lcobucci/jwt`` and
+  ``dflydev/fig-cookies``. It allows for setting & getting values, destroying
+  the session or rotating its ID. The Zend version can be loaded using the
+  ``LoadZendSessionMiddleware``, JWT based sessions can be loaded using the
+  ``LoadJwtSessionMiddleware``.
 
 * ``RouterInterface`` with its default depending on Symfony Routing component.
   It is loaded through the ``RoutingMiddleware`` as shown above. It has methods
