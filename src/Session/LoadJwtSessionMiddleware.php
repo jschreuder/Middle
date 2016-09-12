@@ -46,7 +46,7 @@ final class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
     /** @var  SetCookie */
     private $defaultCookie;
 
-    public function __construct(
+    private function __construct(
         Signer $signer,
         string $signatureKey,
         string $verificationKey,
@@ -71,8 +71,8 @@ final class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
     ) : LoadJwtSessionMiddleware {
         return new self(
             new Signer\Rsa\Sha256(),
-            file_get_contents($privateRsaKey),
-            file_get_contents($publicRsaKey),
+            $privateRsaKey,
+            $publicRsaKey,
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
                 ->withHttpOnly(true)
