@@ -122,7 +122,7 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
                 return new GenericSession();
             }
 
-            return new GenericSession((array) $token->getClaim(self::SESSION_CLAIM, []));
+            return GenericSession::fromStdClass($token->getClaim(self::SESSION_CLAIM, []));
         } catch (\BadMethodCallException $invalidToken) {
             return new GenericSession();
         }
@@ -140,7 +140,7 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && ! $sessionContainer->isEmpty())) {
+        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && !$sessionContainer->isEmpty())) {
             return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
         }
 

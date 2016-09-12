@@ -7,6 +7,12 @@ class GenericSession implements SessionInterface
     const FLASH_DATA_KEY_PREFIX = '_flash_data.';
     const FLASH_DATA_META_KEY = '_flash_data_keys';
 
+    /** Ugly workaround as the JWT library decodes JSON as stdCLass tree */
+    public static function fromStdClass(\stdClass $sessionData)
+    {
+        return new self(json_decode(json_encode($sessionData), true));
+    }
+
     /** @var  array */
     private $sessionData;
 
@@ -28,8 +34,10 @@ class GenericSession implements SessionInterface
             if ($hops <= 0) {
                 unset($sessionData[self::FLASH_DATA_META_KEY][$key]);
                 unset($sessionData[self::FLASH_DATA_KEY_PREFIX . $key]);
+                $this->changed = true;
             } else {
-                $sessionData[self::FLASH_DATA_META_KEY][$key]--;
+                $sessionData[self::FLASH_DATA_META_KEY][$key] = $hops - 1;
+                $this->changed = true;
             }
         }
         return $sessionData;
@@ -54,7 +62,7 @@ class GenericSession implements SessionInterface
     public function set(string $key, $value)
     {
         $this->changed = true;
-        $this->sessionData[self::FLASH_DATA_KEY_PREFIX . $key] = $value;
+        $this->sessionData[$key] = $value;
     }
 
     public function getFlash(string $key)
@@ -66,17 +74,19 @@ class GenericSession implements SessionInterface
     {
         $this->changed = true;
         $this->markFlashKey($key);
-        $this->sessionData[$key] = $value;
+        $this->sessionData[self::FLASH_DATA_KEY_PREFIX . $key] = $value;
     }
 
     public function destroy()
     {
+        $this->changed = true;
         $this->sessionData = [];
     }
 
     public function rotateId()
     {
-        // These sessions don't have an ID
+        $this->changed = true;
+        // These sessions don't have an ID to change, but this should force overwrite
     }
 
     public function isEmpty() : bool
