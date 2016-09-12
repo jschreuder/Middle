@@ -3,10 +3,10 @@
 namespace spec\jschreuder\Middle;
 
 use jschreuder\Middle\ControllerRunner;
+use jschreuder\Middle\DelegateInterface;
 use jschreuder\Middle\View\RendererInterface;
 use jschreuder\Middle\View\ViewInterface;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -30,7 +30,8 @@ class ControllerRunnerSpec extends ObjectBehavior
     public function it_can_execute_a_controller(
         ServerRequestInterface $request,
         ViewInterface $view,
-        ResponseInterface $response
+        ResponseInterface $response,
+        DelegateInterface $delegate
     )
     {
         $controller = function () use ($view) {
@@ -38,33 +39,35 @@ class ControllerRunnerSpec extends ObjectBehavior
         };
         $request->getAttribute('controller')->willReturn($controller);
         $this->renderer->render($request, $view)->willReturn($response);
-        $this->execute($request)->shouldReturn($response);
+        $this->process($request, $delegate)->shouldReturn($response);
     }
 
     public function it_can_execute_a_controller_returning_a_psr_response(
         ServerRequestInterface $request,
-        ResponseInterface $response
+        ResponseInterface $response,
+        DelegateInterface $delegate
     )
     {
         $controller = function () use ($response) {
             return $response->getWrappedObject();
         };
         $request->getAttribute('controller')->willReturn($controller);
-        $this->execute($request)->shouldReturn($response);
+        $this->process($request, $delegate)->shouldReturn($response);
     }
 
-    public function it_will_error_on_invalid_response(ServerRequestInterface $request)
+    public function it_will_error_on_invalid_response(ServerRequestInterface $request, DelegateInterface $delegate)
     {
         $controller = function () {
             return 'an invalid response';
         };
         $request->getAttribute('controller')->willReturn($controller);
-        $this->shouldThrow(\TypeError::class)->duringExecute($request);
+        $this->shouldThrow(\TypeError::class)->duringProcess($request, $delegate);
     }
 
     public function it_will_error_on_invalid_response_on_views_with_no_renderer(
         ServerRequestInterface $request,
-        ViewInterface $view
+        ViewInterface $view,
+        DelegateInterface $delegate
     )
     {
         $controller = function () use ($view) {
@@ -72,6 +75,6 @@ class ControllerRunnerSpec extends ObjectBehavior
         };
         $request->getAttribute('controller')->willReturn($controller);
         $this->beConstructedWith();
-        $this->shouldThrow(\TypeError::class)->duringExecute($request);
+        $this->shouldThrow(\TypeError::class)->duringProcess($request, $delegate);
     }
 }

@@ -7,7 +7,7 @@ use jschreuder\Middle\View\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class ControllerRunner implements ApplicationInterface
+class ControllerRunner implements HttpMiddlewareInterface
 {
     /** @var  ?RendererInterface */
     private $renderer;
@@ -17,7 +17,7 @@ class ControllerRunner implements ApplicationInterface
         $this->renderer = $renderer;
     }
 
-    public function execute(ServerRequestInterface $request) : ResponseInterface
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
     {
         $controller = $request->getAttribute('controller');
         $response = $controller($request);

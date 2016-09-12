@@ -2,7 +2,7 @@
 
 namespace spec\jschreuder\Middle\Router;
 
-use jschreuder\Middle\ApplicationInterface;
+use jschreuder\Middle\DelegateInterface;
 use jschreuder\Middle\Router\RouteMatch;
 use jschreuder\Middle\Router\RouterInterface;
 use jschreuder\Middle\Router\RoutingMiddleware;
@@ -13,21 +13,17 @@ use Psr\Http\Message\ServerRequestInterface;
 /** @mixin  RoutingMiddleware */
 class RoutingMiddlewareSpec extends ObjectBehavior
 {
-    /** @var  ApplicationInterface */
-    private $application;
-
     /** @var  RouterInterface */
     private $router;
 
     /** @var  callable */
     private $fallbackController;
 
-    public function let(ApplicationInterface $application, RouterInterface $router)
+    public function let(RouterInterface $router)
     {
-        $this->application = $application;
         $this->router = $router;
         $this->fallbackController = function () {};
-        $this->beConstructedWith($application, $router, $this->fallbackController);
+        $this->beConstructedWith($router, $this->fallbackController);
     }
 
     public function it_is_initializable()
@@ -40,7 +36,8 @@ class RoutingMiddlewareSpec extends ObjectBehavior
         ServerRequestInterface $request2,
         ServerRequestInterface $request3,
         ServerRequestInterface $request4,
-        ResponseInterface $response
+        ResponseInterface $response,
+        DelegateInterface $delegate
     ) {
         $controller = function () {};
         $attributes = ['v1' => 1, 'v2' => 2];
@@ -51,23 +48,24 @@ class RoutingMiddlewareSpec extends ObjectBehavior
         $request2->withAttribute('v1', $attributes['v1'])->willReturn($request3);
         $request3->withAttribute('v2', $attributes['v2'])->willReturn($request4);
 
-        $this->application->execute($request4)->willReturn($response);
+        $delegate->next($request4)->willReturn($response);
 
-        $this->execute($request1)->shouldReturn($response);
+        $this->process($request1, $delegate)->shouldReturn($response);
     }
 
     public function it_can_assign_fallback_controller_without_a_match(
         ServerRequestInterface $request1,
         ServerRequestInterface $request2,
-        ResponseInterface $response
+        ResponseInterface $response,
+        DelegateInterface $delegate
     ) {
         $routeMatch = new RouteMatch(false);
         $this->router->parseRequest($request1)->willReturn($routeMatch);
 
         $request1->withAttribute('controller', $this->fallbackController)->willReturn($request2);
 
-        $this->application->execute($request2)->willReturn($response);
+        $delegate->next($request2)->willReturn($response);
 
-        $this->execute($request1)->shouldReturn($response);
+        $this->process($request1, $delegate)->shouldReturn($response);
     }
 }

@@ -2,15 +2,13 @@
 
 namespace jschreuder\Middle\Router;
 
-use jschreuder\Middle\ApplicationInterface;
+use jschreuder\Middle\HttpMiddlewareInterface;
+use jschreuder\Middle\DelegateInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class RoutingMiddleware implements ApplicationInterface
+class RoutingMiddleware implements HttpMiddlewareInterface
 {
-    /** @var  ApplicationInterface */
-    private $application;
-
     /** @var  RouterInterface */
     private $router;
 
@@ -18,17 +16,15 @@ class RoutingMiddleware implements ApplicationInterface
     private $fallbackController;
 
     public function __construct(
-        ApplicationInterface $application,
         RouterInterface $router,
         callable $fallbackController
     )
     {
-        $this->application = $application;
         $this->router = $router;
         $this->fallbackController = $fallbackController;
     }
 
-    public function execute(ServerRequestInterface $request) : ResponseInterface
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
     {
         $routeMatch = $this->router->parseRequest($request);
 
@@ -44,6 +40,6 @@ class RoutingMiddleware implements ApplicationInterface
             $request = $request->withAttribute('controller', $this->fallbackController);
         }
 
-        return $this->application->execute($request);
+        return $delegate->next($request);
     }
 }

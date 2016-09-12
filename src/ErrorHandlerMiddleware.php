@@ -6,28 +6,24 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class ErrorHandlerMiddleware implements ApplicationInterface
+class ErrorHandlerMiddleware implements HttpMiddlewareInterface
 {
-    /** @var  ApplicationInterface */
-    private $application;
-
     /** @var  LoggerInterface */
     private $logger;
 
     /** @var  callable */
     private $errorController;
 
-    public function __construct(ApplicationInterface $application, LoggerInterface $logger, callable $errorController)
+    public function __construct(LoggerInterface $logger, callable $errorController)
     {
-        $this->application = $application;
         $this->logger = $logger;
         $this->errorController = $errorController;
     }
 
-    public function execute(ServerRequestInterface $request) : ResponseInterface
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
     {
         try {
-            return $this->application->execute($request);
+            return $delegate->next($request);
         } catch (\Throwable $exception) {
             $this->logger->alert($exception->getMessage(), [
                 'line' => $exception->getLine(),

@@ -2,7 +2,7 @@
 
 namespace spec\jschreuder\Middle\Controller;
 
-use jschreuder\Middle\ApplicationInterface;
+use jschreuder\Middle\DelegateInterface;
 use jschreuder\Middle\Controller\FilterValidationMiddleware;
 use jschreuder\Middle\Controller\RequestFilterInterface;
 use jschreuder\Middle\Controller\RequestValidatorInterface;
@@ -14,17 +14,13 @@ use Psr\Http\Message\ServerRequestInterface;
 /** @mixin  FilterValidationMiddleware */
 class FilterValidationMiddlewareSpec extends ObjectBehavior
 {
-    /** @var  ApplicationInterface */
-    private $application;
-
     /** @var  callable */
     private $errorHandler;
 
-    public function let(ApplicationInterface $application)
+    public function let()
     {
-        $this->application = $application;
         $this->errorHandler = function () {};
-        $this->beConstructedWith($application, $this->errorHandler);
+        $this->beConstructedWith($this->errorHandler);
     }
 
     public function it_is_initializable()
@@ -36,48 +32,55 @@ class FilterValidationMiddlewareSpec extends ObjectBehavior
         ServerRequestInterface $request1,
         ServerRequestInterface $request2,
         RequestFilterInterface $filter,
-        ResponseInterface $response
+        ResponseInterface $response,
+        DelegateInterface $delegate
     )
     {
         $request1->getAttribute('controller')->willReturn($filter);
         $filter->filterRequest($request1)->willReturn($request2);
-        $this->application->execute($request2)->willReturn($response);
-        $this->execute($request1)->shouldReturn($response);
+        $delegate->next($request2)->willReturn($response);
+        $this->process($request1, $delegate)->shouldReturn($response);
     }
 
     public function it_can_successfully_validate_a_request(
         ServerRequestInterface $request,
         RequestValidatorInterface $validator,
-        ResponseInterface $response
+        ResponseInterface $response,
+        DelegateInterface $delegate
     )
     {
         $request->getAttribute('controller')->willReturn($validator);
         $validator->validateRequest($request)->shouldBeCalled();
-        $this->application->execute($request)->willReturn($response);
-        $this->execute($request)->shouldReturn($response);
+        $delegate->next($request)->willReturn($response);
+        $this->process($request, $delegate)->shouldReturn($response);
     }
 
     public function it_can_fail_to_validate_a_request(
         ServerRequestInterface $request,
         RequestValidatorInterface $validator,
-        ResponseInterface $response
+        ResponseInterface $response,
+        DelegateInterface $delegate
     )
     {
         $request->getAttribute('controller')->willReturn($validator);
         $validator->validateRequest($request)->willThrow(new ValidationFailedException([]));
-        $this->application->execute($request)->shouldNotBeCalled();
+        $delegate->next($request)->shouldNotBeCalled();
 
-        $this->beConstructedWith($this->application, function () use ($response) {
+        $this->beConstructedWith(function () use ($response) {
             return $response->getWrappedObject();
         });
 
-        $this->execute($request)->shouldReturn($response);
+        $this->process($request, $delegate)->shouldReturn($response);
     }
 
-    public function it_can_be_neither(ServerRequestInterface $request, ResponseInterface $response)
+    public function it_can_be_neither(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        DelegateInterface $delegate
+    )
     {
         $request->getAttribute('controller')->willReturn('trim');
-        $this->application->execute($request)->willReturn($response);
-        $this->execute($request)->shouldReturn($response);
+        $delegate->next($request)->willReturn($response);
+        $this->process($request, $delegate)->shouldReturn($response);
     }
 }

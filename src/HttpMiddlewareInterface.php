@@ -5,7 +5,7 @@ namespace jschreuder\Middle;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-interface ApplicationInterface
+interface HttpMiddlewareInterface
 {
-    public function execute(ServerRequestInterface $request) : ResponseInterface;
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface;
 }

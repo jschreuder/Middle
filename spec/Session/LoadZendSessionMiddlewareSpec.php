@@ -2,7 +2,7 @@
 
 namespace spec\jschreuder\Middle\Session;
 
-use jschreuder\Middle\ApplicationInterface;
+use jschreuder\Middle\DelegateInterface;
 use jschreuder\Middle\Session\LoadZendSessionMiddleware;
 use jschreuder\Middle\Session\SessionInterface;
 use PhpSpec\ObjectBehavior;
@@ -14,16 +14,12 @@ use Psr\Http\Message\UriInterface;
 /** @mixin  LoadZendSessionMiddleware */
 class LoadZendSessionMiddlewareSpec extends ObjectBehavior
 {
-    /** @var  ApplicationInterface */
-    private $application;
-
     /** @var  int */
     private $cookieLifetime = 0;
 
-    public function let(ApplicationInterface $application)
+    public function let()
     {
-        $this->application = $application;
-        $this->beConstructedWith($application, $this->cookieLifetime);
+        $this->beConstructedWith($this->cookieLifetime);
     }
 
     public function it_is_initializable()
@@ -35,7 +31,8 @@ class LoadZendSessionMiddlewareSpec extends ObjectBehavior
         ServerRequestInterface $request1,
         UriInterface $uri,
         ServerRequestInterface $request2,
-        ResponseInterface $response
+        ResponseInterface $response,
+        DelegateInterface $delegate
     )
     {
         $request1->getUri()->willReturn($uri);
@@ -43,7 +40,7 @@ class LoadZendSessionMiddlewareSpec extends ObjectBehavior
             ->willReturn($request2);
         $uri->getHost()->willReturn('some.hostna.me');
 
-        $this->application->execute($request2)->willReturn($response);
-        $this->execute($request1)->shouldReturn($response);
+        $delegate->next($request2)->willReturn($response);
+        $this->process($request1, $delegate)->shouldReturn($response);
     }
 }

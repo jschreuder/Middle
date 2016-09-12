@@ -2,28 +2,25 @@
 
 namespace jschreuder\Middle\Session;
 
-use jschreuder\Middle\ApplicationInterface;
+use jschreuder\Middle\HttpMiddlewareInterface;
+use jschreuder\Middle\DelegateInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Session\Config\StandardConfig;
 use Zend\Session\Container;
 use Zend\Session\SessionManager;
 
-class LoadZendSessionMiddleware implements ApplicationInterface
+class LoadZendSessionMiddleware implements HttpMiddlewareInterface
 {
-    /** @var  ApplicationInterface */
-    private $application;
-
     /** @var  int */
     private $cookieLifetime;
 
-    public function __construct(ApplicationInterface $application, int $cookieLifetime)
+    public function __construct(int $cookieLifetime)
     {
-        $this->application = $application;
         $this->cookieLifetime = $cookieLifetime;
     }
 
-    public function execute(ServerRequestInterface $request) : ResponseInterface
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
     {
         $config = (new StandardConfig())
             ->setCookieLifetime($this->cookieLifetime)
@@ -33,7 +30,7 @@ class LoadZendSessionMiddleware implements ApplicationInterface
         $container = new Container(str_replace('.', '_', $request->getUri()->getHost()), $sessionManager);
 
         $session = new ZendSession($sessionManager, $container);
-        return $this->application->execute($request->withAttribute('session', $session));
+        return $delegate->next($request->withAttribute('session', $session));
     }
 
 }

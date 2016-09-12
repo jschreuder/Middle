@@ -2,25 +2,22 @@
 
 namespace jschreuder\Middle\Controller;
 
-use jschreuder\Middle\ApplicationInterface;
+use jschreuder\Middle\HttpMiddlewareInterface;
+use jschreuder\Middle\DelegateInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class FilterValidationMiddleware implements ApplicationInterface
+class FilterValidationMiddleware implements HttpMiddlewareInterface
 {
-    /** @var  ApplicationInterface */
-    private $application;
-
     /** @var  callable */
     private $errorHandler;
 
-    public function __construct(ApplicationInterface $application, callable $errorHandler)
+    public function __construct(callable $errorHandler)
     {
-        $this->application = $application;
         $this->errorHandler = $errorHandler;
     }
 
-    public function execute(ServerRequestInterface $request) : ResponseInterface
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
     {
         $controller = $request->getAttribute('controller');
 
@@ -40,6 +37,6 @@ class FilterValidationMiddleware implements ApplicationInterface
         }
 
         // Filtered and validated (if applicable), let's continue on
-        return $this->application->execute($request);
+        return $delegate->next($request);
     }
 }
