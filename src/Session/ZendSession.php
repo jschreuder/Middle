@@ -73,4 +73,9 @@ class ZendSession implements SessionInterface
     {
         return $this->changed;
     }
+
+    public function toArray() : array
+    {
+        return $this->container->getArrayCopy();
+    }
 }

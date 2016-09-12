@@ -4,6 +4,9 @@ namespace jschreuder\Middle\Session;
 
 class GenericSession implements SessionInterface
 {
+    const FLASH_DATA_KEY_PREFIX = '_flash_data.';
+    const FLASH_DATA_META_KEY = '_flash_data_keys';
+
     /** @var  array */
     private $sessionData;
 
@@ -12,7 +15,30 @@ class GenericSession implements SessionInterface
 
     public function __construct(array $sessionData = [])
     {
-        $this->sessionData = $sessionData;
+        $this->sessionData = $this->processFlashData($sessionData);
+    }
+
+    private function processFlashData(array $sessionData) : array
+    {
+        if (!isset($sessionData[self::FLASH_DATA_META_KEY])) {
+            return $sessionData;
+        }
+
+        foreach ($sessionData[self::FLASH_DATA_META_KEY] as $key => $hops) {
+            if ($hops <= 0) {
+                unset($sessionData[self::FLASH_DATA_META_KEY][$key]);
+                unset($sessionData[self::FLASH_DATA_KEY_PREFIX . $key]);
+            } else {
+                $sessionData[self::FLASH_DATA_META_KEY][$key]--;
+            }
+        }
+        return $sessionData;
+    }
+
+    /** @return  void */
+    private function markFlashKey(string $key)
+    {
+        $this->sessionData[self::FLASH_DATA_META_KEY][$key] = 1;
     }
 
     public function has(string $key) : bool
@@ -28,17 +54,18 @@ class GenericSession implements SessionInterface
     public function set(string $key, $value)
     {
         $this->changed = true;
-        $this->sessionData[$key] = $value;
+        $this->sessionData[self::FLASH_DATA_KEY_PREFIX . $key] = $value;
     }
 
     public function getFlash(string $key)
     {
-        return $this->sessionData[$key] ?? null;
+        return $this->sessionData[self::FLASH_DATA_KEY_PREFIX . $key] ?? null;
     }
 
     public function setFlash(string $key, $value)
     {
         $this->changed = true;
+        $this->markFlashKey($key);
         $this->sessionData[$key] = $value;
     }
 

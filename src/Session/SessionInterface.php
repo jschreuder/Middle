@@ -27,4 +27,6 @@ interface SessionInterface
     public function isEmpty() : bool;
 
     public function hasChanged() : bool;
+
+    public function toArray() : array;
 }
