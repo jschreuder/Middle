@@ -33,7 +33,8 @@ final class ApplicationStack implements ApplicationStackInterface
     {
         $oldStack = clone $this->stack;
         $newStack = new \SplStack();
-        while ($middlewareInstance = $oldStack->shift()) {
+        while (!$oldStack->isEmpty()) {
+            $middlewareInstance = $oldStack->shift();
             if ($middlewareInstance !== $middleware) {
                 $newStack->push($middlewareInstance);
             }
