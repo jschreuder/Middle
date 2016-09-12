@@ -51,26 +51,29 @@ class ZendSessionSpec extends ObjectBehavior
         $uglyWorkaround->setAccessible(true);
         $uglyWorkaround->setValue($this->getWrappedObject(), $this->container);
 
+        $this->hasFlash('test')->shouldBe(false);
         $this->get('test')->shouldBe('something');
     }
 
     public function it_can_get_flash_vars()
     {
         $this->container = new \ArrayObject();
-        $this->container->offsetSet('test', 'something');
+        $this->container->offsetSet(ZendSession::FLASH_DATA_KEY_PREFIX . 'test', 'something');
 
         // Prophecy balks at returning by reference, so we'll just hack another container in there
         $uglyWorkaround = new \ReflectionProperty($this->getWrappedObject(), 'container');
         $uglyWorkaround->setAccessible(true);
         $uglyWorkaround->setValue($this->getWrappedObject(), $this->container);
 
+        $this->has('test')->shouldBe(false);
+        $this->hasFlash('test')->shouldBe(true);
         $this->getFlash('test')->shouldBe('something');
     }
 
     public function it_can_set_flash_vars()
     {
-        $this->container->offsetSet('test', 'something')->shouldBeCalled();
-        $this->container->setExpirationHops(1, ['test'])->shouldBeCalled();
+        $this->container->offsetSet(ZendSession::FLASH_DATA_KEY_PREFIX . 'test', 'something')->shouldBeCalled();
+        $this->container->setExpirationHops(1, [ZendSession::FLASH_DATA_KEY_PREFIX . 'test'])->shouldBeCalled();
         $this->setFlash('test', 'something');
     }
 

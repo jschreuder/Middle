@@ -4,8 +4,8 @@ namespace jschreuder\Middle\Session;
 
 final class Session implements SessionInterface
 {
-    const FLASH_DATA_KEY_PREFIX = '_flash_data.';
     const FLASH_DATA_META_KEY = '_flash_data_keys';
+    const FLASH_DATA_KEY_PREFIX = '_flash_data.';
 
     /** @var  array */
     private $sessionData;
@@ -57,6 +57,11 @@ final class Session implements SessionInterface
     {
         $this->changed = true;
         $this->sessionData[$key] = $value;
+    }
+
+    public function hasFlash(string $key) : bool
+    {
+        return isset($this->sessionData[self::FLASH_DATA_KEY_PREFIX . $key]);
     }
 
     public function getFlash(string $key)

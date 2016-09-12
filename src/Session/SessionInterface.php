@@ -12,6 +12,8 @@ interface SessionInterface
     /** @return  void */
     public function set(string $key, $value);
 
+    public function hasFlash(string $key) : bool;
+
     /** @return  mixed */
     public function getFlash(string $key);
 

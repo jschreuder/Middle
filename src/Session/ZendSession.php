@@ -7,6 +7,8 @@ use Zend\Session\SessionManager;
 
 final class ZendSession implements SessionInterface
 {
+    const FLASH_DATA_KEY_PREFIX = '_flash_data.';
+
     /** @var  SessionManager */
     private $sessionManager;
 
@@ -38,14 +40,20 @@ final class ZendSession implements SessionInterface
         $this->container[$key] = $value;
     }
 
+    public function hasFlash(string $key) : bool
+    {
+        return isset($this->container[self::FLASH_DATA_KEY_PREFIX . $key]);
+    }
+
     public function getFlash(string $key)
     {
-        return $this->container[$key];
+        return $this->container[self::FLASH_DATA_KEY_PREFIX . $key];
     }
 
     /** @return  void */
     public function setFlash(string $key, $value)
     {
+        $key = self::FLASH_DATA_KEY_PREFIX . $key;
         $this->changed = true;
         $this->container[$key] = $value;
         $this->container->setExpirationHops(1, [$key]);
