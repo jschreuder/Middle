@@ -23,4 +23,8 @@ interface SessionInterface
 
     /** @return  void */
     public function rotateId();
+
+    public function isEmpty() : bool;
+
+    public function hasChanged() : bool;
 }

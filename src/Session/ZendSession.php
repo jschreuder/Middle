@@ -13,6 +13,8 @@ class ZendSession implements SessionInterface
     /** @var  Container */
     private $container;
 
+    private $changed = false;
+
     public function __construct(SessionManager $sessionManager, Container $container)
     {
         $this->sessionManager = $sessionManager;
@@ -32,6 +34,7 @@ class ZendSession implements SessionInterface
     /** @return  void */
     public function set(string $key, $value)
     {
+        $this->changed = true;
         $this->container[$key] = $value;
     }
 
@@ -43,6 +46,7 @@ class ZendSession implements SessionInterface
     /** @return  void */
     public function setFlash(string $key, $value)
     {
+        $this->changed = true;
         $this->container[$key] = $value;
         $this->container->setExpirationHops(1, [$key]);
     }
@@ -56,6 +60,17 @@ class ZendSession implements SessionInterface
     /** @return  void */
     public function rotateId()
     {
+        $this->changed = true;
         $this->sessionManager->regenerateId();
+    }
+
+    public function isEmpty() : bool
+    {
+        return $this->container->count() > 0;
+    }
+
+    public function hasChanged() : bool
+    {
+        return $this->changed;
     }
 }

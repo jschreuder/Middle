@@ -13,12 +13,11 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use PSR7Session\Session\DefaultSessionData;
-use PSR7Session\Session\LazySession;
-use PSR7Session\Session\SessionInterface as JwtSessionInterface;
-use PSR7Session\Time\CurrentTimeProviderInterface;
-use PSR7Session\Time\SystemCurrentTime;
 
+/**
+ * A copy-paste from ocramius/psr7-session, but without needing to pull in
+ * Stratigility and working with our session container.
+ */
 class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
 {
     const ISSUED_AT_CLAIM      = 'iat';
@@ -47,9 +46,6 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
     /** @var  SetCookie */
     private $defaultCookie;
 
-    /** @var  CurrentTimeProviderInterface */
-    private $currentTimeProvider;
-
     public function __construct(
         Signer $signer,
         string $signatureKey,
@@ -57,7 +53,6 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         SetCookie $defaultCookie,
         Parser $tokenParser,
         int $expirationTime,
-        CurrentTimeProviderInterface $currentTimeProvider,
         int $refreshTime = self::DEFAULT_REFRESH_TIME
     ) {
         $this->signer              = $signer;
@@ -66,7 +61,6 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         $this->tokenParser         = $tokenParser;
         $this->defaultCookie       = clone $defaultCookie;
         $this->expirationTime      = $expirationTime;
-        $this->currentTimeProvider = $currentTimeProvider;
         $this->refreshTime         = $refreshTime;
     }
 
@@ -84,19 +78,16 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
                 ->withHttpOnly(true)
                 ->withPath('/'),
             new Parser(),
-            $expirationTime,
-            new SystemCurrentTime()
+            $expirationTime
         );
     }
 
     public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
     {
-        $token            = $this->parseToken($request);
-        $sessionContainer = LazySession::fromContainerBuildingCallback(function () use ($token) : JwtSessionInterface {
-            return $this->extractSessionContainer($token);
-        });
+        $token = $this->parseToken($request);
+        $sessionContainer = $this->extractSessionContainer($token);
 
-        $response = $delegate->next($request->withAttribute('session', new JwtSession($sessionContainer)));
+        $response = $delegate->next($request->withAttribute('session', new GenericSession($sessionContainer)));
 
         return $this->appendToken($sessionContainer, $response, $token);
     }
@@ -107,7 +98,7 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         $cookies    = $request->getCookieParams();
         $cookieName = $this->defaultCookie->getName();
 
-        if (! isset($cookies[$cookieName])) {
+        if (!isset($cookies[$cookieName])) {
             return null;
         }
 
@@ -117,30 +108,28 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
             return null;
         }
 
-        if (! $token->validate(new ValidationData())) {
+        if (!$token->validate(new ValidationData())) {
             return null;
         }
 
         return $token;
     }
 
-    public function extractSessionContainer(Token $token = null) : JwtSessionInterface
+    private function extractSessionContainer(Token $token = null) : SessionInterface
     {
         try {
-            if (null === $token || ! $token->verify($this->signer, $this->verificationKey)) {
-                return DefaultSessionData::newEmptySession();
+            if (is_null($token) || !$token->verify($this->signer, $this->verificationKey)) {
+                return new GenericSession();
             }
 
-            return DefaultSessionData::fromDecodedTokenData(
-                (object) $token->getClaim(self::SESSION_CLAIM, new \stdClass())
-            );
+            return new GenericSession($token->getPayload());
         } catch (\BadMethodCallException $invalidToken) {
-            return DefaultSessionData::newEmptySession();
+            return new GenericSession();
         }
     }
 
     private function appendToken(
-        JwtSessionInterface $sessionContainer,
+        SessionInterface $sessionContainer,
         ResponseInterface $response,
         Token $token = null
     ) : ResponseInterface
@@ -158,26 +147,22 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         return $response;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     private function shouldTokenBeRefreshed(Token $token = null) : bool
     {
-        if (null === $token) {
+        if (is_null($token)) {
             return false;
         }
 
-        if (! $token->hasClaim(self::ISSUED_AT_CLAIM)) {
+        if (!$token->hasClaim(self::ISSUED_AT_CLAIM)) {
             return false;
         }
 
-        return $this->timestamp() >= ($token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime);
+        return time() >= ($token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime);
     }
 
-    private function getTokenCookie(JwtSessionInterface $sessionContainer) : SetCookie
+    private function getTokenCookie(SessionInterface $sessionContainer) : SetCookie
     {
-        $timestamp = $this->timestamp();
-
+        $timestamp = time();
         return $this
             ->defaultCookie
             ->withValue(
@@ -191,25 +176,12 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
             ->withExpires($timestamp + $this->expirationTime);
     }
 
-    /**
-     * @return SetCookie
-     */
     private function getExpirationCookie() : SetCookie
     {
-        $currentTimeProvider = $this->currentTimeProvider;
-        $expirationDate      = $currentTimeProvider();
-        $expirationDate      = $expirationDate->modify('-30 days');
-
+        $expirationDate = new \DateTime('-30 days');
         return $this
             ->defaultCookie
             ->withValue(null)
             ->withExpires($expirationDate->getTimestamp());
-    }
-
-    private function timestamp() : int
-    {
-        $currentTimeProvider = $this->currentTimeProvider;
-
-        return $currentTimeProvider()->getTimestamp();
     }
 }
