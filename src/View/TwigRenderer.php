@@ -4,11 +4,10 @@ namespace jschreuder\Middle\View;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\Response;
 
 class TwigRenderer implements RendererInterface
 {
-    use CreateResponseTrait;
-
     /** @var  \Twig_Environment */
     private $twig;
 
@@ -19,7 +18,8 @@ class TwigRenderer implements RendererInterface
 
     public function render(ServerRequestInterface $request, ViewInterface $view) : ResponseInterface
     {
-        $response = $this->createResponse($view);
+        $response = (new Response())
+            ->withHeader('Content-Type', 'text/html; charset=utf-8');
         $response->getBody()->write($this->twig->render($view->getTemplate(), $view->getParameters()));
         $response->getBody()->rewind();
         return $response;

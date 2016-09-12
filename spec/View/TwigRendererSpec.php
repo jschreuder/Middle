@@ -5,9 +5,8 @@ namespace spec\jschreuder\Middle\View;
 use jschreuder\Middle\View\TwigRenderer;
 use jschreuder\Middle\View\ViewInterface;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response\HtmlResponse;
 
 /** @mixin  TwigRenderer */
 class TwigRendererSpec extends ObjectBehavior
@@ -38,7 +37,7 @@ class TwigRendererSpec extends ObjectBehavior
         $this->twig->render($template, $params)->willReturn($rendered);
 
         $response = $this->render($request, $view);
-        $response->shouldHaveType(HtmlResponse::class);
+        $response->shouldHaveType(ResponseInterface::class);
         $response->getBody()->getContents()->shouldReturn($rendered);
     }
 }
