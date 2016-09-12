@@ -10,6 +10,11 @@ class Delegate implements DelegateInterface
     /** @var  \SplStack */
     private $stack;
 
+    public function __construct(\SplStack $stack)
+    {
+        $this->stack = $stack;
+    }
+
     public function next(ServerRequestInterface $request) : ResponseInterface
     {
         if ($this->stack->count() === 0) {
