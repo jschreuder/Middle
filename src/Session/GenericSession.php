@@ -54,11 +54,16 @@ class GenericSession implements SessionInterface
 
     public function isEmpty() : bool
     {
-        return count($this->sessionData) > 0;
+        return count($this->sessionData) === 0;
     }
 
     public function hasChanged() : bool
     {
         return $this->changed;
+    }
+
+    public function toArray() : array
+    {
+        return $this->sessionData;
     }
 }

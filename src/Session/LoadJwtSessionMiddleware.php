@@ -71,8 +71,8 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
     ) : LoadJwtSessionMiddleware {
         return new self(
             new Signer\Rsa\Sha256(),
-            $privateRsaKey,
-            $publicRsaKey,
+            file_get_contents($privateRsaKey),
+            file_get_contents($publicRsaKey),
             SetCookie::create(self::DEFAULT_COOKIE)
                 ->withSecure(true)
                 ->withHttpOnly(true)
@@ -87,7 +87,7 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         $token = $this->parseToken($request);
         $sessionContainer = $this->extractSessionContainer($token);
 
-        $response = $delegate->next($request->withAttribute('session', new GenericSession($sessionContainer)));
+        $response = $delegate->next($request->withAttribute('session', $sessionContainer));
 
         return $this->appendToken($sessionContainer, $response, $token);
     }
@@ -115,21 +115,21 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         return $token;
     }
 
-    private function extractSessionContainer(Token $token = null) : SessionInterface
+    private function extractSessionContainer(Token $token = null) : GenericSession
     {
         try {
             if (is_null($token) || !$token->verify($this->signer, $this->verificationKey)) {
                 return new GenericSession();
             }
 
-            return new GenericSession($token->getPayload());
+            return new GenericSession((array) $token->getClaim(self::SESSION_CLAIM, []));
         } catch (\BadMethodCallException $invalidToken) {
             return new GenericSession();
         }
     }
 
     private function appendToken(
-        SessionInterface $sessionContainer,
+        GenericSession $sessionContainer,
         ResponseInterface $response,
         Token $token = null
     ) : ResponseInterface
@@ -160,7 +160,7 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         return time() >= ($token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime);
     }
 
-    private function getTokenCookie(SessionInterface $sessionContainer) : SetCookie
+    private function getTokenCookie(GenericSession $sessionContainer) : SetCookie
     {
         $timestamp = time();
         return $this
@@ -169,7 +169,7 @@ class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
                 (new Builder())
                     ->setIssuedAt($timestamp)
                     ->setExpiration($timestamp + $this->expirationTime)
-                    ->set(self::SESSION_CLAIM, $sessionContainer)
+                    ->set(self::SESSION_CLAIM, $sessionContainer->toArray())
                     ->sign($this->signer, $this->signatureKey)
                     ->getToken()
             )

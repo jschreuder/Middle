@@ -66,7 +66,7 @@ class ZendSession implements SessionInterface
 
     public function isEmpty() : bool
     {
-        return $this->container->count() > 0;
+        return $this->container->count() === 0;
     }
 
     public function hasChanged() : bool
