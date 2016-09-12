@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class ErrorHandlerMiddleware implements HttpMiddlewareInterface
+final class ErrorHandlerMiddleware implements HttpMiddlewareInterface
 {
     /** @var  LoggerInterface */
     private $logger;

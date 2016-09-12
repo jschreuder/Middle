@@ -7,7 +7,7 @@ use jschreuder\Middle\DelegateInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class FilterValidationMiddleware implements HttpMiddlewareInterface
+final class FilterValidationMiddleware implements HttpMiddlewareInterface
 {
     /** @var  callable */
     private $errorHandler;

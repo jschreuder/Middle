@@ -2,7 +2,7 @@
 
 namespace jschreuder\Middle\Router;
 
-class RouteMatch implements RouteMatchInterface
+final class RouteMatch implements RouteMatchInterface
 {
     /** @var  callable */
     private $controller;

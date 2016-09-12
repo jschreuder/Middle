@@ -4,7 +4,7 @@ namespace jschreuder\Middle\Router;
 
 use Symfony\Component\Routing\Generator\UrlGenerator as UrlGenerator;
 
-class SymfonyUrlGenerator implements UrlGeneratorInterface
+final class SymfonyUrlGenerator implements UrlGeneratorInterface
 {
     /** @var  UrlGenerator */
     private $generator;

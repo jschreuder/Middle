@@ -7,7 +7,7 @@ use jschreuder\Middle\View\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class ControllerRunner implements HttpMiddlewareInterface
+final class ControllerRunner implements HttpMiddlewareInterface
 {
     /** @var  ?RendererInterface */
     private $renderer;

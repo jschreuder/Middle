@@ -2,7 +2,7 @@
 
 namespace jschreuder\Middle\Controller;
 
-class ValidationFailedException extends \DomainException
+final class ValidationFailedException extends \DomainException
 {
     private $validationErrors;
 

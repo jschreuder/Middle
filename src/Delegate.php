@@ -5,7 +5,7 @@ namespace jschreuder\Middle;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Delegate implements DelegateInterface
+final class Delegate implements DelegateInterface
 {
     /** @var  \SplStack */
     private $stack;

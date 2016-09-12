@@ -5,7 +5,7 @@ namespace jschreuder\Middle;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class ApplicationStack implements ApplicationStackInterface
+final class ApplicationStack implements ApplicationStackInterface
 {
     /** @var  \SplStack | HttpMiddlewareInterface[] */
     private $stack;

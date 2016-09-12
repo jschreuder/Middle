@@ -5,7 +5,7 @@ namespace jschreuder\Middle\Session;
 use Zend\Session\Container;
 use Zend\Session\SessionManager;
 
-class ZendSession implements SessionInterface
+final class ZendSession implements SessionInterface
 {
     /** @var  SessionManager */
     private $sessionManager;

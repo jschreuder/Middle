@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response\RedirectResponse;
 
-class RedirectRendererMiddleware implements RendererInterface
+final class RedirectRendererMiddleware implements RendererInterface
 {
     /** @var  RendererInterface */
     private $renderer;

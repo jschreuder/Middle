@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
 
-class TwigRenderer implements RendererInterface
+final class TwigRenderer implements RendererInterface
 {
     /** @var  \Twig_Environment */
     private $twig;

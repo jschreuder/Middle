@@ -2,7 +2,7 @@
 
 namespace jschreuder\Middle\Session;
 
-class Session implements SessionInterface
+final class Session implements SessionInterface
 {
     const FLASH_DATA_KEY_PREFIX = '_flash_data.';
     const FLASH_DATA_META_KEY = '_flash_data_keys';

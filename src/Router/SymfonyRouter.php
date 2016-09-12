@@ -10,7 +10,7 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
-class SymfonyRouter implements RouterInterface
+final class SymfonyRouter implements RouterInterface
 {
     /** @var  string */
     private $baseUrl;

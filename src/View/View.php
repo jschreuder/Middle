@@ -2,7 +2,7 @@
 
 namespace jschreuder\Middle\View;
 
-class View implements ViewInterface
+final class View implements ViewInterface
 {
     /** @var  int */
     private $statusCode;

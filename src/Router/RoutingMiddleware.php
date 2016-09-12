@@ -7,7 +7,7 @@ use jschreuder\Middle\DelegateInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class RoutingMiddleware implements HttpMiddlewareInterface
+final class RoutingMiddleware implements HttpMiddlewareInterface
 {
     /** @var  RouterInterface */
     private $router;

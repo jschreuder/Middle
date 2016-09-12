@@ -18,7 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * A copy-paste from ocramius/psr7-session, but without needing to pull in
  * Stratigility and working with our session container.
  */
-class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
+final class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
 {
     const ISSUED_AT_CLAIM      = 'iat';
     const SESSION_CLAIM        = 'session-data';

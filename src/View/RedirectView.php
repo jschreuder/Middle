@@ -2,7 +2,7 @@
 
 namespace jschreuder\Middle\View;
 
-class RedirectView implements ViewInterface
+final class RedirectView implements ViewInterface
 {
     /** @var  int */
     private $statusCode;
