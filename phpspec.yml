@@ -4,12 +4,8 @@ suites:
         psr4_prefix: jschreuder\Middle
 
 extensions:
-    - PhpSpec\Extension\CodeCoverageExtension
-
-code_coverage:
-    format:
-        - clover
-    output:
-        clover: coverage.xml
-    whitelist:
-        - src
+    PhpSpecCodeCoverage\CodeCoverageExtension:
+      format:
+          - clover
+      output:
+          clover: coverage.xml
