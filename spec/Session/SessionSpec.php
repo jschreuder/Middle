@@ -65,7 +65,7 @@ class SessionSpec extends ObjectBehavior
         $this->hasFlash('test')->shouldBe(false);
         $this->setFlash('test', 'data');
         $this->hasFlash('test')->shouldBe(true);
-        $this->getFlash('test')->shouldBe(true);
+        $this->getFlash('test')->shouldBe('data');
 
         $array = $this->toArray();
         $array[Session::FLASH_DATA_META_KEY]['test']->shouldBe(1);

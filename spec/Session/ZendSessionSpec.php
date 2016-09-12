@@ -37,8 +37,10 @@ class ZendSessionSpec extends ObjectBehavior
 
     public function it_can_set()
     {
+        $this->hasChanged()->shouldBe(false);
         $this->container->offsetSet('test', 'something')->shouldBeCalled();
         $this->set('test', 'something');
+        $this->hasChanged()->shouldBe(true);
     }
 
     public function it_can_get()
@@ -87,5 +89,24 @@ class ZendSessionSpec extends ObjectBehavior
     {
         $this->sessionManager->regenerateId()->shouldBeCalled();
         $this->rotateId();
+    }
+
+    public function it_can_check_if_empty()
+    {
+        $this->container->count()->willReturn(0);
+        $this->isEmpty()->shouldBe(true);
+    }
+
+    public function it_can_check_if_non_empty()
+    {
+        $this->container->count()->willReturn(1);
+        $this->isEmpty()->shouldBe(false);
+    }
+
+    public function it_can_get_array_representation_of_session()
+    {
+        $array = ['test' => 'data'];
+        $this->container->getArrayCopy()->willReturn($array);
+        $this->toArray()->shouldBe($array);
     }
 }
