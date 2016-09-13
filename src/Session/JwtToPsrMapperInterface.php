@@ -9,8 +9,8 @@ use Psr\Http\Message\ServerRequestInterface;
 interface JwtToPsrMapperInterface
 {
     const ISSUED_AT_CLAIM = 'iat';
-    const SESSION_CLAIM   = 'session-data';
-    const DEFAULT_COOKIE  = 'slsession';
+    const SESSION_CLAIM = 'session-data';
+    const DEFAULT_COOKIE = 'slsession';
 
     /** @return  ?Token */
     public function parseToken(ServerRequestInterface $request);

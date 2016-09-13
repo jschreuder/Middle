@@ -2,8 +2,8 @@
 
 namespace jschreuder\Middle\Session;
 
-use jschreuder\Middle\HttpMiddlewareInterface;
 use jschreuder\Middle\DelegateInterface;
+use jschreuder\Middle\HttpMiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Session\Config\StandardConfig;

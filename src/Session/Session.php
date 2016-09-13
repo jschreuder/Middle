@@ -37,12 +37,6 @@ final class Session implements SessionInterface
         return $sessionData;
     }
 
-    /** @return  void */
-    private function markFlashKey(string $key)
-    {
-        $this->sessionData[self::FLASH_DATA_META_KEY][$key] = 1;
-    }
-
     public function has(string $key) : bool
     {
         return isset($this->sessionData[$key]);
@@ -74,6 +68,12 @@ final class Session implements SessionInterface
         $this->changed = true;
         $this->markFlashKey($key);
         $this->sessionData[self::FLASH_DATA_KEY_PREFIX . $key] = $value;
+    }
+
+    /** @return  void */
+    private function markFlashKey(string $key)
+    {
+        $this->sessionData[self::FLASH_DATA_META_KEY][$key] = 1;
     }
 
     public function destroy()

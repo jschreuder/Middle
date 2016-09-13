@@ -2,8 +2,8 @@
 
 namespace jschreuder\Middle\Controller;
 
-use jschreuder\Middle\HttpMiddlewareInterface;
 use jschreuder\Middle\DelegateInterface;
+use jschreuder\Middle\HttpMiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

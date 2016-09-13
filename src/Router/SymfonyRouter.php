@@ -89,6 +89,22 @@ final class SymfonyRouter implements RouterInterface
         return $this->match($name, 'GET', $path, $controller, $defaults, $requirements);
     }
 
+    public function match(
+        string $name,
+        string $methods,
+        string $path,
+        callable $controller,
+        array $defaults = [],
+        array $requirements = []
+    ) : Route
+    {
+        $route = new Route($path, $defaults, $requirements);
+        $route->setMethods(explode('|', $methods))
+            ->setDefault('controller', $controller);
+        $this->router->add($name, $route);
+        return $route;
+    }
+
     public function post(
         string $name,
         string $path,
@@ -131,21 +147,5 @@ final class SymfonyRouter implements RouterInterface
     ) : Route
     {
         return $this->match($name, 'DELETE', $path, $controller, $defaults, $requirements);
-    }
-
-    public function match(
-        string $name,
-        string $methods,
-        string $path,
-        callable $controller,
-        array $defaults = [],
-        array $requirements = []
-    ) : Route
-    {
-        $route = new Route($path, $defaults, $requirements);
-        $route->setMethods(explode('|', $methods))
-            ->setDefault('controller', $controller);
-        $this->router->add($name, $route);
-        return $route;
     }
 }

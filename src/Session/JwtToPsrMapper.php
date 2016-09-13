@@ -47,21 +47,23 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
         Parser $tokenParser,
         int $expirationTime,
         int $refreshTime = 60
-    ) {
-        $this->signer              = $signer;
-        $this->signatureKey        = $signatureKey;
-        $this->verificationKey     = $verificationKey;
-        $this->tokenParser         = $tokenParser;
-        $this->defaultCookie       = clone $defaultCookie;
-        $this->expirationTime      = $expirationTime;
-        $this->refreshTime         = $refreshTime;
+    )
+    {
+        $this->signer = $signer;
+        $this->signatureKey = $signatureKey;
+        $this->verificationKey = $verificationKey;
+        $this->tokenParser = $tokenParser;
+        $this->defaultCookie = clone $defaultCookie;
+        $this->expirationTime = $expirationTime;
+        $this->refreshTime = $refreshTime;
     }
 
     public static function fromAsymmetricKeyDefaults(
         string $privateRsaKey,
         string $publicRsaKey,
         int $expirationTime
-    ) : JwtToPsrMapper {
+    ) : JwtToPsrMapper
+    {
         return new self(
             new Signer\Rsa\Sha256(),
             $privateRsaKey,
@@ -78,7 +80,7 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
     /** @return  ?Token */
     public function parseToken(ServerRequestInterface $request)
     {
-        $cookies    = $request->getCookieParams();
+        $cookies = $request->getCookieParams();
         $cookieName = $this->defaultCookie->getName();
 
         if (!isset($cookies[$cookieName])) {
@@ -110,27 +112,20 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && ! $session->isEmpty())) {
+        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && !$session->isEmpty())) {
             return FigResponseCookies::set($response, $this->getTokenCookie($session));
         }
 
         return $response;
     }
 
-    public function extractSessionContainer(Token $token = null) : SessionInterface
+    private function getExpirationCookie() : SetCookie
     {
-        try {
-            if (is_null($token) || !$token->verify($this->signer, $this->verificationKey)) {
-                return new Session();
-            }
-
-            // Re-encode the payload and decode as array to not get stdClass tree
-            return new Session(
-                json_decode(json_encode($token->getClaim(self::SESSION_CLAIM, [])), true)
-            );
-        } catch (\BadMethodCallException $invalidToken) {
-            return new Session();
-        }
+        $expirationDate = new \DateTime('-30 days');
+        return $this
+            ->defaultCookie
+            ->withValue(null)
+            ->withExpires($expirationDate->getTimestamp());
     }
 
     private function shouldTokenBeRefreshed(Token $token = null) : bool
@@ -162,12 +157,19 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
             ->withExpires($timestamp + $this->expirationTime);
     }
 
-    private function getExpirationCookie() : SetCookie
+    public function extractSessionContainer(Token $token = null) : SessionInterface
     {
-        $expirationDate = new \DateTime('-30 days');
-        return $this
-            ->defaultCookie
-            ->withValue(null)
-            ->withExpires($expirationDate->getTimestamp());
+        try {
+            if (is_null($token) || !$token->verify($this->signer, $this->verificationKey)) {
+                return new Session();
+            }
+
+            // Re-encode the payload and decode as array to not get stdClass tree
+            return new Session(
+                json_decode(json_encode($token->getClaim(self::SESSION_CLAIM, [])), true)
+            );
+        } catch (\BadMethodCallException $invalidToken) {
+            return new Session();
+        }
     }
 }
