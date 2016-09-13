@@ -99,20 +99,20 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
     }
 
     public function appendToken(
-        SessionInterface $sessionContainer,
+        SessionInterface $session,
         ResponseInterface $response,
         Token $token = null
     ) : ResponseInterface
     {
-        if (!$sessionContainer->hasChanged() && !$this->shouldTokenBeRefreshed($token)) {
+        if (!$session->hasChanged() && !$this->shouldTokenBeRefreshed($token)) {
             return $response;
         }
 
-        if ($sessionContainer->isEmpty()) {
+        if ($session->isEmpty()) {
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
+        return FigResponseCookies::set($response, $this->getTokenCookie($session));
     }
 
     public function extractSessionContainer(Token $token = null) : SessionInterface
@@ -144,7 +144,7 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
         return time() >= ($token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime);
     }
 
-    private function getTokenCookie(SessionInterface $sessionContainer) : SetCookie
+    private function getTokenCookie(SessionInterface $session) : SetCookie
     {
         $timestamp = time();
         return $this
@@ -153,7 +153,7 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
                 (new Builder())
                     ->setIssuedAt($timestamp)
                     ->setExpiration($timestamp + $this->expirationTime)
-                    ->set(self::SESSION_CLAIM, $sessionContainer->toArray())
+                    ->set(self::SESSION_CLAIM, $session->toArray())
                     ->sign($this->signer, $this->signatureKey)
                     ->getToken()
             )

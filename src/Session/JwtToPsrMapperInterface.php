@@ -16,7 +16,7 @@ interface JwtToPsrMapperInterface
     public function parseToken(ServerRequestInterface $request);
 
     public function appendToken(
-        SessionInterface $sessionContainer,
+        SessionInterface $session,
         ResponseInterface $response,
         Token $token = null
     ) : ResponseInterface;
