@@ -10,7 +10,7 @@ use Zend\Session\Config\StandardConfig;
 use Zend\Session\Container;
 use Zend\Session\SessionManager;
 
-final class LoadZendSessionMiddleware implements HttpMiddlewareInterface
+final class ZendLoadSessionMiddleware implements HttpMiddlewareInterface
 {
     /** @var  int */
     private $cookieLifetime;

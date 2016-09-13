@@ -3,7 +3,7 @@
 namespace spec\jschreuder\Middle\Session;
 
 use jschreuder\Middle\DelegateInterface;
-use jschreuder\Middle\Session\LoadZendSessionMiddleware;
+use jschreuder\Middle\Session\ZendLoadSessionMiddleware;
 use jschreuder\Middle\Session\SessionInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -11,8 +11,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
-/** @mixin  LoadZendSessionMiddleware */
-class LoadZendSessionMiddlewareSpec extends ObjectBehavior
+/** @mixin  ZendLoadSessionMiddleware */
+class ZendLoadSessionMiddlewareSpec extends ObjectBehavior
 {
     /** @var  int */
     private $cookieLifetime = 0;
@@ -24,7 +24,7 @@ class LoadZendSessionMiddlewareSpec extends ObjectBehavior
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType(LoadZendSessionMiddleware::class);
+        $this->shouldHaveType(ZendLoadSessionMiddleware::class);
     }
 
     public function it_can_execute_a_request(
