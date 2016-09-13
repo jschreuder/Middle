@@ -104,17 +104,15 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
         Token $token = null
     ) : ResponseInterface
     {
-        $sessionContainerChanged = $sessionContainer->hasChanged();
+        if (!$sessionContainer->hasChanged() && !$this->shouldTokenBeRefreshed($token)) {
+            return $response;
+        }
 
-        if ($sessionContainerChanged && $sessionContainer->isEmpty()) {
+        if ($sessionContainer->isEmpty()) {
             return FigResponseCookies::set($response, $this->getExpirationCookie());
         }
 
-        if ($sessionContainerChanged || ($this->shouldTokenBeRefreshed($token) && !$sessionContainer->isEmpty())) {
-            return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
-        }
-
-        return $response;
+        return FigResponseCookies::set($response, $this->getTokenCookie($sessionContainer));
     }
 
     public function extractSessionContainer(Token $token = null) : SessionInterface
