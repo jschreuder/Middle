@@ -2,12 +2,12 @@
 
 namespace spec\jschreuder\Middle\Session;
 
-use jschreuder\Middle\Session\LoadJwtSessionMiddleware;
+use jschreuder\Middle\Session\JwtToPsrMapper;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-/** @mixin  LoadJwtSessionMiddleware */
-class LoadJwtSessionMiddlewareSpec extends ObjectBehavior
+/** @mixin  JwtToPsrMapper */
+class JwtToPsrMapperSpec extends ObjectBehavior
 {
     const PRIVATE_KEY = '-----BEGIN RSA PRIVATE KEY-----
 MIIBOgIBAAJBAJZ37zflIWLaeFfzBcQLPVcwB9dTQKzJB+BkzAUS+w9a4R5XZIJr
@@ -33,6 +33,6 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType(LoadJwtSessionMiddleware::class);
+        $this->shouldHaveType(JwtToPsrMapper::class);
     }
 }

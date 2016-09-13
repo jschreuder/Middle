@@ -4,8 +4,6 @@ namespace jschreuder\Middle\Session;
 
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\SetCookie;
-use jschreuder\Middle\DelegateInterface;
-use jschreuder\Middle\HttpMiddlewareInterface;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
@@ -18,13 +16,8 @@ use Psr\Http\Message\ServerRequestInterface;
  * A copy-paste from ocramius/psr7-session, but without needing to pull in
  * Stratigility and working with our session container.
  */
-final class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
+final class JwtToPsrMapper implements JwtToPsrMapperInterface
 {
-    const ISSUED_AT_CLAIM      = 'iat';
-    const SESSION_CLAIM        = 'session-data';
-    const DEFAULT_COOKIE       = 'slsession';
-    const DEFAULT_REFRESH_TIME = 60;
-
     /** @var  Signer */
     private $signer;
 
@@ -53,7 +46,7 @@ final class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         SetCookie $defaultCookie,
         Parser $tokenParser,
         int $expirationTime,
-        int $refreshTime = self::DEFAULT_REFRESH_TIME
+        int $refreshTime = 60
     ) {
         $this->signer              = $signer;
         $this->signatureKey        = $signatureKey;
@@ -68,7 +61,7 @@ final class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         string $privateRsaKey,
         string $publicRsaKey,
         int $expirationTime
-    ) : LoadJwtSessionMiddleware {
+    ) : JwtToPsrMapper {
         return new self(
             new Signer\Rsa\Sha256(),
             $privateRsaKey,
@@ -82,18 +75,8 @@ final class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         );
     }
 
-    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
-    {
-        $token = $this->parseToken($request);
-        $sessionContainer = $this->extractSessionContainer($token);
-
-        $response = $delegate->next($request->withAttribute('session', $sessionContainer));
-
-        return $this->appendToken($sessionContainer, $response, $token);
-    }
-
     /** @return  ?Token */
-    private function parseToken(ServerRequestInterface $request)
+    public function parseToken(ServerRequestInterface $request)
     {
         $cookies    = $request->getCookieParams();
         $cookieName = $this->defaultCookie->getName();
@@ -115,23 +98,7 @@ final class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         return $token;
     }
 
-    private function extractSessionContainer(Token $token = null) : SessionInterface
-    {
-        try {
-            if (is_null($token) || !$token->verify($this->signer, $this->verificationKey)) {
-                return new Session();
-            }
-
-            // Re-encode the payload and decode as array to not get stdClass tree
-            return new Session(
-                json_decode(json_encode($token->getClaim(self::SESSION_CLAIM, [])), true)
-            );
-        } catch (\BadMethodCallException $invalidToken) {
-            return new Session();
-        }
-    }
-
-    private function appendToken(
+    public function appendToken(
         SessionInterface $sessionContainer,
         ResponseInterface $response,
         Token $token = null
@@ -148,6 +115,22 @@ final class LoadJwtSessionMiddleware implements HttpMiddlewareInterface
         }
 
         return $response;
+    }
+
+    public function extractSessionContainer(Token $token = null) : SessionInterface
+    {
+        try {
+            if (is_null($token) || !$token->verify($this->signer, $this->verificationKey)) {
+                return new Session();
+            }
+
+            // Re-encode the payload and decode as array to not get stdClass tree
+            return new Session(
+                json_decode(json_encode($token->getClaim(self::SESSION_CLAIM, [])), true)
+            );
+        } catch (\BadMethodCallException $invalidToken) {
+            return new Session();
+        }
     }
 
     private function shouldTokenBeRefreshed(Token $token = null) : bool
