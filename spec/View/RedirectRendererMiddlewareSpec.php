@@ -17,10 +17,14 @@ class RedirectRendererMiddlewareSpec extends ObjectBehavior
     /** @var  RendererInterface */
     private $renderer;
 
-    public function let(RendererInterface $renderer)
+    /** @var  ResponseInterface */
+    private $response;
+
+    public function let(RendererInterface $renderer, ResponseInterface $response)
     {
         $this->renderer = $renderer;
-        $this->beConstructedWith($renderer);
+        $this->response = $response;
+        $this->beConstructedWith($renderer, $response);
     }
 
     public function it_is_initializable()
@@ -30,6 +34,8 @@ class RedirectRendererMiddlewareSpec extends ObjectBehavior
 
     public function it_can_render_a_redirect(
         ServerRequestInterface $request,
+        ResponseInterface $response2,
+        ResponseInterface $response3,
         ViewInterface $view
     )
     {
@@ -39,8 +45,21 @@ class RedirectRendererMiddlewareSpec extends ObjectBehavior
         $view->getHeaders()->willReturn(['Location' => $redirectTo]);
 
         $this->renderer->render($request, $view)->shouldNotBeCalled();
-        $response = $this->render($request, $view);
-        $response->shouldHaveType(RedirectResponse::class);
+        $this->response->withHeader('Location', $redirectTo)->willReturn($response2);
+        $response2->withStatus(302)->willReturn($response3);
+        $this->render($request, $view)->shouldBe($response3);
+    }
+
+    public function it_cannot_render_without_location_header(
+        ServerRequestInterface $request,
+        ViewInterface $view
+    )
+    {
+        $view->getStatusCode()->willReturn(302);
+        $view->getHeaders()->willReturn([]);
+
+        $this->renderer->render($request, $view)->shouldNotBeCalled();
+        $this->shouldThrow(\UnderflowException::class)->duringRender($request, $view);
     }
 
     public function it_will_pass_on_non_redirect_views(

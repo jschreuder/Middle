@@ -4,16 +4,19 @@ namespace jschreuder\Middle\View;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response\RedirectResponse;
 
 final class RedirectRendererMiddleware implements RendererInterface
 {
     /** @var  RendererInterface */
     private $renderer;
 
-    public function __construct(RendererInterface $renderer)
+    /** @var  ResponseInterface */
+    private $baseResponse;
+
+    public function __construct(RendererInterface $renderer, ResponseInterface $baseResponse)
     {
         $this->renderer = $renderer;
+        $this->baseResponse = $baseResponse;
     }
 
     public function render(ServerRequestInterface $request, ViewInterface $view) : ResponseInterface
@@ -23,6 +26,14 @@ final class RedirectRendererMiddleware implements RendererInterface
         }
 
         $headers = $view->getHeaders();
-        return new RedirectResponse($headers['Location'], $view->getStatusCode(), $headers);
+        if (!isset($headers['Location'])) {
+            throw new \UnderflowException('Location header must be set on View');
+        }
+
+        $response = $this->baseResponse;
+        foreach ($headers as $name => $value) {
+            $response = $response->withHeader($name, $value);
+        }
+        return $response->withStatus($view->getStatusCode());
     }
 }

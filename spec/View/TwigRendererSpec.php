@@ -7,6 +7,7 @@ use jschreuder\Middle\View\ViewInterface;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 
 /** @mixin  TwigRenderer */
 class TwigRendererSpec extends ObjectBehavior
@@ -14,10 +15,14 @@ class TwigRendererSpec extends ObjectBehavior
     /** @var  \Twig_Environment */
     private $twig;
 
-    public function let(\Twig_Environment $twig)
+    /** @var  ResponseInterface */
+    private $baseResponse;
+
+    public function let(\Twig_Environment $twig, ResponseInterface $baseResponse)
     {
         $this->twig = $twig;
-        $this->beConstructedWith($twig);
+        $this->baseResponse = $baseResponse;
+        $this->beConstructedWith($twig, $baseResponse);
     }
 
     public function it_is_initializable()
@@ -25,7 +30,12 @@ class TwigRendererSpec extends ObjectBehavior
         $this->shouldHaveType(TwigRenderer::class);
     }
 
-    public function it_can_render_a_template(ServerRequestInterface $request, ViewInterface $view)
+    public function it_can_render_a_template(
+        ServerRequestInterface $request,
+        ViewInterface $view,
+        StreamInterface $stream,
+        ResponseInterface $response2
+    )
     {
         $view->getContentType()->willReturn(ViewInterface::CONTENT_TYPE_HTML);
         $view->getStatusCode()->willReturn(201);
@@ -36,8 +46,11 @@ class TwigRendererSpec extends ObjectBehavior
         $rendered = '<strong>The answer is: </strong><em>42</em>';
         $this->twig->render($template, $params)->willReturn($rendered);
 
-        $response = $this->render($request, $view);
-        $response->shouldHaveType(ResponseInterface::class);
-        $response->getBody()->getContents()->shouldReturn($rendered);
+        $this->baseResponse->withHeader('Content-Type', 'text/html; charset=utf-8')->willReturn($response2);
+        $response2->getBody()->willReturn($stream);
+        $stream->write($rendered)->shouldBeCalled();
+        $stream->rewind()->shouldBeCalled();
+
+        $this->render($request, $view)->shouldReturn($response2);
     }
 }
