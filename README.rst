@@ -155,9 +155,7 @@ The example below uses the included Twig renderer:
     // Now start with the ControllerRunner given the renderer:
     $app = new Middle\ApplicationStack([
         new Middle\ControllerRunner($renderer),
-        new Middle\Router\RoutingMiddleware(
-            $app, $router, function () { ... }
-        ),
+        new Middle\Router\RoutingMiddleware($router, function () { ... }),
     ]);
 
     $router->get('home', '/', function () {
