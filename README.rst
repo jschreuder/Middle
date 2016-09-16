@@ -15,8 +15,11 @@ Middle Framework
 A micro-framework build around the idea of middlewares, basicly: MIDDLEWARE ALL
 THE THINGS. What does that mean? Everything is based around simple interfaces
 for which the default implementation can can be either replaced or decorated.
-Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4, PSR-7 and inspired by
-the proposed PSR-15; and PHP 7.0 or higher (probably 7.1+ once that's released).
+The implementations can be atomic in nature: just performing one task. Composing
+complex capabilities by choosing which simple middlewares you decorate or add
+to the stack. Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4, PSR-7
+and inspired by the proposed PSR-15; and PHP 7.0 or higher (probably 7.1+ once
+that's released).
 
 The reason I prefer to use middleware approach is because it is far more
 explicit in how the application works than (for example) event-based
@@ -26,17 +29,17 @@ mindful of the order in which you add Middlewares (as some may depend on
 others). But you'll always have a useful backtrace telling you where things
 went wrong.
 
-Note: all examples use Zend Diactoros, but any PSR-7 compatible library will
-work as well.
+*Note: all examples use Zend Diactoros, but any PSR-7 compatible library will
+work as well.*
 
 ----------------------------
 Running a Middle application
 ----------------------------
 
-The heart of an application build with Middle is the ``ApplicationInterface``
-which just takes a PSR ``ServerRequestInterface`` and returns a
-``ResponseInterface``. Running it, after having set it up, will look as
-follows (using Zend Diactoros as PSR-7 implementation):
+The heart of an application build with Middle is the
+``ApplicationStackInterface`` which just takes a PSR ``ServerRequestInterface``
+and must return a ``ResponseInterface``. Running it, after having set it up,
+will look as follows (using Zend Diactoros as PSR-7 implementation):
 
 .. code-block:: php
 
@@ -44,7 +47,7 @@ follows (using Zend Diactoros as PSR-7 implementation):
     // Create Request
     $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 
-    // Render the response
+    // Render the response by processing the request
     $response = $app->process($request);
 
     // And output it
@@ -55,30 +58,25 @@ Minimal default setup
 ---------------------
 
 The following sets up the application with routing middleware and a controller
-runner at its heart:
+runner at its heart. The middlewares are processed in LIFO (last in, first out)
+order.
 
 .. code-block:: php
 
     <?php
     use jschreuder\Middle;
-    // This can only lookup request attribute 'controller' and execute it to
-    // generate the Response
-    $app = new Middle\ApplicationStack([
-        new Middle\ControllerRunner()
-    ]);
-
-    // Let's add support for routing, which should add that controller
-    // attribute. This also add a router which needs the base-URL, and a
-    // handler for generating a response when no route is matched.
+    // Let's setup a router which needs the base-URL, and a handler for
+    // generating a response when no route is matched.
     $router = new Middle\Router\SymfonyRouter('http://localhost');
-    $app = $app->withMiddleware(
-        new Middle\Router\RoutingMiddleware(
-            $router,
-            function () {
-                return new Zend\Diactoros\Response\JsonResponse(['error'], 400);
-            }
-        )
-    );
+    $fallbackController = function () {
+        return new Zend\Diactoros\Response\JsonResponse(['error'], 400);
+    };
+
+    // Setup the application with controller runner and the routing middleware
+    $app = new Middle\ApplicationStack([
+        new Middle\ControllerRunner(),
+        new Middle\Router\RoutingMiddleware($router, $fallbackController),
+    ]);
 
 With that setup we can now add some routes (using the ``$router`` from above):
 
@@ -97,9 +95,9 @@ can use the variable notation. The ``get()`` method also supports 2 additional
 arguments: the ``$defaults`` array and the ``$requirements`` array which are
 passed on to the Symfony routing.
 
------------------------------
-Decorating the app a bit more
------------------------------
+---------------------------------
+Add more middlewares to the stack
+---------------------------------
 
 The example below builds an application using 2 additional middlewares that add
 sessions & error handling on top of the previous example.
@@ -129,7 +127,7 @@ The session middleware adds a ``'session'`` attribute to the ServerRequest's
 attributes, which contains an instance of
 ``jschreuder\Middle\Session\SessionInterface``.
 
-The error handler takes a PSR-3 ``LogerInterface`` instance to which it will
+The error handler takes a PSR-3 ``LoggerInterface`` instance to which it will
 log any uncaught Exceptions as ``alert``. The callable in the constructor will
 be called directly after that and is expected to return a ``ResponseInterface``
 that shows an error to the user.
@@ -170,9 +168,9 @@ The example below uses the included Twig renderer:
         ], 200);
     });
 
-The ``RendererInterface`` can also be decorated. It you'd like to also use a
-view to return a redirect, you can decorate the renderer like this before
-using it to construct the ControllerRunner:
+The ``RendererInterface`` can be decorated. It you'd like to also use a view to
+return a redirect, you can decorate the renderer like this before using it to
+construct the ControllerRunner:
 
 .. code-block:: php
 
@@ -181,9 +179,7 @@ using it to construct the ControllerRunner:
     $renderer = new Middle\View\TwigRenderer(
         new \Twig_Environment(...)
     );
-    $renderer = new Middle\View\RedirectRendererMiddleware(
-        $renderer
-    );
+    $renderer = new Middle\View\RedirectRendererMiddleware($renderer);
 
 Once you've done that you can create redirects like this:
 
@@ -225,8 +221,9 @@ in other containers as well:
         }
     );
 
-When doing this the order might be less explicit, so be extra mindful of the
-order in which you add the middlewares.
+When doing this through in multiple places, for example through service
+providers, the order might be less explicit, so be extra mindful of the order
+in which you add the middlewares.
 
 -----------------
 Included services
