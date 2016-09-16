@@ -26,6 +26,9 @@ mindful of the order in which you add Middlewares (as some may depend on
 others). But you'll always have a useful backtrace telling you where things
 went wrong.
 
+Note: all examples use Zend Diactoros, but any PSR-7 compatible library will
+work as well.
+
 ----------------------------
 Running a Middle application
 ----------------------------
@@ -45,7 +48,7 @@ follows (using Zend Diactoros as PSR-7 implementation):
     $response = $app->process($request);
 
     // And output it
-    (new \Zend\Diactoros\Response\SapiEmitter())->emit($response);
+    (new Zend\Diactoros\Response\SapiEmitter())->emit($response);
 
 ---------------------
 Minimal default setup
@@ -57,18 +60,19 @@ runner at its heart:
 .. code-block:: php
 
     <?php
+    use jschreuder\Middle;
     // This can only lookup request attribute 'controller' and execute it to
     // generate the Response
-    $app = new jschreuder\Middle\ApplicationStack([
-        new jschreuder\Middle\ControllerRunner()
+    $app = new Middle\ApplicationStack([
+        new Middle\ControllerRunner()
     ]);
 
     // Let's add support for routing, which should add that controller
     // attribute. This also add a router which needs the base-URL, and a
     // handler for generating a response when no route is matched.
-    $router = new jschreuder\Middle\Router\SymfonyRouter('http://localhost');
+    $router = new Middle\Router\SymfonyRouter('http://localhost');
     $app = $app->withMiddleware(
-        new jschreuder\Middle\Router\RoutingMiddleware(
+        new Middle\Router\RoutingMiddleware(
             $router,
             function () {
                 return new Zend\Diactoros\Response\JsonResponse(['error'], 400);
@@ -103,16 +107,17 @@ sessions & error handling on top of the previous example.
 .. code-block:: php
 
     <?php
+    use jschreuder\Middle;
     // starting with the example above, let's add these before running the app.
 
     // Now let's also make sessions available on the request
     $app = $app->withMiddleware(
-        new jschreuder\Middle\Session\ZendSession(7200)
+        new Middle\Session\ZendSession(7200)
     );
 
     // And finally: make sure any errors are caught
     $app = $app->withMiddleware(
-        new jschreuder\Middle\ErrorHandlerMiddleware(
+        new Middle\ErrorHandlerMiddleware(
             new Monolog\Logger(...),
             function (ServerRequestInterface $request, \Throwable $exception) {
                 return new Zend\Diactoros\Response\JsonResponse(['error'], 500);
@@ -143,15 +148,16 @@ The example below uses the included Twig renderer:
 .. code-block:: php
 
     <?php
+    use jschreuder\Middle;
     // Setup the renderer for Twig
-    $renderer = new jschreuder\Middle\View\TwigRenderer(
+    $renderer = new Middle\View\TwigRenderer(
         new \Twig_Environment(...)
     );
 
     // Now start with the ControllerRunner given the renderer:
-    $app = new jschreuder\Middle\ApplicationStack([
-        new jschreuder\Middle\ControllerRunner($renderer),
-        new jschreuder\Middle\Router\RoutingMiddleware(
+    $app = new Middle\ApplicationStack([
+        new Middle\ControllerRunner($renderer),
+        new Middle\Router\RoutingMiddleware(
             $app, $router, function () { ... }
         ),
     ]);
@@ -159,7 +165,7 @@ The example below uses the included Twig renderer:
     $router->get('home', '/', function () {
         // Should render template.twig and parameters with Twig and return
         // response with status code 200
-        return new jschreuder\Middle\View\View('template.twig', [
+        return new Middle\View\View('template.twig', [
             'view' => 'parameters',
         ], 200);
     });
@@ -171,10 +177,11 @@ using it to construct the ControllerRunner:
 .. code-block:: php
 
     <?php
-    $renderer = new jschreuder\Middle\View\TwigRenderer(
+    use jschreuder\Middle;
+    $renderer = new Middle\View\TwigRenderer(
         new \Twig_Environment(...)
     );
-    $renderer = new jschreuder\Middle\View\RedirectRendererMiddleware(
+    $renderer = new Middle\View\RedirectRendererMiddleware(
         $renderer
     );
 
@@ -183,10 +190,11 @@ Once you've done that you can create redirects like this:
 .. code-block:: php
 
     <?php
+    use jschreuder\Middle;
     $router->get('redirect.example', '/redirect/to/home', function () {
         // This will redirect to the path '/' with status 302, the status is
         // optional and will default to 302 when omitted.
-        return new jschreuder\Middle\View\RedirectView('/', 302);
+        return new Middle\View\RedirectView('/', 302);
     });
 
 ------------------------------------------------
@@ -199,17 +207,18 @@ in other containers as well:
 .. code-block:: php
 
     <?php
+    use jschreuder\Middle;
     // First create the central app object in the container
     $container = Pimple\Container();
-    $container['app'] = new jschreuder\Middle\ApplicationStack([
-        new jschreuder\Middle\ControllerRunner()
+    $container['app'] = new Middle\ApplicationStack([
+        new Middle\ControllerRunner()
     ]);
 
     // Now to add a middleware you can do this
     $container->extend('app',
-        function (jschreuder\Middle\ApplicationStack $app, Pimple\Container $container) {
+        function (Middle\ApplicationStack $app, Pimple\Container $container) {
             return $app->withMiddleware(
-                new jschreuder\Middle\Router\RoutingMiddleware(
+                new Middle\Router\RoutingMiddleware(
                     $container['router'], $container['fallbackHandler']
                 )
             );
