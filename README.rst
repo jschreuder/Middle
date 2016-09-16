@@ -248,3 +248,35 @@ and may be replaced or decorated as you wish:
   as shown above. You could also wrap it in other Middlewares for additional
   parsing or replace it completely. The related ``ViewInterface`` is expected
   to be given and have the information necessary to render a template.
+
+----------------------
+Questions with answers
+----------------------
+
+1. *Another micro-framework... why?*
+   I created an application using Silex, but it got in my way. Also I prefer
+   PSR-7 over Symfony's implementation. I started refactoring it out and
+   replaced it with just its Routing component, Twig, and Zend's Diactoros and
+   Session libraries. After a while I realised I created a microframework in
+   its own right and extracted it from my application.
+
+2. *Why are all classes final?*
+   The intend is to follow the SOLID `Open/Closed
+   principle<https://en.wikipedia.org/wiki/Open/closed_principle>`_. This says
+   to be open for extension but closed for modification. Every dependency is
+   typehinted as an interface, and not against any concrete implementation. All
+   classes can be extended with middlewares, either like the ApplicationStack
+   or by using the `Decorator
+   pattern<https://en.wikipedia.org/wiki/Decorator_pattern>`_. Thus you can
+   extend or replace any class, but not modify how they work internally. As
+   such only the interfaces are part of this framework's API.
+
+3. *Do I have to use Twig, Symfony's router or Zend's Session library?*
+   No, but the only batteries included implement their API's based on those
+   packages. You can replace those pretty easily by implementing the Routing or
+   Session interfaces using another library.
+
+4. *Why not use the decorator pattern for the application like StackPHP?*
+   I did originally. But I want this framework to work with PSR-15 in the
+   future. So I copy-pasted the current state of that proposal and intend to
+   replace those interfaces completely with the PSR once accepted.
