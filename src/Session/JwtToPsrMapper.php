@@ -39,7 +39,7 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
     /** @var  SetCookie */
     private $defaultCookie;
 
-    private function __construct(
+    public function __construct(
         Signer $signer,
         string $signatureKey,
         string $verificationKey,
