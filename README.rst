@@ -261,15 +261,15 @@ Questions with answers
    its own right and extracted it from my application.
 
 2. *Why are all classes final?*
-   The intend is to follow the SOLID `Open/Closed
-   principle<https://en.wikipedia.org/wiki/Open/closed_principle>`_. This says
-   to be open for extension but closed for modification. Every dependency is
-   typehinted as an interface, and not against any concrete implementation. All
-   classes can be extended with middlewares, either like the ApplicationStack
-   or by using the `Decorator
-   pattern<https://en.wikipedia.org/wiki/Decorator_pattern>`_. Thus you can
-   extend or replace any class, but not modify how they work internally. As
-   such only the interfaces are part of this framework's API.
+   The intend is to follow the SOLID `Open/Closed principle
+   <https://en.wikipedia.org/wiki/Open/closed_principle>`_. This says to be
+   open for extension but closed for modification. Every dependency is
+   type-hinted as an interface, and not against any concrete implementation.
+   All classes can be extended with middlewares, either like the
+   ApplicationStack or by using the `Decorator pattern
+   <https://en.wikipedia.org/wiki/Decorator_pattern>`_. Thus you can extend or
+   replace any class, but not modify how they work internally. As such only
+   the interfaces are part of this framework's API.
 
 3. *Do I have to use Twig, Symfony's router or Zend's Session library?*
    No, but the only batteries included implement their API's based on those
