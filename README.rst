@@ -210,9 +210,9 @@ in other containers as well:
     use jschreuder\Middle;
     // First create the central app object in the container
     $container = Pimple\Container();
-    $container['app'] = new Middle\ApplicationStack([
-        new Middle\ControllerRunner()
-    ]);
+    $container['app'] = function () {
+        return new Middle\ApplicationStack([new Middle\ControllerRunner()]);
+    };
 
     // Now to add a middleware you can do this
     $container->extend('app',
