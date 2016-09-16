@@ -119,7 +119,7 @@ sessions & error handling on top of the previous example.
     $app = $app->withMiddleware(
         new Middle\ErrorHandlerMiddleware(
             new Monolog\Logger(...),
-            function (ServerRequestInterface $request, \Throwable $exception) {
+            function (Psr\Http\Message\ServerRequestInterface $request, \Throwable $exception) {
                 return new Zend\Diactoros\Response\JsonResponse(['error'], 500);
             }
         )
