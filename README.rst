@@ -232,10 +232,10 @@ and may be replaced or decorated as you wish:
 
 * ``SessionInterface`` with its default option depending on either
   ``zendframework/zend-session`` or a combination of ``lcobucci/jwt`` and
-  ``dflydev/fig-cookies``. It allows for setting & getting values, destroying
-  the session or rotating its ID. The Zend version can be loaded using the
-  ``LoadZendSessionMiddleware``, JWT based sessions can be loaded using the
-  ``LoadJwtSessionMiddleware``.
+  ``dflydev/fig-cookies`` for JWT based sessions. It allows for setting &
+  getting values, destroying the session or rotating its ID. The Zend version
+  can be loaded using the ``ZendLoadSessionMiddleware``, JWT based sessions
+  can be loaded using the ``JwtLoadSessionMiddleware``.
 
 * ``RouterInterface`` with its default depending on Symfony Routing component.
   It is loaded through the ``RoutingMiddleware`` as shown above. It has methods
