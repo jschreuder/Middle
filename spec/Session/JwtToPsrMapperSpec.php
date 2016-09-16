@@ -3,14 +3,17 @@
 namespace spec\jschreuder\Middle\Session;
 
 use Dflydev\FigCookies\SetCookie;
+use Dflydev\FigCookies\SetCookies;
 use jschreuder\Middle\Session\JwtToPsrMapper;
 use jschreuder\Middle\Session\JwtToPsrMapperInterface;
+use jschreuder\Middle\Session\SessionInterface;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /** @mixin  JwtToPsrMapper */
@@ -123,5 +126,198 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
         $token->verify($this->signer, self::PUBLIC_KEY)->willThrow(\BadMethodCallException::class);
         $session = $this->extractSessionContainer($token);
         $session->isEmpty()->shouldReturn(true);
+    }
+
+    public function it_doesnt_append_unchanged_nonempty_nonrefresh_session(
+        SessionInterface $session,
+        ResponseInterface $response
+    )
+    {
+        $session->hasChanged()->willReturn(false);
+        $session->isEmpty()->willReturn(false);
+        $token = null;
+
+        $this->appendToken($session, $response, $token)->shouldReturn($response);
+    }
+
+    public function it_appends_unchanged_nonempty_refresh_session(
+        SessionInterface $session,
+        ResponseInterface $response1,
+        ResponseInterface $response2,
+        ResponseInterface $response3,
+        SetCookie $cookie2,
+        SetCookie $cookie3,
+        Token $token
+    )
+    {
+        $sessionArray = ['test' => 'rest'];
+        $cookieString = 'test=rest';
+        $session->hasChanged()->willReturn(false);
+        $session->isEmpty()->willReturn(false);
+        $session->toArray()->willReturn($sessionArray);
+        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
+
+        $response1->getHeader(SetCookies::SET_COOKIE_HEADER)->willReturn([]);
+        $response1->withoutHeader(SetCookies::SET_COOKIE_HEADER)->willReturn($response2);
+        $response2->withAddedHeader(SetCookies::SET_COOKIE_HEADER, $cookieString)
+            ->willReturn($response3);
+
+        $this->defaultCookie->withValue(new Argument\Token\TypeToken(Token::class))->willReturn($cookie2);
+        $cookie2->withExpires(new Argument\Token\TypeToken('int'))->willReturn($cookie3);
+        $cookie3->getName()->willReturn(JwtToPsrMapper::DEFAULT_COOKIE);
+        $cookie3->__toString()->willReturn($cookieString);
+
+        $this->appendToken($session, $response1, $token)->shouldReturn($response3);
+    }
+
+    public function it_doesnt_append_unchanged_empty_nonrefresh_session(
+        SessionInterface $session,
+        ResponseInterface $response
+    )
+    {
+        $session->hasChanged()->willReturn(false);
+        $session->isEmpty()->willReturn(true);
+        $token = null;
+
+        $this->appendToken($session, $response, $token)->shouldReturn($response);
+    }
+
+    public function it_doesnt_append_unchanged_empty_refresh_session(
+        SessionInterface $session,
+        ResponseInterface $response,
+        Token $token
+    )
+    {
+        $session->hasChanged()->willReturn(false);
+        $session->isEmpty()->willReturn(true);
+        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
+
+        $this->appendToken($session, $response, $token)->shouldReturn($response);
+    }
+
+    public function it_appends_changed_nonempty_nonrefresh_session(
+        SessionInterface $session,
+        ResponseInterface $response1,
+        ResponseInterface $response2,
+        ResponseInterface $response3,
+        SetCookie $cookie2,
+        SetCookie $cookie3,
+        Token $token
+    )
+    {
+        $sessionArray = ['test' => 'rest'];
+        $cookieString = 'test=rest';
+        $session->hasChanged()->willReturn(true);
+        $session->isEmpty()->willReturn(false);
+        $session->toArray()->willReturn($sessionArray);
+        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 5);
+
+        $response1->getHeader(SetCookies::SET_COOKIE_HEADER)->willReturn([]);
+        $response1->withoutHeader(SetCookies::SET_COOKIE_HEADER)->willReturn($response2);
+        $response2->withAddedHeader(SetCookies::SET_COOKIE_HEADER, $cookieString)
+            ->willReturn($response3);
+
+        $this->defaultCookie->withValue(new Argument\Token\TypeToken(Token::class))->willReturn($cookie2);
+        $cookie2->withExpires(new Argument\Token\TypeToken('int'))->willReturn($cookie3);
+        $cookie3->getName()->willReturn(JwtToPsrMapper::DEFAULT_COOKIE);
+        $cookie3->__toString()->willReturn($cookieString);
+
+        $this->appendToken($session, $response1, $token)->shouldReturn($response3);
+    }
+
+    public function it_appends_changed_nonempty_refresh_session(
+        SessionInterface $session,
+        ResponseInterface $response1,
+        ResponseInterface $response2,
+        ResponseInterface $response3,
+        SetCookie $cookie2,
+        SetCookie $cookie3,
+        Token $token
+    )
+    {
+        $sessionArray = ['test' => 'rest'];
+        $cookieString = 'test=rest';
+        $session->hasChanged()->willReturn(true);
+        $session->isEmpty()->willReturn(false);
+        $session->toArray()->willReturn($sessionArray);
+        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
+
+        $response1->getHeader(SetCookies::SET_COOKIE_HEADER)->willReturn([]);
+        $response1->withoutHeader(SetCookies::SET_COOKIE_HEADER)->willReturn($response2);
+        $response2->withAddedHeader(SetCookies::SET_COOKIE_HEADER, $cookieString)
+            ->willReturn($response3);
+
+        $this->defaultCookie->withValue(new Argument\Token\TypeToken(Token::class))->willReturn($cookie2);
+        $cookie2->withExpires(new Argument\Token\TypeToken('int'))->willReturn($cookie3);
+        $cookie3->getName()->willReturn(JwtToPsrMapper::DEFAULT_COOKIE);
+        $cookie3->__toString()->willReturn($cookieString);
+
+        $this->appendToken($session, $response1, $token)->shouldReturn($response3);
+    }
+
+    public function it_appends_changed_empty_nonrefresh_session(
+        SessionInterface $session,
+        ResponseInterface $response1,
+        ResponseInterface $response2,
+        ResponseInterface $response3,
+        SetCookie $cookie2,
+        SetCookie $cookie3,
+        Token $token
+    )
+    {
+        $sessionArray = ['test' => 'rest'];
+        $cookieString = '';
+        $session->hasChanged()->willReturn(true);
+        $session->isEmpty()->willReturn(true);
+        $session->toArray()->willReturn($sessionArray);
+        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 5);
+
+        $response1->getHeader(SetCookies::SET_COOKIE_HEADER)->willReturn([]);
+        $response1->withoutHeader(SetCookies::SET_COOKIE_HEADER)->willReturn($response2);
+        $response2->withAddedHeader(SetCookies::SET_COOKIE_HEADER, $cookieString)
+            ->willReturn($response3);
+
+        $this->defaultCookie->withValue(null)->willReturn($cookie2);
+        $cookie2->withExpires(new Argument\Token\TypeToken('int'))->willReturn($cookie3);
+        $cookie3->getName()->willReturn(JwtToPsrMapper::DEFAULT_COOKIE);
+        $cookie3->__toString()->willReturn($cookieString);
+
+        $this->appendToken($session, $response1, $token)->shouldReturn($response3);
+    }
+
+    public function it_appends_changed_empty_refresh_session(
+        SessionInterface $session,
+        ResponseInterface $response1,
+        ResponseInterface $response2,
+        ResponseInterface $response3,
+        SetCookie $cookie2,
+        SetCookie $cookie3,
+        Token $token
+    )
+    {
+        $sessionArray = ['test' => 'rest'];
+        $cookieString = '';
+        $session->hasChanged()->willReturn(true);
+        $session->isEmpty()->willReturn(true);
+        $session->toArray()->willReturn($sessionArray);
+        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
+
+        $response1->getHeader(SetCookies::SET_COOKIE_HEADER)->willReturn([]);
+        $response1->withoutHeader(SetCookies::SET_COOKIE_HEADER)->willReturn($response2);
+        $response2->withAddedHeader(SetCookies::SET_COOKIE_HEADER, $cookieString)
+            ->willReturn($response3);
+
+        $this->defaultCookie->withValue(null)->willReturn($cookie2);
+        $cookie2->withExpires(new Argument\Token\TypeToken('int'))->willReturn($cookie3);
+        $cookie3->getName()->willReturn(JwtToPsrMapper::DEFAULT_COOKIE);
+        $cookie3->__toString()->willReturn($cookieString);
+
+        $this->appendToken($session, $response1, $token)->shouldReturn($response3);
     }
 }
