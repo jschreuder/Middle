@@ -173,12 +173,13 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
 
     public function it_doesnt_append_unchanged_empty_nonrefresh_session(
         SessionInterface $session,
-        ResponseInterface $response
+        ResponseInterface $response,
+        Token $token
     )
     {
         $session->hasChanged()->willReturn(false);
         $session->isEmpty()->willReturn(true);
-        $token = null;
+        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(false);
 
         $this->appendToken($session, $response, $token)->shouldReturn($response);
     }
