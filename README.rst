@@ -147,9 +147,11 @@ The example below uses the included Twig renderer:
 
     <?php
     use jschreuder\Middle;
-    // Setup the renderer for Twig
+    // Setup the renderer for Twig with a Twig_Environment instance and a base
+    // Response object to which it will write the rendered output
     $renderer = new Middle\View\TwigRenderer(
-        new \Twig_Environment(...)
+        new Twig_Environment(...),
+        new Zend\Diactoros\Response()
     );
 
     // Now start with the ControllerRunner given the renderer:
@@ -175,9 +177,16 @@ construct the ControllerRunner:
     <?php
     use jschreuder\Middle;
     $renderer = new Middle\View\TwigRenderer(
-        new \Twig_Environment(...)
+        new \Twig_Environment(...),
+        new Zend\Diactoros\Response()
     );
-    $renderer = new Middle\View\RedirectRendererMiddleware($renderer);
+
+    // Decorate with the RedirectRendererMiddleware which needs a base Response
+    // object to which it will add a 300 status code & location header
+    $renderer = new Middle\View\RedirectRendererMiddleware(
+        $renderer,
+        new Zend\Diactoros\Response()
+    );
 
 Once you've done that you can create redirects like this:
 
