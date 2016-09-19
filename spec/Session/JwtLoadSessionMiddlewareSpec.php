@@ -2,13 +2,12 @@
 
 namespace spec\jschreuder\Middle\Session;
 
-use jschreuder\Middle\DelegateInterface;
+use Interop\Http\Middleware\DelegateInterface;
 use jschreuder\Middle\Session\JwtLoadSessionMiddleware;
 use jschreuder\Middle\Session\JwtToPsrMapperInterface;
 use jschreuder\Middle\Session\SessionInterface;
 use Lcobucci\JWT\Token;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

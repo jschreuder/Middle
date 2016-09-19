@@ -2,7 +2,7 @@
 
 namespace spec\jschreuder\Middle;
 
-use jschreuder\Middle\DelegateInterface;
+use Interop\Http\Middleware\DelegateInterface;
 use jschreuder\Middle\ErrorHandlerMiddleware;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;

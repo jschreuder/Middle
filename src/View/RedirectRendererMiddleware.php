@@ -2,6 +2,7 @@
 
 namespace jschreuder\Middle\View;
 
+use Psr\Http\Factory\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -10,13 +11,13 @@ final class RedirectRendererMiddleware implements RendererInterface
     /** @var  RendererInterface */
     private $renderer;
 
-    /** @var  ResponseInterface */
-    private $baseResponse;
+    /** @var  ResponseFactoryInterface */
+    private $responseFactory;
 
-    public function __construct(RendererInterface $renderer, ResponseInterface $baseResponse)
+    public function __construct(RendererInterface $renderer, ResponseFactoryInterface $responseFactory)
     {
         $this->renderer = $renderer;
-        $this->baseResponse = $baseResponse;
+        $this->responseFactory = $responseFactory;
     }
 
     public function render(ServerRequestInterface $request, ViewInterface $view) : ResponseInterface
@@ -30,10 +31,10 @@ final class RedirectRendererMiddleware implements RendererInterface
             throw new \UnderflowException('Location header must be set on View');
         }
 
-        $response = $this->baseResponse;
+        $response = $this->responseFactory->createResponse($view->getStatusCode());
         foreach ($headers as $name => $value) {
             $response = $response->withHeader($name, $value);
         }
-        return $response->withStatus($view->getStatusCode());
+        return $response;
     }
 }

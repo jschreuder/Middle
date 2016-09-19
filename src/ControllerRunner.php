@@ -2,12 +2,14 @@
 
 namespace jschreuder\Middle;
 
+use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\Middleware\ServerMiddlewareInterface;
 use jschreuder\Middle\View\RendererInterface;
 use jschreuder\Middle\View\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class ControllerRunner implements HttpMiddlewareInterface
+final class ControllerRunner implements ServerMiddlewareInterface
 {
     /** @var  ?RendererInterface */
     private $renderer;

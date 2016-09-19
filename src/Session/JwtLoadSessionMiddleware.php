@@ -2,12 +2,12 @@
 
 namespace jschreuder\Middle\Session;
 
-use jschreuder\Middle\DelegateInterface;
-use jschreuder\Middle\HttpMiddlewareInterface;
+use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\Middleware\ServerMiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class JwtLoadSessionMiddleware implements HttpMiddlewareInterface
+final class JwtLoadSessionMiddleware implements ServerMiddlewareInterface
 {
     /** @var  JwtToPsrMapperInterface */
     private $mapper;

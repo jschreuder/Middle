@@ -2,9 +2,9 @@
 
 namespace spec\jschreuder\Middle;
 
+use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\Middleware\ServerMiddlewareInterface;
 use jschreuder\Middle\ApplicationStack;
-use jschreuder\Middle\DelegateInterface;
-use jschreuder\Middle\HttpMiddlewareInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
@@ -25,8 +25,8 @@ class ApplicationStackSpec extends ObjectBehavior
     }
 
     public function it_will_clone_on_with_middleware(
-        HttpMiddlewareInterface $middleware1,
-        HttpMiddlewareInterface $middleware2,
+        ServerMiddlewareInterface $middleware1,
+        ServerMiddlewareInterface $middleware2,
         ServerRequestInterface $request,
         ResponseInterface $response1,
         ResponseInterface $response2
@@ -45,8 +45,8 @@ class ApplicationStackSpec extends ObjectBehavior
     }
 
     public function it_will_clone_on_without_middleware(
-        HttpMiddlewareInterface $middleware1,
-        HttpMiddlewareInterface $middleware2,
+        ServerMiddlewareInterface $middleware1,
+        ServerMiddlewareInterface $middleware2,
         ServerRequestInterface $request,
         ResponseInterface $response1,
         ResponseInterface $response2

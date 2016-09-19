@@ -2,8 +2,9 @@
 
 namespace jschreuder\Middle;
 
+use Interop\Http\Middleware\DelegateInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 final class Delegate implements DelegateInterface
 {
@@ -15,7 +16,7 @@ final class Delegate implements DelegateInterface
         $this->stack = $stack;
     }
 
-    public function next(ServerRequestInterface $request) : ResponseInterface
+    public function next(RequestInterface $request) : ResponseInterface
     {
         if ($this->stack->count() === 0) {
             throw new \RuntimeException('No more middleware\'s to call on.');

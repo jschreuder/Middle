@@ -2,12 +2,12 @@
 
 namespace jschreuder\Middle\Router;
 
-use jschreuder\Middle\DelegateInterface;
-use jschreuder\Middle\HttpMiddlewareInterface;
+use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\Middleware\ServerMiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class RoutingMiddleware implements HttpMiddlewareInterface
+final class RoutingMiddleware implements ServerMiddlewareInterface
 {
     /** @var  RouterInterface */
     private $router;

@@ -2,26 +2,27 @@
 
 namespace jschreuder\Middle;
 
+use Interop\Http\Middleware\ServerMiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class ApplicationStack implements ApplicationStackInterface
 {
-    /** @var  \SplStack | HttpMiddlewareInterface[] */
+    /** @var  \SplStack | ServerMiddlewareInterface[] */
     private $stack;
 
     public function __construct(array $middlewares = [])
     {
         $this->stack = new \SplStack();
         foreach ($middlewares as $middleware) {
-            if (!$middleware instanceof HttpMiddlewareInterface) {
+            if (!$middleware instanceof ServerMiddlewareInterface) {
                 throw new \InvalidArgumentException('All middlewares must implement ApplicationInterface');
             }
             $this->stack->push($middleware);
         }
     }
 
-    public function withMiddleware(HttpMiddlewareInterface $middleware) : ApplicationStack
+    public function withMiddleware(ServerMiddlewareInterface $middleware) : ApplicationStack
     {
         $stack = clone $this;
         $stack->stack = clone $this->stack;
@@ -29,7 +30,7 @@ final class ApplicationStack implements ApplicationStackInterface
         return $stack;
     }
 
-    public function withoutMiddleware(HttpMiddlewareInterface $middleware) : ApplicationStack
+    public function withoutMiddleware(ServerMiddlewareInterface $middleware) : ApplicationStack
     {
         $oldStack = clone $this->stack;
         $newStack = new \SplStack();
@@ -52,7 +53,7 @@ final class ApplicationStack implements ApplicationStackInterface
         }
         $stack = clone $this->stack;
 
-        /** @var  HttpMiddlewareInterface $current */
+        /** @var  ServerMiddlewareInterface $current */
         $current = $stack->pop();
         $response = $current->process($request, new Delegate($stack));
 

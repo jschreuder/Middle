@@ -2,12 +2,12 @@
 
 namespace jschreuder\Middle\Controller;
 
-use jschreuder\Middle\DelegateInterface;
-use jschreuder\Middle\HttpMiddlewareInterface;
+use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\Middleware\ServerMiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class FilterValidationMiddleware implements HttpMiddlewareInterface
+final class FilterValidationMiddleware implements ServerMiddlewareInterface
 {
     /** @var  callable */
     private $errorHandler;

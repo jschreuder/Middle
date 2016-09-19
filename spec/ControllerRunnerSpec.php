@@ -2,8 +2,8 @@
 
 namespace spec\jschreuder\Middle;
 
+use Interop\Http\Middleware\DelegateInterface;
 use jschreuder\Middle\ControllerRunner;
-use jschreuder\Middle\DelegateInterface;
 use jschreuder\Middle\View\RendererInterface;
 use jschreuder\Middle\View\ViewInterface;
 use PhpSpec\ObjectBehavior;

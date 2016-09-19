@@ -6,10 +6,9 @@ use jschreuder\Middle\View\RedirectRendererMiddleware;
 use jschreuder\Middle\View\RendererInterface;
 use jschreuder\Middle\View\ViewInterface;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+use Psr\Http\Factory\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response\RedirectResponse;
 
 /** @mixin  RedirectRendererMiddleware */
 class RedirectRendererMiddlewareSpec extends ObjectBehavior
@@ -17,14 +16,14 @@ class RedirectRendererMiddlewareSpec extends ObjectBehavior
     /** @var  RendererInterface */
     private $renderer;
 
-    /** @var  ResponseInterface */
-    private $response;
+    /** @var  ResponseFactoryInterface */
+    private $responseFactory;
 
-    public function let(RendererInterface $renderer, ResponseInterface $response)
+    public function let(RendererInterface $renderer, ResponseFactoryInterface $responseFactory)
     {
         $this->renderer = $renderer;
-        $this->response = $response;
-        $this->beConstructedWith($renderer, $response);
+        $this->responseFactory = $responseFactory;
+        $this->beConstructedWith($renderer, $responseFactory);
     }
 
     public function it_is_initializable()
@@ -34,8 +33,8 @@ class RedirectRendererMiddlewareSpec extends ObjectBehavior
 
     public function it_can_render_a_redirect(
         ServerRequestInterface $request,
+        ResponseInterface $response1,
         ResponseInterface $response2,
-        ResponseInterface $response3,
         ViewInterface $view
     )
     {
@@ -44,10 +43,10 @@ class RedirectRendererMiddlewareSpec extends ObjectBehavior
         $view->getStatusCode()->willReturn(302);
         $view->getHeaders()->willReturn(['Location' => $redirectTo]);
 
+        $this->responseFactory->createResponse(302)->willReturn($response1);
         $this->renderer->render($request, $view)->shouldNotBeCalled();
-        $this->response->withHeader('Location', $redirectTo)->willReturn($response2);
-        $response2->withStatus(302)->willReturn($response3);
-        $this->render($request, $view)->shouldBe($response3);
+        $response1->withHeader('Location', $redirectTo)->willReturn($response2);
+        $this->render($request, $view)->shouldBe($response2);
     }
 
     public function it_cannot_render_without_location_header(

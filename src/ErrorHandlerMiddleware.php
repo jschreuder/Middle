@@ -2,11 +2,13 @@
 
 namespace jschreuder\Middle;
 
+use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\Middleware\ServerMiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-final class ErrorHandlerMiddleware implements HttpMiddlewareInterface
+final class ErrorHandlerMiddleware implements ServerMiddlewareInterface
 {
     /** @var  LoggerInterface */
     private $logger;
