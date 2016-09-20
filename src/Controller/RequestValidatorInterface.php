@@ -4,7 +4,7 @@ namespace jschreuder\Middle\Controller;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-interface RequestValidatorInterface extends ControllerInterface
+interface RequestValidatorInterface
 {
     /**
      * Validate the request's contents and throw ValidationFailedException
