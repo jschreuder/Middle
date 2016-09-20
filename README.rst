@@ -18,8 +18,8 @@ for which the default implementation can can be either replaced or decorated.
 The implementations can be atomic in nature: just performing one task. Composing
 complex capabilities by choosing which simple middlewares you decorate or add
 to the stack. Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4, PSR-7
-and inspired by the proposed PSR-15; and PHP 7.0 or higher (probably 7.1+ once
-that's released).
+and forward compatible with PSR-15 & PSR-17 through HTTP-Interop; aimed at PHP
+7.0 or higher (probably 7.1+ once that's released).
 
 The reason I prefer to use middleware approach is because it is far more
 explicit in how the application works than (for example) event-based
@@ -151,11 +151,11 @@ The example below uses the included Twig renderer:
 
     <?php
     use jschreuder\Middle;
-    // Setup the renderer for Twig with a Twig_Environment instance and a base
-    // Response object to which it will write the rendered output
+    // Setup the renderer for Twig with a Twig_Environment instance and a
+    // PSR-17 Response factory for generating the Response object
     $renderer = new Middle\View\TwigRenderer(
         new Twig_Environment(...),
-        new Zend\Diactoros\Response()
+        $responseFactory
     );
 
     $router->get('home', '/',
@@ -177,11 +177,11 @@ return a redirect, you can decorate the renderer like this:
 
     <?php
     use jschreuder\Middle;
-    // Decorate with the RedirectRendererMiddleware which needs a base Response
-    // object to which it will add a 300 status code & location header
+    // Decorate with the RedirectRendererMiddleware which needs a PSR-17
+    // Response factory for generating the Response object
     $renderer = new Middle\View\RedirectRendererMiddleware(
         $renderer,
-        new Zend\Diactoros\Response()
+        $responseFactory
     );
 
 Once you've done that you can create redirects like this:
