@@ -4,6 +4,7 @@ namespace jschreuder\Middle;
 
 use Interop\Http\Middleware\DelegateInterface;
 use Interop\Http\Middleware\ServerMiddlewareInterface;
+use jschreuder\Middle\Controller\ControllerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -13,10 +14,10 @@ final class ErrorHandlerMiddleware implements ServerMiddlewareInterface
     /** @var  LoggerInterface */
     private $logger;
 
-    /** @var  callable */
+    /** @var  ControllerInterface */
     private $errorController;
 
-    public function __construct(LoggerInterface $logger, callable $errorController)
+    public function __construct(LoggerInterface $logger, ControllerInterface $errorController)
     {
         $this->logger = $logger;
         $this->errorController = $errorController;
@@ -32,7 +33,7 @@ final class ErrorHandlerMiddleware implements ServerMiddlewareInterface
                 'file' => $exception->getFile(),
                 'backtrace' => $exception->getTrace()
             ]);
-            return ($this->errorController)($exception, $request);
+            return $this->errorController->execute($request->withAttribute('error', $exception));
         }
     }
 }

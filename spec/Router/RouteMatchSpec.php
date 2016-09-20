@@ -2,6 +2,7 @@
 
 namespace spec\jschreuder\Middle\Router;
 
+use jschreuder\Middle\Controller\ControllerInterface;
 use jschreuder\Middle\Router\RouteMatch;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -16,9 +17,8 @@ class RouteMatchSpec extends ObjectBehavior
         $this->isMatch()->shouldReturn(false);
     }
 
-    public function it_is_initializable_as_match()
+    public function it_is_initializable_as_match(ControllerInterface $controller)
     {
-        $controller = function () {};
         $attributes = ['answer' => 42];
         $this->beConstructedWith(true, $controller, $attributes);
         $this->shouldHaveType(RouteMatch::class);

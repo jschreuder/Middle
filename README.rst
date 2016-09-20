@@ -68,13 +68,15 @@ order.
     // Let's setup a router which needs the base-URL, and a handler for
     // generating a response when no route is matched.
     $router = new Middle\Router\SymfonyRouter('http://localhost');
-    $fallbackController = function () {
-        return new Zend\Diactoros\Response\JsonResponse(['error'], 400);
-    };
+    $fallbackController = Middle\Controller\CallableController::fromCallable(
+        function () {
+            return new Zend\Diactoros\Response\JsonResponse(['error'], 400);
+        }
+    );
 
     // Setup the application with controller runner and the routing middleware
     $app = new Middle\ApplicationStack([
-        new Middle\ControllerRunner(),
+        new Middle\Controller\ControllerRunner(),
         new Middle\Router\RoutingMiddleware($router, $fallbackController),
     ]);
 
@@ -83,12 +85,15 @@ With that setup we can now add some routes (using the ``$router`` from above):
 .. code-block:: php
 
     <?php
+    use jschreuder\Middle;
     // Using the convenience method for GET request on '/'
-    $router->get('home', '/', function () {
-        return new Zend\Diactoros\Response\JsonResponse([
-            'message' => 'Welcome to our homepage',
-        ]);
-    });
+    $router->get('home', '/', Middle\Controller\CallableController::fromCallable(
+        function () {
+            return new Zend\Diactoros\Response\JsonResponse([
+                'message' => 'Welcome to our homepage',
+            ]);
+        }
+    ));
 
 The included routing depends on Symfony's Routing component. In the path you
 can use the variable notation. The ``get()`` method also supports 2 additional
@@ -136,10 +141,9 @@ that shows an error to the user.
 Also with templating
 --------------------
 
-The central ``ApplicationInterface`` object, the ``ControllerRunner`` also
-supports rendering templates into ``ResponseInterface`` objects. To do that the
-Controller must return a ``ViewInterface`` instance and the ControllerRunner
-must be build with a ``RendererInterface`` instance.
+There's also a build-in generic templating solution. To use it the Controller
+can create an intermediate ``ViewInterface`` instance and take a
+``RendererInterface`` instance as well to render it into a Response object.
 
 The example below uses the included Twig renderer:
 
@@ -154,33 +158,23 @@ The example below uses the included Twig renderer:
         new Zend\Diactoros\Response()
     );
 
-    // Now start with the ControllerRunner given the renderer:
-    $app = new Middle\ApplicationStack([
-        new Middle\ControllerRunner($renderer),
-        new Middle\Router\RoutingMiddleware($router, function () { ... }),
-    ]);
-
-    $router->get('home', '/', function () {
-        // Should render template.twig and parameters with Twig and return
-        // response with status code 200
-        return new Middle\View\View('template.twig', [
-            'view' => 'parameters',
-        ], 200);
-    });
+    $router->get('home', '/', Middle\Controller\CallableViewController::fromCallable(
+        function (Psr\Http\Message\ServerRequestInterface $request) use ($renderer) {
+            // Should render template.twig and parameters with Twig and return
+            // response with status code 200
+            return $renderer->render($request, new Middle\View\View('template.twig', [
+                'view' => 'parameters',
+            ], 200));
+        }
+    ));
 
 The ``RendererInterface`` can be decorated. It you'd like to also use a view to
-return a redirect, you can decorate the renderer like this before using it to
-construct the ControllerRunner:
+return a redirect, you can decorate the renderer like this:
 
 .. code-block:: php
 
     <?php
     use jschreuder\Middle;
-    $renderer = new Middle\View\TwigRenderer(
-        new \Twig_Environment(...),
-        new Zend\Diactoros\Response()
-    );
-
     // Decorate with the RedirectRendererMiddleware which needs a base Response
     // object to which it will add a 300 status code & location header
     $renderer = new Middle\View\RedirectRendererMiddleware(
@@ -194,11 +188,13 @@ Once you've done that you can create redirects like this:
 
     <?php
     use jschreuder\Middle;
-    $router->get('redirect.example', '/redirect/to/home', function () {
-        // This will redirect to the path '/' with status 302, the status is
-        // optional and will default to 302 when omitted.
-        return new Middle\View\RedirectView('/', 302);
-    });
+    $router->get('redirect.example', '/redirect/to/home',
+        function (Psr\Http\Message\ServerRequestInterface $request) use ($renderer) {
+            // This will redirect to the path '/' with status 302, the status is
+            // optional and will default to 302 when omitted.
+            return $renderer->render($request, new Middle\View\RedirectView('/', 302));
+        }
+    );
 
 ------------------------------------------------
 Middlewares and a Dependency Injection Container
@@ -214,7 +210,9 @@ in other containers as well:
     // First create the central app object in the container
     $container = Pimple\Container();
     $container['app'] = function () {
-        return new Middle\ApplicationStack([new Middle\ControllerRunner()]);
+        return new Middle\ApplicationStack([
+            new Middle\Controller\ControllerRunner(),
+        ]);
     };
 
     // Now to add a middleware you can do this

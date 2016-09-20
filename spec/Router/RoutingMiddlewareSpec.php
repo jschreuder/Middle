@@ -3,6 +3,7 @@
 namespace spec\jschreuder\Middle\Router;
 
 use Interop\Http\Middleware\DelegateInterface;
+use jschreuder\Middle\Controller\ControllerInterface;
 use jschreuder\Middle\Router\RouteMatch;
 use jschreuder\Middle\Router\RouterInterface;
 use jschreuder\Middle\Router\RoutingMiddleware;
@@ -16,14 +17,14 @@ class RoutingMiddlewareSpec extends ObjectBehavior
     /** @var  RouterInterface */
     private $router;
 
-    /** @var  callable */
+    /** @var  ControllerInterface */
     private $fallbackController;
 
-    public function let(RouterInterface $router)
+    public function let(RouterInterface $router, ControllerInterface $fallbackController)
     {
         $this->router = $router;
-        $this->fallbackController = function () {};
-        $this->beConstructedWith($router, $this->fallbackController);
+        $this->fallbackController = $fallbackController;
+        $this->beConstructedWith($router, $fallbackController);
     }
 
     public function it_is_initializable()
@@ -32,6 +33,7 @@ class RoutingMiddlewareSpec extends ObjectBehavior
     }
 
     public function it_can_assign_a_controller_and_attributes(
+        ControllerInterface $controller,
         ServerRequestInterface $request1,
         ServerRequestInterface $request2,
         ServerRequestInterface $request3,
@@ -39,9 +41,8 @@ class RoutingMiddlewareSpec extends ObjectBehavior
         ResponseInterface $response,
         DelegateInterface $delegate
     ) {
-        $controller = function () {};
         $attributes = ['v1' => 1, 'v2' => 2];
-        $routeMatch = new RouteMatch(true, $controller, $attributes);
+        $routeMatch = new RouteMatch(true, $controller->getWrappedObject(), $attributes);
         $this->router->parseRequest($request1)->willReturn($routeMatch);
 
         $request1->withAttribute('controller', $controller)->willReturn($request2);

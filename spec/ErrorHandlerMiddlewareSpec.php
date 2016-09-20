@@ -3,6 +3,7 @@
 namespace spec\jschreuder\Middle;
 
 use Interop\Http\Middleware\DelegateInterface;
+use jschreuder\Middle\Controller\ControllerInterface;
 use jschreuder\Middle\ErrorHandlerMiddleware;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -16,13 +17,13 @@ class ErrorHandlerMiddlewareSpec extends ObjectBehavior
     /** @var  LoggerInterface */
     private $logger;
 
-    /** @var  callable */
+    /** @var  ControllerInterface */
     private $errorController;
 
-    public function let(LoggerInterface $logger)
+    public function let(LoggerInterface $logger, ControllerInterface $controller)
     {
         $this->logger = $logger;
-        $this->errorController = function () {};
+        $this->errorController = $controller;
         $this->beConstructedWith($logger, $this->errorController);
     }
 
@@ -45,6 +46,7 @@ class ErrorHandlerMiddlewareSpec extends ObjectBehavior
 
     public function it_will_log_and_process_exception_when_thrown(
         ServerRequestInterface $request,
+        ServerRequestInterface $request2,
         ResponseInterface $response,
         DelegateInterface $delegate
     )
@@ -53,10 +55,8 @@ class ErrorHandlerMiddlewareSpec extends ObjectBehavior
         $delegate->next($request)->willThrow($exception);
         $this->logger->alert($msg, new Argument\Token\ArrayEntryToken('file', __FILE__))->shouldBeCalled();
 
-        $this->errorController = function () use ($response) {
-            return $response->getWrappedObject();
-        };
-        $this->beConstructedWith($this->logger, $this->errorController);
+        $request->withAttribute('error', $exception)->willReturn($request2);
+        $this->errorController->execute($request2)->willReturn($response);
 
         $this->process($request, $delegate)->shouldReturn($response);
     }

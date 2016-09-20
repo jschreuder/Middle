@@ -2,6 +2,7 @@
 
 namespace jschreuder\Middle\Router;
 
+use jschreuder\Middle\Controller\ControllerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 interface RouterInterface
@@ -20,7 +21,7 @@ interface RouterInterface
         string $name,
         string $methods,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     );
@@ -29,7 +30,7 @@ interface RouterInterface
     public function get(
         string $name,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     );
@@ -38,7 +39,7 @@ interface RouterInterface
     public function post(
         string $name,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     );
@@ -47,7 +48,7 @@ interface RouterInterface
     public function put(
         string $name,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     );
@@ -56,7 +57,7 @@ interface RouterInterface
     public function patch(
         string $name,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     );
@@ -65,7 +66,7 @@ interface RouterInterface
     public function delete(
         string $name,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     );

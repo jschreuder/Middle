@@ -2,6 +2,7 @@
 
 namespace jschreuder\Middle\Router;
 
+use jschreuder\Middle\Controller\ControllerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Routing\Exception\ExceptionInterface as SymfonyRoutingException;
 use Symfony\Component\Routing\Generator\UrlGenerator;
@@ -81,7 +82,7 @@ final class SymfonyRouter implements RouterInterface
     public function get(
         string $name,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     ) : Route
@@ -93,7 +94,7 @@ final class SymfonyRouter implements RouterInterface
         string $name,
         string $methods,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     ) : Route
@@ -108,7 +109,7 @@ final class SymfonyRouter implements RouterInterface
     public function post(
         string $name,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     ) : Route
@@ -119,7 +120,7 @@ final class SymfonyRouter implements RouterInterface
     public function put(
         string $name,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     ) : Route
@@ -130,7 +131,7 @@ final class SymfonyRouter implements RouterInterface
     public function patch(
         string $name,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     ) : Route
@@ -141,7 +142,7 @@ final class SymfonyRouter implements RouterInterface
     public function delete(
         string $name,
         string $path,
-        callable $controller,
+        ControllerInterface $controller,
         array $defaults = [],
         array $requirements = []
     ) : Route

@@ -4,6 +4,7 @@ namespace jschreuder\Middle\Router;
 
 use Interop\Http\Middleware\DelegateInterface;
 use Interop\Http\Middleware\ServerMiddlewareInterface;
+use jschreuder\Middle\Controller\ControllerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -12,12 +13,12 @@ final class RoutingMiddleware implements ServerMiddlewareInterface
     /** @var  RouterInterface */
     private $router;
 
-    /** @var  callable */
+    /** @var  ControllerInterface */
     private $fallbackController;
 
     public function __construct(
         RouterInterface $router,
-        callable $fallbackController
+        ControllerInterface $fallbackController
     )
     {
         $this->router = $router;
