@@ -3,6 +3,7 @@
 namespace jschreuder\Middle;
 
 use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\Middleware\MiddlewareInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -22,7 +23,7 @@ final class Delegate implements DelegateInterface
             throw new \RuntimeException('No more middleware\'s to call on.');
         }
 
-        /** @var  HttpMiddlewareInterface $next */
+        /** @var  MiddlewareInterface $next */
         $next = $this->stack->pop();
         return $next->process($request, $this);
     }
