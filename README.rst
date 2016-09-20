@@ -87,13 +87,13 @@ With that setup we can now add some routes (using the ``$router`` from above):
     <?php
     use jschreuder\Middle;
     // Using the convenience method for GET request on '/'
-    $router->get('home', '/', Middle\Controller\CallableController::fromCallable(
-        function () {
+    $router->get('home', '/',
+        Middle\Controller\CallableController::factoryFromCallable(function () {
             return new Zend\Diactoros\Response\JsonResponse([
                 'message' => 'Welcome to our homepage',
             ]);
-        }
-    ));
+        })
+    );
 
 The included routing depends on Symfony's Routing component. In the path you
 can use the variable notation. The ``get()`` method also supports 2 additional
@@ -158,15 +158,17 @@ The example below uses the included Twig renderer:
         new Zend\Diactoros\Response()
     );
 
-    $router->get('home', '/', Middle\Controller\CallableViewController::fromCallable(
-        function (Psr\Http\Message\ServerRequestInterface $request) use ($renderer) {
-            // Should render template.twig and parameters with Twig and return
-            // response with status code 200
-            return $renderer->render($request, new Middle\View\View('template.twig', [
-                'view' => 'parameters',
-            ], 200));
-        }
-    ));
+    $router->get('home', '/',
+        Middle\Controller\CallableViewController::factoryFromCallable(
+            function (Psr\Http\Message\ServerRequestInterface $request) use ($renderer) {
+                // Should render template.twig and parameters with Twig and return
+                // response with status code 200
+                return $renderer->render($request, new Middle\View\View('template.twig', [
+                    'view' => 'parameters',
+                ], 200));
+            }
+        );
+    );
 
 The ``RendererInterface`` can be decorated. It you'd like to also use a view to
 return a redirect, you can decorate the renderer like this:
@@ -189,11 +191,13 @@ Once you've done that you can create redirects like this:
     <?php
     use jschreuder\Middle;
     $router->get('redirect.example', '/redirect/to/home',
-        function (Psr\Http\Message\ServerRequestInterface $request) use ($renderer) {
-            // This will redirect to the path '/' with status 302, the status is
-            // optional and will default to 302 when omitted.
-            return $renderer->render($request, new Middle\View\RedirectView('/', 302));
-        }
+        Middle\Controller\CallableViewController::factoryFromCallable(
+            function (Psr\Http\Message\ServerRequestInterface $request) use ($renderer) {
+                // This will redirect to the path '/' with status 302, the status is
+                // optional and will default to 302 when omitted.
+                return $renderer->render($request, new Middle\View\RedirectView('/', 302));
+            }
+        );
     );
 
 ------------------------------------------------

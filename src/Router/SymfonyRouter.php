@@ -2,7 +2,6 @@
 
 namespace jschreuder\Middle\Router;
 
-use jschreuder\Middle\Controller\ControllerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Routing\Exception\ExceptionInterface as SymfonyRoutingException;
 use Symfony\Component\Routing\Generator\UrlGenerator;
@@ -43,14 +42,11 @@ final class SymfonyRouter implements RouterInterface
 
             return new RouteMatch(
                 true,
-                $routeMatch['controller'],
+                ($routeMatch['controller'])(),
                 array_diff_key($routeMatch, array_flip(['controller', '_route']))
             );
-        } catch (\Throwable $exception) {
-            if ($exception instanceof SymfonyRoutingException) {
-                return new RouteMatch(false);
-            }
-            throw $exception;
+        } catch (SymfonyRoutingException $exception) {
+            return new RouteMatch(false);
         }
     }
 
@@ -82,26 +78,26 @@ final class SymfonyRouter implements RouterInterface
     public function get(
         string $name,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     ) : Route
     {
-        return $this->match($name, 'GET', $path, $controller, $defaults, $requirements);
+        return $this->match($name, 'GET', $path, $controllerFactory, $defaults, $requirements);
     }
 
     public function match(
         string $name,
         string $methods,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     ) : Route
     {
         $route = new Route($path, $defaults, $requirements);
         $route->setMethods(explode('|', $methods))
-            ->setDefault('controller', $controller);
+            ->setDefault('controller', $controllerFactory);
         $this->router->add($name, $route);
         return $route;
     }
@@ -109,44 +105,44 @@ final class SymfonyRouter implements RouterInterface
     public function post(
         string $name,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     ) : Route
     {
-        return $this->match($name, 'POST', $path, $controller, $defaults, $requirements);
+        return $this->match($name, 'POST', $path, $controllerFactory, $defaults, $requirements);
     }
 
     public function put(
         string $name,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     ) : Route
     {
-        return $this->match($name, 'PUT', $path, $controller, $defaults, $requirements);
+        return $this->match($name, 'PUT', $path, $controllerFactory, $defaults, $requirements);
     }
 
     public function patch(
         string $name,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     ) : Route
     {
-        return $this->match($name, 'PATCH', $path, $controller, $defaults, $requirements);
+        return $this->match($name, 'PATCH', $path, $controllerFactory, $defaults, $requirements);
     }
 
     public function delete(
         string $name,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     ) : Route
     {
-        return $this->match($name, 'DELETE', $path, $controller, $defaults, $requirements);
+        return $this->match($name, 'DELETE', $path, $controllerFactory, $defaults, $requirements);
     }
 }

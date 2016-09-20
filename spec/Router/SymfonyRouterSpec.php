@@ -8,7 +8,6 @@ use jschreuder\Middle\Router\RoutingProviderInterface;
 use jschreuder\Middle\Router\SymfonyRouter;
 use jschreuder\Middle\Router\SymfonyUrlGenerator;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
@@ -72,70 +71,77 @@ class SymfonyRouterSpec extends ObjectBehavior
         $routeMatch = $this->parseRequest($request);
         $routeMatch->shouldHaveType(RouteMatch::class);
         $routeMatch->isMatch()->shouldReturn(true);
+        $routeMatch->getController()->shouldHaveType(ControllerInterface::class);
     }
 
     public function it_can_register_a_get_route(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
+        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];
         $requirements = ['required' => 'a.towel'];
-        $this->get($name, $path, $controller, $defaults, $requirements);
+        $this->get($name, $path, $controllerFactory, $defaults, $requirements);
 
         $this->test_route($request, $uri, '/path', 'GET', 'http', 'what.a.host');
     }
 
     public function it_can_register_a_post_route(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
+        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];
         $requirements = ['required' => 'a.towel'];
-        $this->post($name, $path, $controller, $defaults, $requirements);
+        $this->post($name, $path, $controllerFactory, $defaults, $requirements);
 
         $this->test_route($request, $uri, '/path', 'POST', 'http', 'what.a.host');
     }
 
     public function it_can_register_a_put_route(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
+        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];
         $requirements = ['required' => 'a.towel'];
-        $this->put($name, $path, $controller, $defaults, $requirements);
+        $this->put($name, $path, $controllerFactory, $defaults, $requirements);
 
         $this->test_route($request, $uri, '/path', 'PUT', 'http', 'what.a.host');
     }
 
     public function it_can_register_a_patch_route(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
+        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];
         $requirements = ['required' => 'a.towel'];
-        $this->patch($name, $path, $controller, $defaults, $requirements);
+        $this->patch($name, $path, $controllerFactory, $defaults, $requirements);
 
         $this->test_route($request, $uri, '/path', 'PATCH', 'http', 'what.a.host');
     }
 
     public function it_can_register_a_delete_route(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
+        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];
         $requirements = ['required' => 'a.towel'];
-        $this->delete($name, $path, $controller, $defaults, $requirements);
+        $this->delete($name, $path, $controllerFactory, $defaults, $requirements);
 
         $this->test_route($request, $uri, '/path', 'DELETE', 'http', 'what.a.host');
     }
 
     public function it_can_register_other_method_routes(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
+        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];
         $requirements = ['required' => 'a.towel'];
-        $this->match($name, 'GET|POST|TEST', $path, $controller, $defaults, $requirements);
+        $this->match($name, 'GET|POST|TEST', $path, $controllerFactory, $defaults, $requirements);
 
         $this->test_route($request, $uri, '/path', 'TEST', 'http', 'what.a.host');
     }

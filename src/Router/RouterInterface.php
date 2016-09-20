@@ -21,7 +21,7 @@ interface RouterInterface
         string $name,
         string $methods,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     );
@@ -30,7 +30,7 @@ interface RouterInterface
     public function get(
         string $name,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     );
@@ -39,7 +39,7 @@ interface RouterInterface
     public function post(
         string $name,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     );
@@ -48,7 +48,7 @@ interface RouterInterface
     public function put(
         string $name,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     );
@@ -57,7 +57,7 @@ interface RouterInterface
     public function patch(
         string $name,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     );
@@ -66,7 +66,7 @@ interface RouterInterface
     public function delete(
         string $name,
         string $path,
-        ControllerInterface $controller,
+        callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
     );

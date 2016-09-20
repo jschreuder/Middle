@@ -12,6 +12,13 @@ final class CallableController implements ControllerInterface
         return new self($closure);
     }
 
+    public static function factoryFromCallable(callable $closure) : callable
+    {
+        return function () use ($closure) {
+            return self::fromCallable($closure);
+        };
+    }
+
     /** @var  callable */
     private $closure;
 

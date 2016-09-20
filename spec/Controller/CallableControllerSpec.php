@@ -38,4 +38,13 @@ class CallableControllerSpec extends ObjectBehavior
         $this->response = 'nope';
         $this->shouldThrow(\TypeError::class)->duringExecute($request);
     }
+
+    public function it_can_create_a_factory(ServerRequestInterface $request)
+    {
+        $controllerFactory = $this->factoryFromCallable(function () {
+            return $this->response instanceof Collaborator ? $this->response->getWrappedObject() : $this->response;
+        });
+        $controller = $controllerFactory();
+        $controller->execute($request)->shouldReturn($this->response);
+    }
 }
