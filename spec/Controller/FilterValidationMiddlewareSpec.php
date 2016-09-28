@@ -38,7 +38,7 @@ class FilterValidationMiddlewareSpec extends ObjectBehavior
     {
         $request1->getAttribute('controller')->willReturn($filter);
         $filter->filterRequest($request1)->willReturn($request2);
-        $delegate->next($request2)->willReturn($response);
+        $delegate->process($request2)->willReturn($response);
         $this->process($request1, $delegate)->shouldReturn($response);
     }
 
@@ -51,7 +51,7 @@ class FilterValidationMiddlewareSpec extends ObjectBehavior
     {
         $request->getAttribute('controller')->willReturn($validator);
         $validator->validateRequest($request)->shouldBeCalled();
-        $delegate->next($request)->willReturn($response);
+        $delegate->process($request)->willReturn($response);
         $this->process($request, $delegate)->shouldReturn($response);
     }
 
@@ -64,7 +64,7 @@ class FilterValidationMiddlewareSpec extends ObjectBehavior
     {
         $request->getAttribute('controller')->willReturn($validator);
         $validator->validateRequest($request)->willThrow(new ValidationFailedException([]));
-        $delegate->next($request)->shouldNotBeCalled();
+        $delegate->process($request)->shouldNotBeCalled();
 
         $this->beConstructedWith(function () use ($response) {
             return $response->getWrappedObject();
@@ -80,7 +80,7 @@ class FilterValidationMiddlewareSpec extends ObjectBehavior
     )
     {
         $request->getAttribute('controller')->willReturn('trim');
-        $delegate->next($request)->willReturn($response);
+        $delegate->process($request)->willReturn($response);
         $this->process($request, $delegate)->shouldReturn($response);
     }
 }

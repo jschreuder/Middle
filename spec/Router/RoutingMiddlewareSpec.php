@@ -49,7 +49,7 @@ class RoutingMiddlewareSpec extends ObjectBehavior
         $request2->withAttribute('v1', $attributes['v1'])->willReturn($request3);
         $request3->withAttribute('v2', $attributes['v2'])->willReturn($request4);
 
-        $delegate->next($request4)->willReturn($response);
+        $delegate->process($request4)->willReturn($response);
 
         $this->process($request1, $delegate)->shouldReturn($response);
     }
@@ -65,7 +65,7 @@ class RoutingMiddlewareSpec extends ObjectBehavior
 
         $request1->withAttribute('controller', $this->fallbackController)->willReturn($request2);
 
-        $delegate->next($request2)->willReturn($response);
+        $delegate->process($request2)->willReturn($response);
 
         $this->process($request1, $delegate)->shouldReturn($response);
     }

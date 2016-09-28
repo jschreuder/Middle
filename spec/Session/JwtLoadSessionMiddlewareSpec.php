@@ -41,7 +41,7 @@ class JwtLoadSessionMiddlewareSpec extends ObjectBehavior
         $this->mapper->parseToken($request1)->willReturn($token);
         $this->mapper->extractSessionContainer($token)->willReturn($session);
         $request1->withAttribute('session', $session)->willReturn($request2);
-        $delegate->next($request2)->willReturn($response1);
+        $delegate->process($request2)->willReturn($response1);
         $this->mapper->appendToken($session, $response1, $token)->willReturn($response2);
         $this->process($request1, $delegate)->shouldReturn($response2);
     }
@@ -58,7 +58,7 @@ class JwtLoadSessionMiddlewareSpec extends ObjectBehavior
         $this->mapper->parseToken($request1)->willReturn(null);
         $this->mapper->extractSessionContainer(null)->willReturn($session);
         $request1->withAttribute('session', $session)->willReturn($request2);
-        $delegate->next($request2)->willReturn($response1);
+        $delegate->process($request2)->willReturn($response1);
         $this->mapper->appendToken($session, $response1, null)->willReturn($response2);
         $this->process($request1, $delegate)->shouldReturn($response2);
     }

@@ -37,6 +37,6 @@ final class FilterValidationMiddleware implements ServerMiddlewareInterface
         }
 
         // Filtered and validated (if applicable), let's continue on
-        return $delegate->next($request);
+        return $delegate->process($request);
     }
 }

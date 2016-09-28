@@ -26,7 +26,7 @@ final class JwtLoadSessionMiddleware implements ServerMiddlewareInterface
         $token = $this->mapper->parseToken($request);
         $sessionContainer = $this->mapper->extractSessionContainer($token);
 
-        $response = $delegate->next($request->withAttribute('session', $sessionContainer));
+        $response = $delegate->process($request->withAttribute('session', $sessionContainer));
 
         return $this->mapper->appendToken($sessionContainer, $response, $token);
     }

@@ -40,7 +40,7 @@ class ZendLoadSessionMiddlewareSpec extends ObjectBehavior
             ->willReturn($request2);
         $uri->getHost()->willReturn('some.hostna.me');
 
-        $delegate->next($request2)->willReturn($response);
+        $delegate->process($request2)->willReturn($response);
         $this->process($request1, $delegate)->shouldReturn($response);
     }
 }

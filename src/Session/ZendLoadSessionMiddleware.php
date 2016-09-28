@@ -30,7 +30,7 @@ final class ZendLoadSessionMiddleware implements ServerMiddlewareInterface
         $container = new Container(str_replace('.', '_', $request->getUri()->getHost()), $sessionManager);
 
         $session = new ZendSession($sessionManager, $container);
-        return $delegate->next($request->withAttribute('session', $session));
+        return $delegate->process($request->withAttribute('session', $session));
     }
 
 }

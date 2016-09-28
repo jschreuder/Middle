@@ -41,6 +41,6 @@ final class RoutingMiddleware implements ServerMiddlewareInterface
             $request = $request->withAttribute('controller', $this->fallbackController);
         }
 
-        return $delegate->next($request);
+        return $delegate->process($request);
     }
 }

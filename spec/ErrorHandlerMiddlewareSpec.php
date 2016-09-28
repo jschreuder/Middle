@@ -38,7 +38,7 @@ class ErrorHandlerMiddlewareSpec extends ObjectBehavior
         DelegateInterface $delegate
     )
     {
-        $delegate->next($request)->willReturn($response);
+        $delegate->process($request)->willReturn($response);
         $this->logger->alert(new Argument\Token\AnyValueToken(), new Argument\Token\AnyValueToken())
             ->shouldNotBeCalled();
         $this->process($request, $delegate)->shouldReturn($response);
@@ -52,7 +52,7 @@ class ErrorHandlerMiddlewareSpec extends ObjectBehavior
     )
     {
         $exception = new \RuntimeException($msg = uniqid(), $code = 418);
-        $delegate->next($request)->willThrow($exception);
+        $delegate->process($request)->willThrow($exception);
         $this->logger->alert($msg, new Argument\Token\ArrayEntryToken('file', __FILE__))->shouldBeCalled();
 
         $request->withAttribute('error', $exception)->willReturn($request2);

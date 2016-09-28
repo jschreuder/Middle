@@ -26,7 +26,7 @@ final class ErrorHandlerMiddleware implements ServerMiddlewareInterface
     public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
     {
         try {
-            return $delegate->next($request);
+            return $delegate->process($request);
         } catch (\Throwable $exception) {
             $this->logger->alert($exception->getMessage(), [
                 'line' => $exception->getLine(),

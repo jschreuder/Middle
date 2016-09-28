@@ -13,8 +13,8 @@
     "require": {
         "psr/http-message": "^1.0",
         "psr/log": "^1.0",
-        "http-interop/http-middleware": "^0.1.1",
-        "http-interop/http-factory": "^0.1.0"
+        "http-interop/http-middleware": "^0.2",
+        "http-interop/http-factory": "^0.1"
     },
     "require-dev": {
         "php": ">=7.0",

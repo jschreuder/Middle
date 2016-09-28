@@ -23,7 +23,7 @@ class DelegateSpec extends ObjectBehavior
         $stack->push($middleware->getWrappedObject());
 
         $middleware->process($request, $this)->willReturn($response);
-        $this->next($request)->shouldReturn($response);
+        $this->process($request)->shouldReturn($response);
     }
 
     public function it_can_call_next_with_3_middlewares(
@@ -48,9 +48,9 @@ class DelegateSpec extends ObjectBehavior
         $middleware2->process($request, $this)->willReturn($response2);
         $middleware3->process($request, $this)->willReturn($response3);
 
-        $this->next($request)->shouldReturn($response3);
-        $this->next($request)->shouldReturn($response2);
-        $this->next($request)->shouldReturn($response1);
+        $this->process($request)->shouldReturn($response3);
+        $this->process($request)->shouldReturn($response2);
+        $this->process($request)->shouldReturn($response1);
     }
 
     public function it_will_error_when_called_too_many_times(
@@ -65,7 +65,7 @@ class DelegateSpec extends ObjectBehavior
         $stack->push($middleware->getWrappedObject());
 
         $middleware->process($request, $this)->willReturn($response);
-        $this->next($request)->shouldReturn($response);
-        $this->shouldThrow(\RuntimeException::class)->duringNext($request);
+        $this->process($request)->shouldReturn($response);
+        $this->shouldThrow(\RuntimeException::class)->duringProcess($request);
     }
 }
