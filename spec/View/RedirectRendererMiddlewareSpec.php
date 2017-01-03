@@ -2,11 +2,11 @@
 
 namespace spec\jschreuder\Middle\View;
 
+use Interop\Http\Factory\ResponseFactoryInterface;
 use jschreuder\Middle\View\RedirectRendererMiddleware;
 use jschreuder\Middle\View\RendererInterface;
 use jschreuder\Middle\View\ViewInterface;
 use PhpSpec\ObjectBehavior;
-use Psr\Http\Factory\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

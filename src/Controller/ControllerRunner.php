@@ -2,12 +2,12 @@
 
 namespace jschreuder\Middle\Controller;
 
-use Interop\Http\Middleware\DelegateInterface;
-use Interop\Http\Middleware\ServerMiddlewareInterface;
+use Interop\Http\ServerMiddleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class ControllerRunner implements ServerMiddlewareInterface
+final class ControllerRunner implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
     {

@@ -2,20 +2,16 @@
 
 namespace jschreuder\Middle\Session;
 
-use Interop\Http\Middleware\DelegateInterface;
-use Interop\Http\Middleware\ServerMiddlewareInterface;
+use Interop\Http\ServerMiddleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class JwtLoadSessionMiddleware implements ServerMiddlewareInterface
+final class JwtLoadSessionMiddleware implements MiddlewareInterface
 {
     /** @var  JwtToPsrMapperInterface */
     private $mapper;
 
-    /**
-     * JwtLoadSessionMiddleware constructor.
-     * @param JwtToPsrMapper $mapper
-     */
     public function __construct(JwtToPsrMapperInterface $mapper)
     {
         $this->mapper = $mapper;

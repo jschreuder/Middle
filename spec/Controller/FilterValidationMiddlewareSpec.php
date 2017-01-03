@@ -2,7 +2,7 @@
 
 namespace spec\jschreuder\Middle\Controller;
 
-use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\DelegateInterface;
 use jschreuder\Middle\Controller\FilterValidationMiddleware;
 use jschreuder\Middle\Controller\RequestFilterInterface;
 use jschreuder\Middle\Controller\RequestValidatorInterface;

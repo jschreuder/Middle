@@ -2,15 +2,15 @@
 
 namespace jschreuder\Middle\Session;
 
-use Interop\Http\Middleware\DelegateInterface;
-use Interop\Http\Middleware\ServerMiddlewareInterface;
+use Interop\Http\ServerMiddleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Session\Config\StandardConfig;
 use Zend\Session\Container;
 use Zend\Session\SessionManager;
 
-final class ZendLoadSessionMiddleware implements ServerMiddlewareInterface
+final class ZendLoadSessionMiddleware implements MiddlewareInterface
 {
     /** @var  int */
     private $cookieLifetime;

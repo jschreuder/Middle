@@ -2,7 +2,7 @@
 
 namespace spec\jschreuder\Middle\Router;
 
-use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\DelegateInterface;
 use jschreuder\Middle\Controller\ControllerInterface;
 use jschreuder\Middle\Router\RouteMatch;
 use jschreuder\Middle\Router\RouterInterface;

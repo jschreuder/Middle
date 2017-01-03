@@ -2,7 +2,7 @@
 
 namespace spec\jschreuder\Middle\Session;
 
-use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\DelegateInterface;
 use jschreuder\Middle\Session\ZendLoadSessionMiddleware;
 use jschreuder\Middle\Session\SessionInterface;
 use PhpSpec\ObjectBehavior;

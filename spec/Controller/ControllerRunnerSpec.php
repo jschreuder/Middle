@@ -2,7 +2,7 @@
 
 namespace spec\jschreuder\Middle\Controller;
 
-use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\DelegateInterface;
 use jschreuder\Middle\Controller\CallableController;
 use jschreuder\Middle\Controller\ControllerRunner;
 use PhpSpec\ObjectBehavior;

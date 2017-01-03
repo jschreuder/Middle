@@ -2,7 +2,7 @@
 
 namespace spec\jschreuder\Middle;
 
-use Interop\Http\Middleware\ServerMiddlewareInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use jschreuder\Middle\Delegate;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
@@ -14,7 +14,7 @@ class DelegateSpec extends ObjectBehavior
     public function it_can_call_next(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        ServerMiddlewareInterface $middleware
+        MiddlewareInterface $middleware
     )
     {
         $stack = new \SplStack();
@@ -31,9 +31,9 @@ class DelegateSpec extends ObjectBehavior
         ResponseInterface $response1,
         ResponseInterface $response2,
         ResponseInterface $response3,
-        ServerMiddlewareInterface $middleware1,
-        ServerMiddlewareInterface $middleware2,
-        ServerMiddlewareInterface $middleware3
+        MiddlewareInterface $middleware1,
+        MiddlewareInterface $middleware2,
+        MiddlewareInterface $middleware3
     )
     {
         $stack = new \SplStack();
@@ -56,7 +56,7 @@ class DelegateSpec extends ObjectBehavior
     public function it_will_error_when_called_too_many_times(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        ServerMiddlewareInterface $middleware
+        MiddlewareInterface $middleware
     )
     {
         $stack = new \SplStack();

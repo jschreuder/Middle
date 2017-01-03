@@ -2,7 +2,7 @@
 
 namespace jschreuder\Middle\View;
 
-use Psr\Http\Factory\ResponseFactoryInterface;
+use Interop\Http\Factory\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
