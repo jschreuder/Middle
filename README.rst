@@ -21,6 +21,9 @@ to the stack. Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4, PSR-7
 and forward compatible with PSR-15 & PSR-17 through HTTP-Interop; aimed at PHP
 7.0 or higher (probably 7.1+ once that's released).
 
+Check out the `Middle skeleton <https://github.com/jschreuder/Middle-skeleton>`_
+application to get an example setup running quickly.
+
 *Note: all examples use Zend Diactoros, but any PSR-7 compatible library will
 work as well.*
 
