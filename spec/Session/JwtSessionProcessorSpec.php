@@ -4,8 +4,7 @@ namespace spec\jschreuder\Middle\Session;
 
 use Dflydev\FigCookies\SetCookie;
 use Dflydev\FigCookies\SetCookies;
-use jschreuder\Middle\Session\JwtToPsrMapper;
-use jschreuder\Middle\Session\JwtToPsrMapperInterface;
+use jschreuder\Middle\Session\JwtSessionProcessor;
 use jschreuder\Middle\Session\SessionInterface;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
@@ -16,8 +15,8 @@ use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @mixin  JwtToPsrMapper */
-class JwtToPsrMapperSpec extends ObjectBehavior
+/** @mixin  JwtSessionProcessor */
+class JwtSessionProcessorSpec extends ObjectBehavior
 {
     const PRIVATE_KEY = '-----BEGIN RSA PRIVATE KEY-----
 MIIBOgIBAAJBAJZ37zflIWLaeFfzBcQLPVcwB9dTQKzJB+BkzAUS+w9a4R5XZIJr
@@ -56,7 +55,46 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
         $this->beConstructedThrough('fromAsymmetricKeyDefaults', [
             self::PRIVATE_KEY, self::PUBLIC_KEY, 3600
         ]);
-        $this->shouldHaveType(JwtToPsrMapper::class);
+        $this->shouldHaveType(JwtSessionProcessor::class);
+    }
+
+    public function it_can_process_a_request(
+        Token $token,
+        ServerRequestInterface $request1,
+        ServerRequestInterface $request2,
+        ServerRequestInterface $request3
+    )
+    {
+        $cookieName = 'cookie.name';
+        $cookieValue = 'cookie.value';
+        $sessionArray = ['test' => 'rest'];
+        $request1->getCookieParams()->willReturn([$cookieName => $cookieValue]);
+        $this->defaultCookie->getName()->willReturn($cookieName);
+        $this->tokenParser->parse($cookieValue)->willReturn($token);
+        $token->validate(new Argument\Token\TypeToken(ValidationData::class))->willReturn(true);
+        $token->verify($this->signer, self::PUBLIC_KEY)->willReturn(true);
+        $token->getClaim(JwtSessionProcessor::SESSION_CLAIM, [])->willReturn($sessionArray);
+        $this->parseToken($request1)->shouldReturn($token);
+
+        $request1->withAttribute('session', new Argument\Token\TypeToken(SessionInterface::class))->willReturn($request2);
+        $request2->withAttribute('session.token', $token)->willReturn($request3);
+        $this->processRequest($request1)->shouldReturn($request3);
+    }
+
+    public function it_can_process_a_response(
+        Token $token,
+        SessionInterface $session,
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    )
+    {
+        $request->getAttribute('session')->willReturn($session);
+        $request->getAttribute('session.token')->willReturn($token);
+
+        $session->hasChanged()->willReturn(false);
+        $session->isEmpty()->willReturn(false);
+
+        $this->processResponse($request, $response)->shouldReturn($response);
     }
 
     public function it_can_parse_token_from_request(ServerRequestInterface $request, Token $token)
@@ -103,7 +141,7 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
     {
         $sessionArray = ['test' => 'rest'];
         $token->verify($this->signer, self::PUBLIC_KEY)->willReturn(true);
-        $token->getClaim(JwtToPsrMapperInterface::SESSION_CLAIM, [])->willReturn($sessionArray);
+        $token->getClaim(JwtSessionProcessor::SESSION_CLAIM, [])->willReturn($sessionArray);
         $session = $this->extractSessionContainer($token);
         $session->get('test')->shouldReturn($sessionArray['test']);
     }
@@ -155,8 +193,8 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
         $session->hasChanged()->willReturn(false);
         $session->isEmpty()->willReturn(false);
         $session->toArray()->willReturn($sessionArray);
-        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
-        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
+        $token->hasClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
 
         $response1->getHeader(SetCookies::SET_COOKIE_HEADER)->willReturn([]);
         $response1->withoutHeader(SetCookies::SET_COOKIE_HEADER)->willReturn($response2);
@@ -165,7 +203,7 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
 
         $this->defaultCookie->withValue(new Argument\Token\TypeToken(Token::class))->willReturn($cookie2);
         $cookie2->withExpires(new Argument\Token\TypeToken('int'))->willReturn($cookie3);
-        $cookie3->getName()->willReturn(JwtToPsrMapper::DEFAULT_COOKIE);
+        $cookie3->getName()->willReturn(JwtSessionProcessor::DEFAULT_COOKIE);
         $cookie3->__toString()->willReturn($cookieString);
 
         $this->appendToken($session, $response1, $token)->shouldReturn($response3);
@@ -179,7 +217,7 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
     {
         $session->hasChanged()->willReturn(false);
         $session->isEmpty()->willReturn(true);
-        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(false);
+        $token->hasClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(false);
 
         $this->appendToken($session, $response, $token)->shouldReturn($response);
     }
@@ -192,8 +230,8 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
     {
         $session->hasChanged()->willReturn(false);
         $session->isEmpty()->willReturn(true);
-        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
-        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
+        $token->hasClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
 
         $this->appendToken($session, $response, $token)->shouldReturn($response);
     }
@@ -213,8 +251,8 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
         $session->hasChanged()->willReturn(true);
         $session->isEmpty()->willReturn(false);
         $session->toArray()->willReturn($sessionArray);
-        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
-        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 5);
+        $token->hasClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(time() - 5);
 
         $response1->getHeader(SetCookies::SET_COOKIE_HEADER)->willReturn([]);
         $response1->withoutHeader(SetCookies::SET_COOKIE_HEADER)->willReturn($response2);
@@ -223,7 +261,7 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
 
         $this->defaultCookie->withValue(new Argument\Token\TypeToken(Token::class))->willReturn($cookie2);
         $cookie2->withExpires(new Argument\Token\TypeToken('int'))->willReturn($cookie3);
-        $cookie3->getName()->willReturn(JwtToPsrMapper::DEFAULT_COOKIE);
+        $cookie3->getName()->willReturn(JwtSessionProcessor::DEFAULT_COOKIE);
         $cookie3->__toString()->willReturn($cookieString);
 
         $this->appendToken($session, $response1, $token)->shouldReturn($response3);
@@ -244,8 +282,8 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
         $session->hasChanged()->willReturn(true);
         $session->isEmpty()->willReturn(false);
         $session->toArray()->willReturn($sessionArray);
-        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
-        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
+        $token->hasClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
 
         $response1->getHeader(SetCookies::SET_COOKIE_HEADER)->willReturn([]);
         $response1->withoutHeader(SetCookies::SET_COOKIE_HEADER)->willReturn($response2);
@@ -254,7 +292,7 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
 
         $this->defaultCookie->withValue(new Argument\Token\TypeToken(Token::class))->willReturn($cookie2);
         $cookie2->withExpires(new Argument\Token\TypeToken('int'))->willReturn($cookie3);
-        $cookie3->getName()->willReturn(JwtToPsrMapper::DEFAULT_COOKIE);
+        $cookie3->getName()->willReturn(JwtSessionProcessor::DEFAULT_COOKIE);
         $cookie3->__toString()->willReturn($cookieString);
 
         $this->appendToken($session, $response1, $token)->shouldReturn($response3);
@@ -275,8 +313,8 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
         $session->hasChanged()->willReturn(true);
         $session->isEmpty()->willReturn(true);
         $session->toArray()->willReturn($sessionArray);
-        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
-        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 5);
+        $token->hasClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(time() - 5);
 
         $response1->getHeader(SetCookies::SET_COOKIE_HEADER)->willReturn([]);
         $response1->withoutHeader(SetCookies::SET_COOKIE_HEADER)->willReturn($response2);
@@ -285,7 +323,7 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
 
         $this->defaultCookie->withValue(null)->willReturn($cookie2);
         $cookie2->withExpires(new Argument\Token\TypeToken('int'))->willReturn($cookie3);
-        $cookie3->getName()->willReturn(JwtToPsrMapper::DEFAULT_COOKIE);
+        $cookie3->getName()->willReturn(JwtSessionProcessor::DEFAULT_COOKIE);
         $cookie3->__toString()->willReturn($cookieString);
 
         $this->appendToken($session, $response1, $token)->shouldReturn($response3);
@@ -306,8 +344,8 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
         $session->hasChanged()->willReturn(true);
         $session->isEmpty()->willReturn(true);
         $session->toArray()->willReturn($sessionArray);
-        $token->hasClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(true);
-        $token->getClaim(JwtToPsrMapper::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
+        $token->hasClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(true);
+        $token->getClaim(JwtSessionProcessor::ISSUED_AT_CLAIM)->willReturn(time() - 3605);
 
         $response1->getHeader(SetCookies::SET_COOKIE_HEADER)->willReturn([]);
         $response1->withoutHeader(SetCookies::SET_COOKIE_HEADER)->willReturn($response2);
@@ -316,7 +354,7 @@ B+BkzAUS+w9a4R5XZIJr/iOKU3znyDz91yoojDU0UcmOu3Ah7uX7Co0CAwEAAQ==
 
         $this->defaultCookie->withValue(null)->willReturn($cookie2);
         $cookie2->withExpires(new Argument\Token\TypeToken('int'))->willReturn($cookie3);
-        $cookie3->getName()->willReturn(JwtToPsrMapper::DEFAULT_COOKIE);
+        $cookie3->getName()->willReturn(JwtSessionProcessor::DEFAULT_COOKIE);
         $cookie3->__toString()->willReturn($cookieString);
 
         $this->appendToken($session, $response1, $token)->shouldReturn($response3);

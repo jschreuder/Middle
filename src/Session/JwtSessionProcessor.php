@@ -16,8 +16,12 @@ use Psr\Http\Message\ServerRequestInterface;
  * A copy-paste from ocramius/psr7-session, but without needing to pull in
  * Stratigility and working with our session container.
  */
-final class JwtToPsrMapper implements JwtToPsrMapperInterface
+final class JwtSessionProcessor implements SessionProcessorInterface
 {
+    const ISSUED_AT_CLAIM = 'iat';
+    const SESSION_CLAIM = 'session-data';
+    const DEFAULT_COOKIE = 'slsession';
+
     /** @var  Signer */
     private $signer;
 
@@ -62,7 +66,7 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
         string $privateRsaKey,
         string $publicRsaKey,
         int $expirationTime
-    ): JwtToPsrMapper
+    ): JwtSessionProcessor
     {
         return new self(
             new Signer\Rsa\Sha256(),
@@ -74,6 +78,25 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
                 ->withPath('/'),
             new Parser(),
             $expirationTime
+        );
+    }
+
+    public function processRequest(ServerRequestInterface $request): ServerRequestInterface
+    {
+        $token = $this->parseToken($request);
+        $sessionContainer = $this->extractSessionContainer($token);
+        return $request
+            ->withAttribute('session', $sessionContainer)
+            ->withAttribute('session.token', $token);
+
+    }
+
+    public function processResponse(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        return $this->appendToken(
+            $request->getAttribute('session'),
+            $response,
+            $request->getAttribute('session.token')
         );
     }
 

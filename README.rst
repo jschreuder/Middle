@@ -21,14 +21,6 @@ to the stack. Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4, PSR-7
 and forward compatible with PSR-15 & PSR-17 through HTTP-Interop; aimed at PHP
 7.0 or higher (probably 7.1+ once that's released).
 
-The reason I prefer to use middleware approach is because it is far more
-explicit in how the application works than (for example) event-based
-programming. When using events, the order in which the handlers are executed
-can get messy and very hard to debug. With decoration you'll still have to be
-mindful of the order in which you add Middlewares (as some may depend on
-others). But you'll always have a useful backtrace telling you where things
-went wrong.
-
 *Note: all examples use Zend Diactoros, but any PSR-7 compatible library will
 work as well.*
 
@@ -77,7 +69,7 @@ order.
     // Setup the application with controller runner and the routing middleware
     $app = new Middle\ApplicationStack([
         new Middle\Controller\ControllerRunner(),
-        new Middle\Router\RoutingMiddleware($router, $fallbackController),
+        new Middle\ServerMiddleware\RoutingMiddleware($router, $fallbackController),
     ]);
 
 With that setup we can now add some routes (using the ``$router`` from above):
@@ -115,12 +107,19 @@ sessions & error handling on top of the previous example.
 
     // Now let's also make sessions available on the request
     $app = $app->withMiddleware(
-        new Middle\Session\ZendSession(7200)
+        new Middle\ServerMiddleware\SessionMiddleware(
+            new Middle\Session\ZendSessionProcessor(
+                (new Zend\Session\Config\StandardConfig())
+                    ->setCookieLifetime(7200)
+                    ->setCookieSecure(true)
+                    ->setCookieHttpOnly(true);
+            )
+        )
     );
 
     // And finally: make sure any errors are caught
     $app = $app->withMiddleware(
-        new Middle\ErrorHandlerMiddleware(
+        new Middle\ServerMiddleware\ErrorHandlerMiddleware(
             new Monolog\Logger(...),
             function (Psr\Http\Message\ServerRequestInterface $request, \Throwable $exception) {
                 return new Zend\Diactoros\Response\JsonResponse(['error'], 500);
@@ -223,7 +222,7 @@ in other containers as well:
     $container->extend('app',
         function (Middle\ApplicationStack $app, Pimple\Container $container) {
             return $app->withMiddleware(
-                new Middle\Router\RoutingMiddleware(
+                new Middle\ServerMiddleware\RoutingMiddleware(
                     $container['router'], $container['fallbackHandler']
                 )
             );
@@ -241,12 +240,13 @@ Included services
 There's a few services included that all have their default implementations
 and may be replaced or decorated as you wish:
 
-* ``SessionInterface`` with its default option depending on either
+* ``SessionProcessorInterface`` with its default option depending on either
   ``zendframework/zend-session`` or a combination of ``lcobucci/jwt`` and
   ``dflydev/fig-cookies`` for JWT based sessions. It allows for setting &
   getting values, destroying the session or rotating its ID. The Zend version
-  can be loaded using the ``ZendLoadSessionMiddleware``, JWT based sessions
-  can be loaded using the ``JwtLoadSessionMiddleware``.
+  can be loaded using the ``ZendSessionProcessor``, JWT based sessions
+  can be loaded using the ``JwtSessionProcessor``. Both are loaded through the
+  ``SessionMiddleware`` as shown above.
 
 * ``RouterInterface`` with its default depending on Symfony Routing component.
   It is loaded through the ``RoutingMiddleware`` as shown above. It has methods
@@ -283,11 +283,6 @@ Questions with answers
    the interfaces are part of this framework's API.
 
 3. *Do I have to use Twig, Symfony's router or Zend's Session library?*
-   No, but the only batteries included implement their API's based on those
-   packages. You can replace those pretty easily by implementing the Routing or
-   Session interfaces using another library.
-
-4. *Why not use the decorator pattern for the application like StackPHP?*
-   I did originally. But I want this framework to work with PSR-15 in the
-   future. So I copy-pasted the current state of that proposal and intend to
-   replace those interfaces completely with the PSR once accepted.
+   No, but there are only some batteries included. The ones provided are
+   implemented using those packages. You can replace those pretty easily by
+   implementing the Routing or Session interfaces using another library.
