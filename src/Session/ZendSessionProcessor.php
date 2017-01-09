@@ -10,10 +10,10 @@ use Zend\Session\SessionManager;
 
 class ZendSessionProcessor implements SessionProcessorInterface
 {
-    /** @var  int */
+    /** @var  ?ConfigInterface */
     private $zendSessionConfig;
 
-    public function __construct(ConfigInterface $zendSessionConfig)
+    public function __construct(ConfigInterface $zendSessionConfig = null)
     {
         $this->zendSessionConfig = $zendSessionConfig;
     }

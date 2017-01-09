@@ -108,12 +108,7 @@ sessions & error handling on top of the previous example.
     // Now let's also make sessions available on the request
     $app = $app->withMiddleware(
         new Middle\ServerMiddleware\SessionMiddleware(
-            new Middle\Session\ZendSessionProcessor(
-                (new Zend\Session\Config\StandardConfig())
-                    ->setCookieLifetime(7200)
-                    ->setCookieSecure(true)
-                    ->setCookieHttpOnly(true);
-            )
+            new Middle\Session\ZendSessionProcessor()
         )
     );
 
