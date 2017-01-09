@@ -1,10 +1,10 @@
 <?php
 
-namespace spec\jschreuder\Middle;
+namespace spec\jschreuder\Middle\ServerMiddleware;
 
 use Interop\Http\ServerMiddleware\DelegateInterface;
 use jschreuder\Middle\Controller\ControllerInterface;
-use jschreuder\Middle\ErrorHandlerMiddleware;
+use jschreuder\Middle\ServerMiddleware\ErrorHandlerMiddleware;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;

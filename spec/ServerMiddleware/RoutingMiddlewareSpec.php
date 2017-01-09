@@ -1,12 +1,12 @@
 <?php
 
-namespace spec\jschreuder\Middle\Router;
+namespace spec\jschreuder\Middle\ServerMiddleware;
 
 use Interop\Http\ServerMiddleware\DelegateInterface;
 use jschreuder\Middle\Controller\ControllerInterface;
 use jschreuder\Middle\Router\RouteMatch;
 use jschreuder\Middle\Router\RouterInterface;
-use jschreuder\Middle\Router\RoutingMiddleware;
+use jschreuder\Middle\ServerMiddleware\RoutingMiddleware;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

@@ -1,9 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace jschreuder\Middle\Session;
+namespace jschreuder\Middle\ServerMiddleware;
 
 use Interop\Http\ServerMiddleware\DelegateInterface;
 use Interop\Http\ServerMiddleware\MiddlewareInterface;
+use jschreuder\Middle\Session\ZendSession;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Session\Config\StandardConfig;

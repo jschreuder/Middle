@@ -1,18 +1,17 @@
 <?php
 
-namespace spec\jschreuder\Middle\Controller;
+namespace spec\jschreuder\Middle\ServerMiddleware;
 
 use Interop\Http\ServerMiddleware\DelegateInterface;
-use jschreuder\Middle\Controller\FilterValidationMiddleware;
-use jschreuder\Middle\Controller\RequestFilterInterface;
 use jschreuder\Middle\Controller\RequestValidatorInterface;
 use jschreuder\Middle\Controller\ValidationFailedException;
+use jschreuder\Middle\ServerMiddleware\RequestValidatorMiddleware;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @mixin  FilterValidationMiddleware */
-class FilterValidationMiddlewareSpec extends ObjectBehavior
+/** @mixin  RequestValidatorMiddleware */
+class RequestValidatorMiddlewareSpec extends ObjectBehavior
 {
     /** @var  callable */
     private $errorHandler;
@@ -26,21 +25,7 @@ class FilterValidationMiddlewareSpec extends ObjectBehavior
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType(FilterValidationMiddleware::class);
-    }
-
-    public function it_can_filter_a_request(
-        ServerRequestInterface $request1,
-        ServerRequestInterface $request2,
-        RequestFilterInterface $filter,
-        ResponseInterface $response,
-        DelegateInterface $delegate
-    )
-    {
-        $request1->getAttribute('controller')->willReturn($filter);
-        $filter->filterRequest($request1)->willReturn($request2);
-        $delegate->process($request2)->willReturn($response);
-        $this->process($request1, $delegate)->shouldReturn($response);
+        $this->shouldHaveType(RequestValidatorMiddleware::class);
     }
 
     public function it_can_successfully_validate_a_request(
@@ -74,7 +59,7 @@ class FilterValidationMiddlewareSpec extends ObjectBehavior
         $this->process($request, $delegate)->shouldReturn($response);
     }
 
-    public function it_can_be_neither(
+    public function it_can_do_nothing(
         ServerRequestInterface $request,
         ResponseInterface $response,
         DelegateInterface $delegate

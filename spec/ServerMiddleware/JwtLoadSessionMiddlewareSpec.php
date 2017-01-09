@@ -1,9 +1,9 @@
 <?php
 
-namespace spec\jschreuder\Middle\Session;
+namespace spec\jschreuder\Middle\ServerMiddleware;
 
 use Interop\Http\ServerMiddleware\DelegateInterface;
-use jschreuder\Middle\Session\JwtLoadSessionMiddleware;
+use jschreuder\Middle\ServerMiddleware\JwtLoadSessionMiddleware;
 use jschreuder\Middle\Session\JwtToPsrMapperInterface;
 use jschreuder\Middle\Session\SessionInterface;
 use Lcobucci\JWT\Token;

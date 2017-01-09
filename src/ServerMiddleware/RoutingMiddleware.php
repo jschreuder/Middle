@@ -1,10 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace jschreuder\Middle\Router;
+namespace jschreuder\Middle\ServerMiddleware;
 
 use Interop\Http\ServerMiddleware\DelegateInterface;
 use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use jschreuder\Middle\Controller\ControllerInterface;
+use jschreuder\Middle\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

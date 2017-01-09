@@ -1,13 +1,15 @@
 <?php declare(strict_types = 1);
 
-namespace jschreuder\Middle\Controller;
+namespace jschreuder\Middle\ServerMiddleware;
 
 use Interop\Http\ServerMiddleware\DelegateInterface;
 use Interop\Http\ServerMiddleware\MiddlewareInterface;
+use jschreuder\Middle\Controller\RequestValidatorInterface;
+use jschreuder\Middle\Controller\ValidationFailedException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class FilterValidationMiddleware implements MiddlewareInterface
+final class RequestValidatorMiddleware implements MiddlewareInterface
 {
     /** @var  callable */
     private $errorHandler;
@@ -20,11 +22,6 @@ final class FilterValidationMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, DelegateInterface $delegate): ResponseInterface
     {
         $controller = $request->getAttribute('controller');
-
-        if ($controller instanceof RequestFilterInterface) {
-            // Execute the request-filter from the controller
-            $request = $controller->filterRequest($request);
-        }
 
         if ($controller instanceof RequestValidatorInterface) {
             // Execute the request-validator from the controller

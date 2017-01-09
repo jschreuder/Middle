@@ -1,9 +1,9 @@
 <?php
 
-namespace spec\jschreuder\Middle\Session;
+namespace spec\jschreuder\Middle\ServerMiddleware;
 
 use Interop\Http\ServerMiddleware\DelegateInterface;
-use jschreuder\Middle\Session\ZendLoadSessionMiddleware;
+use jschreuder\Middle\ServerMiddleware\ZendLoadSessionMiddleware;
 use jschreuder\Middle\Session\SessionInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
