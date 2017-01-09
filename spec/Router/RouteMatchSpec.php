@@ -5,7 +5,6 @@ namespace spec\jschreuder\Middle\Router;
 use jschreuder\Middle\Controller\ControllerInterface;
 use jschreuder\Middle\Router\RouteMatch;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class RouteMatchSpec extends ObjectBehavior
 {

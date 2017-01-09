@@ -4,7 +4,6 @@ namespace spec\jschreuder\Middle\Router;
 
 use jschreuder\Middle\Router\SymfonyUrlGenerator;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
 class SymfonyUrlGeneratorSpec extends ObjectBehavior

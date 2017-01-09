@@ -4,7 +4,6 @@ namespace spec\jschreuder\Middle\Session;
 
 use jschreuder\Middle\Session\ZendSession;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Zend\Session\Container;
 use Zend\Session\SessionManager;
 

@@ -4,7 +4,6 @@ namespace spec\jschreuder\Middle\Session;
 
 use jschreuder\Middle\Session\Session;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class SessionSpec extends ObjectBehavior
 {

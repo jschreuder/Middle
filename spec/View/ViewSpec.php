@@ -5,7 +5,6 @@ namespace spec\jschreuder\Middle\View;
 use jschreuder\Middle\View\View;
 use jschreuder\Middle\View\ViewInterface;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class ViewSpec extends ObjectBehavior
 {
