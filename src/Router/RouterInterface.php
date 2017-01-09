@@ -2,7 +2,6 @@
 
 namespace jschreuder\Middle\Router;
 
-use jschreuder\Middle\Controller\ControllerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 interface RouterInterface
