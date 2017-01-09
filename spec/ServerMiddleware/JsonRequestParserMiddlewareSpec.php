@@ -9,7 +9,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
-/** @mixin  JsonRequestParserMiddleware */
 class JsonRequestParserMiddlewareSpec extends ObjectBehavior
 {
     public function it_is_initializable()

@@ -9,7 +9,6 @@ use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @mixin  RequestFilterMiddleware */
 class RequestFilterMiddlewareSpec extends ObjectBehavior
 {
     public function it_is_initializable()

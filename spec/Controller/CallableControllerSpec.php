@@ -9,7 +9,6 @@ use PhpSpec\Wrapper\Collaborator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @mixin  CallableController */
 class CallableControllerSpec extends ObjectBehavior
 {
     private $response;

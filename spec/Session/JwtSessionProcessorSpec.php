@@ -15,7 +15,6 @@ use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @mixin  JwtSessionProcessor */
 class JwtSessionProcessorSpec extends ObjectBehavior
 {
     const PRIVATE_KEY = '-----BEGIN RSA PRIVATE KEY-----

@@ -7,7 +7,6 @@ use jschreuder\Middle\View\ViewInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-/** @mixin  View */
 class ViewSpec extends ObjectBehavior
 {
     public function it_is_initializable()

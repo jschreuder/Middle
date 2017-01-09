@@ -11,7 +11,6 @@ use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @mixin  RoutingMiddleware */
 class RoutingMiddlewareSpec extends ObjectBehavior
 {
     /** @var  RouterInterface */

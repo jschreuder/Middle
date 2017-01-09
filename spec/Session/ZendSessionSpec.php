@@ -8,7 +8,6 @@ use Prophecy\Argument;
 use Zend\Session\Container;
 use Zend\Session\SessionManager;
 
-/** @mixin  ZendSession */
 class ZendSessionSpec extends ObjectBehavior
 {
     /** @var  SessionManager */

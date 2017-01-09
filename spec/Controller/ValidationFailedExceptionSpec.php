@@ -5,7 +5,6 @@ namespace spec\jschreuder\Middle\Controller;
 use jschreuder\Middle\Controller\ValidationFailedException;
 use PhpSpec\ObjectBehavior;
 
-/** @mixin  ValidationFailedException */
 class ValidationFailedExceptionSpec extends ObjectBehavior
 {
     public function it_is_initializable()

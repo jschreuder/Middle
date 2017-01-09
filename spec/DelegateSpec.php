@@ -8,7 +8,6 @@ use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @mixin  Delegate */
 class DelegateSpec extends ObjectBehavior
 {
     public function it_can_call_next(

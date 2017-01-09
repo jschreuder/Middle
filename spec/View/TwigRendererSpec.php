@@ -10,7 +10,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
-/** @mixin  TwigRenderer */
 class TwigRendererSpec extends ObjectBehavior
 {
     /** @var  \Twig_Environment */

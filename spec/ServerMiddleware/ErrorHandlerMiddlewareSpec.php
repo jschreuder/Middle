@@ -11,7 +11,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-/** @mixin  ErrorHandlerMiddleware */
 class ErrorHandlerMiddlewareSpec extends ObjectBehavior
 {
     /** @var  LoggerInterface */

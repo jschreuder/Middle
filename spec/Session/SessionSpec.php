@@ -6,7 +6,6 @@ use jschreuder\Middle\Session\Session;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-/** @mixin  Session */
 class SessionSpec extends ObjectBehavior
 {
     public function it_is_initializable()

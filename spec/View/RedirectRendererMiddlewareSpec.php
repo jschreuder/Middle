@@ -10,7 +10,6 @@ use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @mixin  RedirectRendererMiddleware */
 class RedirectRendererMiddlewareSpec extends ObjectBehavior
 {
     /** @var  RendererInterface */

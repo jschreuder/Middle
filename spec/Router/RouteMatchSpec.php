@@ -7,7 +7,6 @@ use jschreuder\Middle\Router\RouteMatch;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-/** @mixin  RouteMatch */
 class RouteMatchSpec extends ObjectBehavior
 {
     public function it_is_initializable_as_no_match()

@@ -11,7 +11,6 @@ use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
-/** @mixin  SymfonyRouter */
 class SymfonyRouterSpec extends ObjectBehavior
 {
     /** @var  string */

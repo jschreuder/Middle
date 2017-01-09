@@ -5,7 +5,6 @@ namespace spec\jschreuder\Middle\View;
 use jschreuder\Middle\View\RedirectView;
 use PhpSpec\ObjectBehavior;
 
-/** @mixin  RedirectView */
 class RedirectViewSpec extends ObjectBehavior
 {
     public function it_is_initializable()

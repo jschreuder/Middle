@@ -9,7 +9,6 @@ use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @mixin  SessionMiddleware */
 class SessionMiddlewareSpec extends ObjectBehavior
 {
     /** @var  SessionProcessorInterface */

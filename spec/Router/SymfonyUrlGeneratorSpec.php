@@ -7,7 +7,6 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
-/** @mixin  SymfonyUrlGenerator */
 class SymfonyUrlGeneratorSpec extends ObjectBehavior
 {
     /** @var  UrlGenerator */

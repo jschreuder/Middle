@@ -10,7 +10,6 @@ use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @mixin  ApplicationStack */
 class ApplicationStackSpec extends ObjectBehavior
 {
     public function it_is_initializable()

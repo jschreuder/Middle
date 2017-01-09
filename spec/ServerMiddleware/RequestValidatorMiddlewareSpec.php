@@ -10,7 +10,6 @@ use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @mixin  RequestValidatorMiddleware */
 class RequestValidatorMiddlewareSpec extends ObjectBehavior
 {
     /** @var  callable */
