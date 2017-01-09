@@ -8,7 +8,7 @@ use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class JsonRequestParserMiddleware implements MiddlewareInterface
+final class JsonRequestParserMiddleware implements MiddlewareInterface
 {
     /** @var  string[] */
     private $jsonContentTypes;

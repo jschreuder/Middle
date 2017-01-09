@@ -8,7 +8,7 @@ use Zend\Session\Config\ConfigInterface;
 use Zend\Session\Container;
 use Zend\Session\SessionManager;
 
-class ZendSessionProcessor implements SessionProcessorInterface
+final class ZendSessionProcessor implements SessionProcessorInterface
 {
     /** @var  ?ConfigInterface */
     private $zendSessionConfig;
