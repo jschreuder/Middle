@@ -40,7 +40,8 @@ class RoutingMiddlewareSpec extends ObjectBehavior
         ServerRequestInterface $request4,
         ResponseInterface $response,
         DelegateInterface $delegate
-    ) {
+    )
+    {
         $attributes = ['v1' => 1, 'v2' => 2];
         $routeMatch = new RouteMatch(true, $controller->getWrappedObject(), $attributes);
         $this->router->parseRequest($request1)->willReturn($routeMatch);
@@ -59,7 +60,8 @@ class RoutingMiddlewareSpec extends ObjectBehavior
         ServerRequestInterface $request2,
         ResponseInterface $response,
         DelegateInterface $delegate
-    ) {
+    )
+    {
         $routeMatch = new RouteMatch(false);
         $this->router->parseRequest($request1)->willReturn($routeMatch);
 

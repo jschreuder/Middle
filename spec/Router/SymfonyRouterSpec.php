@@ -76,7 +76,9 @@ class SymfonyRouterSpec extends ObjectBehavior
 
     public function it_can_register_a_get_route(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
-        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
+        $controllerFactory = function () use ($controller) {
+            return $controller->getWrappedObject();
+        };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];
@@ -88,7 +90,9 @@ class SymfonyRouterSpec extends ObjectBehavior
 
     public function it_can_register_a_post_route(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
-        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
+        $controllerFactory = function () use ($controller) {
+            return $controller->getWrappedObject();
+        };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];
@@ -100,7 +104,9 @@ class SymfonyRouterSpec extends ObjectBehavior
 
     public function it_can_register_a_put_route(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
-        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
+        $controllerFactory = function () use ($controller) {
+            return $controller->getWrappedObject();
+        };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];
@@ -112,7 +118,9 @@ class SymfonyRouterSpec extends ObjectBehavior
 
     public function it_can_register_a_patch_route(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
-        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
+        $controllerFactory = function () use ($controller) {
+            return $controller->getWrappedObject();
+        };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];
@@ -124,7 +132,9 @@ class SymfonyRouterSpec extends ObjectBehavior
 
     public function it_can_register_a_delete_route(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
-        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
+        $controllerFactory = function () use ($controller) {
+            return $controller->getWrappedObject();
+        };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];
@@ -136,7 +146,9 @@ class SymfonyRouterSpec extends ObjectBehavior
 
     public function it_can_register_other_method_routes(ServerRequestInterface $request, UriInterface $uri, ControllerInterface $controller)
     {
-        $controllerFactory = function () use ($controller) { return $controller->getWrappedObject(); };
+        $controllerFactory = function () use ($controller) {
+            return $controller->getWrappedObject();
+        };
         $name = 'name';
         $path = '/path';
         $defaults = ['default' => 42];

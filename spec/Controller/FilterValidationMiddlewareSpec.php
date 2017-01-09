@@ -19,7 +19,8 @@ class FilterValidationMiddlewareSpec extends ObjectBehavior
 
     public function let()
     {
-        $this->errorHandler = function () {};
+        $this->errorHandler = function () {
+        };
         $this->beConstructedWith($this->errorHandler);
     }
 
