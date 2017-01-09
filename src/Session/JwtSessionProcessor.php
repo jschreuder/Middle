@@ -15,6 +15,8 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * A copy-paste from ocramius/psr7-session, but without needing to pull in
  * Stratigility and working with our session container.
+ *
+ * @todo this class probably needs a big refactor
  */
 final class JwtSessionProcessor implements SessionProcessorInterface
 {
