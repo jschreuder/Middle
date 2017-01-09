@@ -34,7 +34,7 @@ final class SymfonyRouter implements RouterInterface
         );
     }
 
-    public function parseRequest(ServerRequestInterface $request) : RouteMatchInterface
+    public function parseRequest(ServerRequestInterface $request): RouteMatchInterface
     {
         try {
             $matcher = new UrlMatcher($this->router, $this->getRequestContext($request));
@@ -50,7 +50,7 @@ final class SymfonyRouter implements RouterInterface
         }
     }
 
-    private function getRequestContext(ServerRequestInterface $request) : RequestContext
+    private function getRequestContext(ServerRequestInterface $request): RequestContext
     {
         return new RequestContext(
             $this->baseUrl,
@@ -64,7 +64,7 @@ final class SymfonyRouter implements RouterInterface
         );
     }
 
-    public function getGenerator() : UrlGeneratorInterface
+    public function getGenerator(): UrlGeneratorInterface
     {
         return $this->generator;
     }
@@ -81,7 +81,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    ) : Route
+    ): Route
     {
         return $this->match($name, 'GET', $path, $controllerFactory, $defaults, $requirements);
     }
@@ -93,7 +93,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    ) : Route
+    ): Route
     {
         $route = new Route($path, $defaults, $requirements);
         $route->setMethods(explode('|', $methods))
@@ -108,7 +108,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    ) : Route
+    ): Route
     {
         return $this->match($name, 'POST', $path, $controllerFactory, $defaults, $requirements);
     }
@@ -119,7 +119,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    ) : Route
+    ): Route
     {
         return $this->match($name, 'PUT', $path, $controllerFactory, $defaults, $requirements);
     }
@@ -130,7 +130,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    ) : Route
+    ): Route
     {
         return $this->match($name, 'PATCH', $path, $controllerFactory, $defaults, $requirements);
     }
@@ -141,7 +141,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    ) : Route
+    ): Route
     {
         return $this->match($name, 'DELETE', $path, $controllerFactory, $defaults, $requirements);
     }

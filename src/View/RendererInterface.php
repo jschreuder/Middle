@@ -7,5 +7,5 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface RendererInterface
 {
-    public function render(ServerRequestInterface $request, ViewInterface $view) : ResponseInterface;
+    public function render(ServerRequestInterface $request, ViewInterface $view): ResponseInterface;
 }

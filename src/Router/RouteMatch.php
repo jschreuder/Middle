@@ -21,17 +21,17 @@ final class RouteMatch implements RouteMatchInterface
         $this->attributes = $attributes;
     }
 
-    public function isMatch() : bool
+    public function isMatch(): bool
     {
         return !is_null($this->controller);
     }
 
-    public function getController() : ControllerInterface
+    public function getController(): ControllerInterface
     {
         return $this->controller;
     }
 
-    public function getAttributes() : array
+    public function getAttributes(): array
     {
         return $this->attributes;
     }

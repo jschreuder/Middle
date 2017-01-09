@@ -19,7 +19,7 @@ interface JwtToPsrMapperInterface
         SessionInterface $session,
         ResponseInterface $response,
         Token $token = null
-    ) : ResponseInterface;
+    ): ResponseInterface;
 
-    public function extractSessionContainer(Token $token = null) : SessionInterface;
+    public function extractSessionContainer(Token $token = null): SessionInterface;
 }

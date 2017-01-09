@@ -7,5 +7,5 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface ControllerInterface
 {
-    public function execute(ServerRequestInterface $request) : ResponseInterface;
+    public function execute(ServerRequestInterface $request): ResponseInterface;
 }

@@ -62,7 +62,7 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
         string $privateRsaKey,
         string $publicRsaKey,
         int $expirationTime
-    ) : JwtToPsrMapper
+    ): JwtToPsrMapper
     {
         return new self(
             new Signer\Rsa\Sha256(),
@@ -104,7 +104,7 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
         SessionInterface $session,
         ResponseInterface $response,
         Token $token = null
-    ) : ResponseInterface
+    ): ResponseInterface
     {
         $sessionContainerChanged = $session->hasChanged();
 
@@ -119,7 +119,7 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
         return $response;
     }
 
-    private function getExpirationCookie() : SetCookie
+    private function getExpirationCookie(): SetCookie
     {
         $expirationDate = new \DateTime('-30 days');
         return $this
@@ -128,7 +128,7 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
             ->withExpires($expirationDate->getTimestamp());
     }
 
-    private function shouldTokenBeRefreshed(Token $token = null) : bool
+    private function shouldTokenBeRefreshed(Token $token = null): bool
     {
         if (is_null($token)) {
             return false;
@@ -141,7 +141,7 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
         return time() >= ($token->getClaim(self::ISSUED_AT_CLAIM) + $this->refreshTime);
     }
 
-    private function getTokenCookie(SessionInterface $session) : SetCookie
+    private function getTokenCookie(SessionInterface $session): SetCookie
     {
         $timestamp = time();
         return $this
@@ -157,7 +157,7 @@ final class JwtToPsrMapper implements JwtToPsrMapperInterface
             ->withExpires($timestamp + $this->expirationTime);
     }
 
-    public function extractSessionContainer(Token $token = null) : SessionInterface
+    public function extractSessionContainer(Token $token = null): SessionInterface
     {
         try {
             if (is_null($token) || !$token->verify($this->signer, $this->verificationKey)) {

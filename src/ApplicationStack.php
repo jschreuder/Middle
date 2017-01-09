@@ -22,7 +22,7 @@ final class ApplicationStack implements ApplicationStackInterface
         }
     }
 
-    public function withMiddleware(MiddlewareInterface $middleware) : ApplicationStack
+    public function withMiddleware(MiddlewareInterface $middleware): ApplicationStack
     {
         $stack = clone $this;
         $stack->stack = clone $this->stack;
@@ -30,7 +30,7 @@ final class ApplicationStack implements ApplicationStackInterface
         return $stack;
     }
 
-    public function withoutMiddleware(MiddlewareInterface $middleware) : ApplicationStack
+    public function withoutMiddleware(MiddlewareInterface $middleware): ApplicationStack
     {
         $oldStack = clone $this->stack;
         $newStack = new \SplStack();
@@ -46,7 +46,7 @@ final class ApplicationStack implements ApplicationStackInterface
         return $stack;
     }
 
-    public function process(ServerRequestInterface $request) : ResponseInterface
+    public function process(ServerRequestInterface $request): ResponseInterface
     {
         if ($this->stack->count() === 0) {
             throw new \RuntimeException('Cannot process with an empty stack');

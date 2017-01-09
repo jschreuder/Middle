@@ -17,7 +17,7 @@ final class Delegate implements DelegateInterface
         $this->stack = $stack;
     }
 
-    public function process(ServerRequestInterface $request) : ResponseInterface
+    public function process(ServerRequestInterface $request): ResponseInterface
     {
         if ($this->stack->count() === 0) {
             throw new \RuntimeException('No more middleware\'s to call on.');

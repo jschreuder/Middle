@@ -20,17 +20,17 @@ final class RedirectView implements ViewInterface
         $this->setHeader('Location', $location);
     }
 
-    public function getStatusCode() : int
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    public function getContentType() : string
+    public function getContentType(): string
     {
         throw new \RuntimeException('No content-type allowed on RedirectView');
     }
 
-    public function getHeaders() : array
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -40,12 +40,12 @@ final class RedirectView implements ViewInterface
         $this->headers[$key] = $value;
     }
 
-    public function getTemplate() : string
+    public function getTemplate(): string
     {
         throw new \RuntimeException('No template allowed on RedirectView');
     }
 
-    public function getParameters() : array
+    public function getParameters(): array
     {
         return [];
     }

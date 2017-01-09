@@ -20,7 +20,7 @@ final class RedirectRendererMiddleware implements RendererInterface
         $this->responseFactory = $responseFactory;
     }
 
-    public function render(ServerRequestInterface $request, ViewInterface $view) : ResponseInterface
+    public function render(ServerRequestInterface $request, ViewInterface $view): ResponseInterface
     {
         if ($view->getStatusCode() < 300 || $view->getStatusCode() >= 400) {
             return $this->renderer->render($request, $view);

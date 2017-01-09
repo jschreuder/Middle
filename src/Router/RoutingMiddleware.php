@@ -25,7 +25,7 @@ final class RoutingMiddleware implements MiddlewareInterface
         $this->fallbackController = $fallbackController;
     }
 
-    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate): ResponseInterface
     {
         $routeMatch = $this->router->parseRequest($request);
 

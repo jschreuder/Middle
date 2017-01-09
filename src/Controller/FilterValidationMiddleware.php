@@ -17,7 +17,7 @@ final class FilterValidationMiddleware implements MiddlewareInterface
         $this->errorHandler = $errorHandler;
     }
 
-    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate): ResponseInterface
     {
         $controller = $request->getAttribute('controller');
 

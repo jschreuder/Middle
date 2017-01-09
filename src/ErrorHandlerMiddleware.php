@@ -23,7 +23,7 @@ final class ErrorHandlerMiddleware implements MiddlewareInterface
         $this->errorController = $errorController;
     }
 
-    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate): ResponseInterface
     {
         try {
             return $delegate->process($request);

@@ -12,7 +12,7 @@ final class ValidationFailedException extends \DomainException
         $this->validationErrors = $validationErrors;
     }
 
-    public function getValidationErrors() : array
+    public function getValidationErrors(): array
     {
         return $this->validationErrors;
     }

@@ -14,12 +14,12 @@ final class SymfonyUrlGenerator implements UrlGeneratorInterface
         $this->generator = $generator;
     }
 
-    public function generatePath(string $name, array $options = []) : string
+    public function generatePath(string $name, array $options = []): string
     {
         return $this->generator->generate($name, $options, UrlGenerator::ABSOLUTE_PATH);
     }
 
-    public function generateUrl(string $name, array $options = []) : string
+    public function generateUrl(string $name, array $options = []): string
     {
         return $this->generator->generate($name, $options, UrlGenerator::ABSOLUTE_URL);
     }

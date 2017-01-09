@@ -18,7 +18,7 @@ final class Session implements SessionInterface
         $this->sessionData = $this->processFlashData($sessionData);
     }
 
-    private function processFlashData(array $sessionData) : array
+    private function processFlashData(array $sessionData): array
     {
         if (!isset($sessionData[self::FLASH_DATA_META_KEY])) {
             return $sessionData;
@@ -37,7 +37,7 @@ final class Session implements SessionInterface
         return $sessionData;
     }
 
-    public function has(string $key) : bool
+    public function has(string $key): bool
     {
         return isset($this->sessionData[$key]);
     }
@@ -53,7 +53,7 @@ final class Session implements SessionInterface
         $this->sessionData[$key] = $value;
     }
 
-    public function hasFlash(string $key) : bool
+    public function hasFlash(string $key): bool
     {
         return isset($this->sessionData[self::FLASH_DATA_KEY_PREFIX . $key]);
     }
@@ -88,17 +88,17 @@ final class Session implements SessionInterface
         // These sessions don't have an ID to change, but this should force overwrite
     }
 
-    public function isEmpty() : bool
+    public function isEmpty(): bool
     {
         return count($this->sessionData) === 0;
     }
 
-    public function hasChanged() : bool
+    public function hasChanged(): bool
     {
         return $this->changed;
     }
 
-    public function toArray() : array
+    public function toArray(): array
     {
         return $this->sessionData;
     }

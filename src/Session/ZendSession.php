@@ -23,7 +23,7 @@ final class ZendSession implements SessionInterface
         $this->container = $container;
     }
 
-    public function has(string $key) : bool
+    public function has(string $key): bool
     {
         return isset($this->container[$key]);
     }
@@ -40,7 +40,7 @@ final class ZendSession implements SessionInterface
         $this->container[$key] = $value;
     }
 
-    public function hasFlash(string $key) : bool
+    public function hasFlash(string $key): bool
     {
         return isset($this->container[self::FLASH_DATA_KEY_PREFIX . $key]);
     }
@@ -72,17 +72,17 @@ final class ZendSession implements SessionInterface
         $this->sessionManager->regenerateId();
     }
 
-    public function isEmpty() : bool
+    public function isEmpty(): bool
     {
         return $this->container->count() === 0;
     }
 
-    public function hasChanged() : bool
+    public function hasChanged(): bool
     {
         return $this->changed;
     }
 
-    public function toArray() : array
+    public function toArray(): array
     {
         return $this->container->getArrayCopy();
     }

@@ -20,7 +20,7 @@ final class TwigRenderer implements RendererInterface
         $this->responseFactory = $responseFactory;
     }
 
-    public function render(ServerRequestInterface $request, ViewInterface $view) : ResponseInterface
+    public function render(ServerRequestInterface $request, ViewInterface $view): ResponseInterface
     {
         // Get new Response with HTML content type
         $response = $this->responseFactory->createResponse()->withHeader('Content-Type', 'text/html; charset=utf-8');

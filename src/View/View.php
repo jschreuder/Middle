@@ -34,7 +34,7 @@ final class View implements ViewInterface
         $this->parameters = $parameters;
     }
 
-    public function getStatusCode() : int
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
@@ -50,17 +50,17 @@ final class View implements ViewInterface
         $this->headers[$key] = $value;
     }
 
-    public function getContentType() : string
+    public function getContentType(): string
     {
         return $this->contentType;
     }
 
-    public function getTemplate() : string
+    public function getTemplate(): string
     {
         return $this->template;
     }
 
-    public function getParameters() : array
+    public function getParameters(): array
     {
         return $this->parameters;
     }

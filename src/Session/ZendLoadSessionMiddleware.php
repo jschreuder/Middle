@@ -20,7 +20,7 @@ final class ZendLoadSessionMiddleware implements MiddlewareInterface
         $this->cookieLifetime = $cookieLifetime;
     }
 
-    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate): ResponseInterface
     {
         $config = (new StandardConfig())
             ->setCookieLifetime($this->cookieLifetime)

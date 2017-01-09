@@ -7,11 +7,11 @@ use jschreuder\Middle\Controller\ControllerInterface;
 interface RouteMatchInterface
 {
     /** Whether it contains an actual matched route */
-    public function isMatch() : bool;
+    public function isMatch(): bool;
 
     /** Callable controller */
-    public function getController() : ControllerInterface;
+    public function getController(): ControllerInterface;
 
     /** Array of attributes determined by routing */
-    public function getAttributes() : array;
+    public function getAttributes(): array;
 }

@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class ControllerRunner implements MiddlewareInterface
 {
-    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate): ResponseInterface
     {
         $controller = $request->getAttribute('controller');
         if (!$controller instanceof ControllerInterface) {

@@ -17,7 +17,7 @@ final class JwtLoadSessionMiddleware implements MiddlewareInterface
         $this->mapper = $mapper;
     }
 
-    public function process(ServerRequestInterface $request, DelegateInterface $delegate) : ResponseInterface
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate): ResponseInterface
     {
         $token = $this->mapper->parseToken($request);
         $sessionContainer = $this->mapper->extractSessionContainer($token);

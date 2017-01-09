@@ -8,10 +8,10 @@ use Psr\Http\Message\ServerRequestInterface;
 interface RouterInterface
 {
     /** Parses ServerRequest and returns the routing information */
-    public function parseRequest(ServerRequestInterface $request) : RouteMatchInterface;
+    public function parseRequest(ServerRequestInterface $request): RouteMatchInterface;
 
     /** Returns UrlGenerator for reverse routing */
-    public function getGenerator() : UrlGeneratorInterface;
+    public function getGenerator(): UrlGeneratorInterface;
 
     /** @return  void */
     public function registerRoutes(RoutingProviderInterface $routingProvider);

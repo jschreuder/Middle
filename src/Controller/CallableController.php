@@ -7,12 +7,12 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class CallableController implements ControllerInterface
 {
-    public static function fromCallable(callable $closure) : self
+    public static function fromCallable(callable $closure): self
     {
         return new self($closure);
     }
 
-    public static function factoryFromCallable(callable $closure) : callable
+    public static function factoryFromCallable(callable $closure): callable
     {
         return function () use ($closure) {
             return self::fromCallable($closure);
@@ -27,7 +27,7 @@ final class CallableController implements ControllerInterface
         $this->closure = $closure;
     }
 
-    public function execute(ServerRequestInterface $request) : ResponseInterface
+    public function execute(ServerRequestInterface $request): ResponseInterface
     {
         return ($this->closure)($request);
     }
