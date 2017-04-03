@@ -70,10 +70,10 @@ order.
     );
 
     // Setup the application with controller runner and the routing middleware
-    $app = new Middle\ApplicationStack([
+    $app = new Middle\ApplicationStack(
         new Middle\Controller\ControllerRunner(),
-        new Middle\ServerMiddleware\RoutingMiddleware($router, $fallbackController),
-    ]);
+        new Middle\ServerMiddleware\RoutingMiddleware($router, $fallbackController)
+    );
 
 With that setup we can now add some routes (using the ``$router`` from above):
 
@@ -211,9 +211,9 @@ in other containers as well:
     // First create the central app object in the container
     $container = Pimple\Container();
     $container['app'] = function () {
-        return new Middle\ApplicationStack([
-            new Middle\Controller\ControllerRunner(),
-        ]);
+        return new Middle\ApplicationStack(
+            new Middle\Controller\ControllerRunner()
+        );
     };
 
     // Now to add a middleware you can do this

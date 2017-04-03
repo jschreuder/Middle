@@ -11,13 +11,10 @@ final class ApplicationStack implements ApplicationStackInterface
     /** @var  \SplStack | MiddlewareInterface[] */
     private $stack;
 
-    public function __construct(array $middlewares = [])
+    public function __construct(MiddlewareInterface ...$middlewares)
     {
         $this->stack = new \SplStack();
         foreach ($middlewares as $middleware) {
-            if (!$middleware instanceof MiddlewareInterface) {
-                throw new \InvalidArgumentException('All middlewares must implement ApplicationInterface');
-            }
             $this->stack->push($middleware);
         }
     }

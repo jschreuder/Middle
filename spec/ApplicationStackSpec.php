@@ -17,12 +17,6 @@ class ApplicationStackSpec extends ObjectBehavior
         $this->shouldHaveType(ApplicationStack::class);
     }
 
-    public function it_will_error_on_invalid_middleware()
-    {
-        $this->beConstructedWith(['not-a-middleware']);
-        $this->shouldThrow(\InvalidArgumentException::class)->duringInstantiation();
-    }
-
     public function it_will_clone_on_with_middleware(
         MiddlewareInterface $middleware1,
         MiddlewareInterface $middleware2,
@@ -31,7 +25,7 @@ class ApplicationStackSpec extends ObjectBehavior
         ResponseInterface $response2
     )
     {
-        $this->beConstructedWith([$middleware1]);
+        $this->beConstructedWith($middleware1);
         $clone = $this->withMiddleware($middleware2);
 
         $middleware1->process($request, new Argument\Token\TypeToken(DelegateInterface::class))
@@ -51,7 +45,7 @@ class ApplicationStackSpec extends ObjectBehavior
         ResponseInterface $response2
     )
     {
-        $this->beConstructedWith([$middleware1, $middleware2]);
+        $this->beConstructedWith($middleware1, $middleware2);
         $clone = $this->withoutMiddleware($middleware2);
 
         $middleware1->process($request, new Argument\Token\TypeToken(DelegateInterface::class))
