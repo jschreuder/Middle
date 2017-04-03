@@ -4,5 +4,5 @@ namespace jschreuder\Middle\Router;
 
 interface RoutingProviderInterface
 {
-    public function registerRoutes(RouterInterface $router);
+    public function registerRoutes(RouterInterface $router): void;
 }
