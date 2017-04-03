@@ -34,7 +34,7 @@ final class ZendSession implements SessionInterface
     }
 
     /** @return  void */
-    public function set(string $key, $value)
+    public function set(string $key, $value): void
     {
         $this->changed = true;
         $this->container[$key] = $value;
@@ -51,7 +51,7 @@ final class ZendSession implements SessionInterface
     }
 
     /** @return  void */
-    public function setFlash(string $key, $value)
+    public function setFlash(string $key, $value): void
     {
         $key = self::FLASH_DATA_KEY_PREFIX . $key;
         $this->changed = true;
@@ -60,13 +60,13 @@ final class ZendSession implements SessionInterface
     }
 
     /** @return  void */
-    public function destroy()
+    public function destroy(): void
     {
         $this->sessionManager->destroy();
     }
 
     /** @return  void */
-    public function rotateId()
+    public function rotateId(): void
     {
         $this->changed = true;
         $this->sessionManager->regenerateId();

@@ -13,7 +13,7 @@ final class ZendSessionProcessor implements SessionProcessorInterface
     /** @var  ?ConfigInterface */
     private $zendSessionConfig;
 
-    public function __construct(ConfigInterface $zendSessionConfig = null)
+    public function __construct(?ConfigInterface $zendSessionConfig = null)
     {
         $this->zendSessionConfig = $zendSessionConfig;
     }

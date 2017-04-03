@@ -9,22 +9,18 @@ interface SessionInterface
     /** @return  mixed */
     public function get(string $key);
 
-    /** @return  void */
-    public function set(string $key, $value);
+    public function set(string $key, $value): void;
 
     public function hasFlash(string $key): bool;
 
     /** @return  mixed */
     public function getFlash(string $key);
 
-    /** @return  void */
-    public function setFlash(string $key, $value);
+    public function setFlash(string $key, $value): void;
 
-    /** @return  void */
-    public function destroy();
+    public function destroy(): void;
 
-    /** @return  void */
-    public function rotateId();
+    public function rotateId(): void;
 
     public function isEmpty(): bool;
 

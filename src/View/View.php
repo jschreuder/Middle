@@ -45,7 +45,7 @@ final class View implements ViewInterface
     }
 
     /** @return  void */
-    public function setHeader(string $key, string $value)
+    public function setHeader(string $key, string $value): void
     {
         $this->headers[$key] = $value;
     }
@@ -66,7 +66,7 @@ final class View implements ViewInterface
     }
 
     /** @return  void */
-    public function setParameter(string $key, $value)
+    public function setParameter(string $key, $value): void
     {
         $this->parameters[$key] = $value;
     }

@@ -13,13 +13,11 @@ interface ViewInterface
 
     public function getHeaders(): array;
 
-    /** @return  void */
-    public function setHeader(string $key, string $value);
+    public function setHeader(string $key, string $value): void;
 
     public function getTemplate(): string;
 
     public function getParameters(): array;
 
-    /** @return  void */
-    public function setParameter(string $key, $value);
+    public function setParameter(string $key, $value): void;
 }

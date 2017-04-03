@@ -7,6 +7,7 @@ use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+// @todo prevent calling ->process() twice
 final class Delegate implements DelegateInterface
 {
     /** @var  \SplStack */

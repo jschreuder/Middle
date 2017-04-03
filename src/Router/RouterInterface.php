@@ -12,8 +12,7 @@ interface RouterInterface
     /** Returns UrlGenerator for reverse routing */
     public function getGenerator(): UrlGeneratorInterface;
 
-    /** @return  void */
-    public function registerRoutes(RoutingProviderInterface $routingProvider);
+    public function registerRoutes(RoutingProviderInterface $routingProvider): void;
 
     /** Generic method for adding routes with arbitrary or multiple methods */
     public function match(

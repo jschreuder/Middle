@@ -47,7 +47,7 @@ final class Session implements SessionInterface
         return $this->sessionData[$key] ?? null;
     }
 
-    public function set(string $key, $value)
+    public function set(string $key, $value): void
     {
         $this->changed = true;
         $this->sessionData[$key] = $value;
@@ -63,7 +63,7 @@ final class Session implements SessionInterface
         return $this->sessionData[self::FLASH_DATA_KEY_PREFIX . $key] ?? null;
     }
 
-    public function setFlash(string $key, $value)
+    public function setFlash(string $key, $value): void
     {
         $this->changed = true;
         $this->markFlashKey($key);
@@ -76,13 +76,13 @@ final class Session implements SessionInterface
         $this->sessionData[self::FLASH_DATA_META_KEY][$key] = 1;
     }
 
-    public function destroy()
+    public function destroy(): void
     {
         $this->changed = true;
         $this->sessionData = [];
     }
 
-    public function rotateId()
+    public function rotateId(): void
     {
         $this->changed = true;
         // These sessions don't have an ID to change, but this should force overwrite

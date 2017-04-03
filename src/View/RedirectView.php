@@ -35,7 +35,7 @@ final class RedirectView implements ViewInterface
         return $this->headers;
     }
 
-    public function setHeader(string $key, string $value)
+    public function setHeader(string $key, string $value): void
     {
         $this->headers[$key] = $value;
     }
@@ -50,7 +50,7 @@ final class RedirectView implements ViewInterface
         return [];
     }
 
-    public function setParameter(string $key, $value)
+    public function setParameter(string $key, $value): void
     {
         throw new \RuntimeException('No parameters allowed on RedirectView');
     }

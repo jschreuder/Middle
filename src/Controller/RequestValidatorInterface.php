@@ -13,5 +13,5 @@ interface RequestValidatorInterface
      * @return  void
      * @throws  ValidationFailedException
      */
-    public function validateRequest(ServerRequestInterface $request);
+    public function validateRequest(ServerRequestInterface $request): void;
 }

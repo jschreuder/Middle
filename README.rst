@@ -19,7 +19,7 @@ The implementations can be atomic in nature: just performing one task. Composing
 complex capabilities by choosing which simple middlewares you decorate or add
 to the stack. Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4, PSR-7
 and forward compatible with PSR-15 & PSR-17 through HTTP-Interop; aimed at PHP
-7.0 or higher (probably 7.1+ once that's released).
+7.1.
 
 Check out the `Middle skeleton <https://github.com/jschreuder/Middle-skeleton>`_
 application to get an example setup running quickly.

@@ -102,8 +102,7 @@ final class JwtSessionProcessor implements SessionProcessorInterface
         );
     }
 
-    /** @return  ?Token */
-    public function parseToken(ServerRequestInterface $request)
+    public function parseToken(ServerRequestInterface $request): ?Token
     {
         $cookies = $request->getCookieParams();
         $cookieName = $this->defaultCookie->getName();
@@ -128,7 +127,7 @@ final class JwtSessionProcessor implements SessionProcessorInterface
     public function appendToken(
         SessionInterface $session,
         ResponseInterface $response,
-        Token $token = null
+        ?Token $token
     ): ResponseInterface
     {
         $sessionContainerChanged = $session->hasChanged();
@@ -182,7 +181,7 @@ final class JwtSessionProcessor implements SessionProcessorInterface
             ->withExpires($timestamp + $this->expirationTime);
     }
 
-    public function extractSessionContainer(Token $token = null): SessionInterface
+    public function extractSessionContainer(?Token $token): SessionInterface
     {
         try {
             if (is_null($token) || !$token->verify($this->signer, $this->verificationKey)) {

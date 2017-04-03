@@ -70,7 +70,7 @@ final class SymfonyRouter implements RouterInterface
     }
 
     /** @return  void */
-    public function registerRoutes(RoutingProviderInterface $routingProvider)
+    public function registerRoutes(RoutingProviderInterface $routingProvider): void
     {
         $routingProvider->registerRoutes($this);
     }
