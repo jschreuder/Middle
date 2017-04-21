@@ -9,23 +9,33 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class JsonRequestParserMiddleware implements MiddlewareInterface
 {
-    /** @var  string[] */
+    /** @var  string[]  array of regexes to check against content-types */
     private $jsonContentTypes;
 
     public function __construct(array $jsonContentTypes = null)
     {
         if (is_null($jsonContentTypes)) {
-            $jsonContentTypes = ['application/json'];
+            $jsonContentTypes = ['#^application\/json(;|$)#iD'];
         }
         $this->jsonContentTypes = $jsonContentTypes;
     }
 
     public function process(ServerRequestInterface $request, DelegateInterface $delegate): ResponseInterface
     {
-        if (in_array($request->getHeaderLine('Content-Type'), $this->jsonContentTypes, true)) {
+        if ($this->isJsonRequest($request->getHeaderLine('Content-Type'))) {
             $request = $request->withParsedBody($this->parseBody($request));
         }
         return $delegate->process($request);
+    }
+
+    private function isJsonRequest(?string $requestContentType)
+    {
+        foreach ($this->jsonContentTypes as $jsonContentType) {
+            if (preg_match($jsonContentType, $requestContentType) > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function parseBody(ServerRequestInterface $request) : array

@@ -35,6 +35,25 @@ class JsonRequestParserMiddlewareSpec extends ObjectBehavior
         $this->process($request1, $delegate)->shouldReturn($response);
     }
 
+    public function it_can_parse_json_with_charset(
+        ServerRequestInterface $request1,
+        ServerRequestInterface $request2,
+        StreamInterface $body,
+        DelegateInterface $delegate,
+        ResponseInterface $response
+    )
+    {
+        $array = ['test' => 42, 'next' => 'best'];
+        $body->getContents()->willReturn(json_encode($array));
+        $request1->getBody()->willReturn($body);
+        $request1->getHeaderLine('Content-Type')->willReturn('application/json;charset=utf-8');
+        $request1->withParsedBody($array)->willReturn($request2);
+
+        $delegate->process($request2)->willReturn($response);
+
+        $this->process($request1, $delegate)->shouldReturn($response);
+    }
+
     public function it_can_parse_non_default_json_content_types(
         ServerRequestInterface $request1,
         ServerRequestInterface $request2,
@@ -43,7 +62,7 @@ class JsonRequestParserMiddlewareSpec extends ObjectBehavior
         ResponseInterface $response
     )
     {
-        $this->beConstructedWith(['application/vnd.api+json', 'application/json']);
+        $this->beConstructedWith(['#^application\/vnd\.api\+json(;|$)#iD', '#^application\/json(;|$)#iD']);
 
         $array = ['test' => 42, 'next' => 'best'];
         $body->getContents()->willReturn(json_encode($array));
