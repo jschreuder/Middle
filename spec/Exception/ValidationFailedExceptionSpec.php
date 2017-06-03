@@ -1,8 +1,8 @@
 <?php
 
-namespace spec\jschreuder\Middle\Controller;
+namespace spec\jschreuder\Middle\Exception;
 
-use jschreuder\Middle\Controller\ValidationFailedException;
+use jschreuder\Middle\Exception\ValidationFailedException;
 use PhpSpec\ObjectBehavior;
 
 class ValidationFailedExceptionSpec extends ObjectBehavior

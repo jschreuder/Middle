@@ -4,7 +4,7 @@ namespace spec\jschreuder\Middle\ServerMiddleware;
 
 use Interop\Http\ServerMiddleware\DelegateInterface;
 use jschreuder\Middle\Controller\RequestValidatorInterface;
-use jschreuder\Middle\Controller\ValidationFailedException;
+use jschreuder\Middle\Exception\ValidationFailedException;
 use jschreuder\Middle\ServerMiddleware\RequestValidatorMiddleware;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;

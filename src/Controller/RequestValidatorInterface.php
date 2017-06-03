@@ -2,6 +2,7 @@
 
 namespace jschreuder\Middle\Controller;
 
+use jschreuder\Middle\Exception\ValidationFailedException;
 use Psr\Http\Message\ServerRequestInterface;
 
 interface RequestValidatorInterface
