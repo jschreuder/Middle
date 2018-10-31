@@ -17,9 +17,8 @@ THE THINGS. What does that mean? Everything is based around simple interfaces
 for which the default implementation can can be either replaced or decorated.
 The implementations can be atomic in nature: just performing one task. Composing
 complex capabilities by choosing which simple middlewares you decorate or add
-to the stack. Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4, PSR-7
-and forward compatible with PSR-15 & PSR-17 through HTTP-Interop; aimed at PHP
-7.1.
+to the stack. Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4, PSR-7,
+PSR-15 and PSR-17; aimed at PHP 7.1.
 
 Check out the `Middle skeleton <https://github.com/jschreuder/Middle-skeleton>`_
 application to get an example setup running quickly.
