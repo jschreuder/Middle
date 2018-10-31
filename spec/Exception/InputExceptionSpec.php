@@ -4,7 +4,6 @@ namespace spec\jschreuder\Middle\Exception;
 
 use jschreuder\Middle\Exception\InputException;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class InputExceptionSpec extends ObjectBehavior
 {

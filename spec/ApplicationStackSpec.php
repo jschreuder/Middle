@@ -2,13 +2,13 @@
 
 namespace spec\jschreuder\Middle;
 
-use Interop\Http\ServerMiddleware\DelegateInterface;
-use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use jschreuder\Middle\ApplicationStack;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class ApplicationStackSpec extends ObjectBehavior
 {
@@ -28,9 +28,9 @@ class ApplicationStackSpec extends ObjectBehavior
         $this->beConstructedWith($middleware1);
         $clone = $this->withMiddleware($middleware2);
 
-        $middleware1->process($request, new Argument\Token\TypeToken(DelegateInterface::class))
+        $middleware1->process($request, new Argument\Token\TypeToken(RequestHandlerInterface::class))
             ->willReturn($response1);
-        $middleware2->process($request, new Argument\Token\TypeToken(DelegateInterface::class))
+        $middleware2->process($request, new Argument\Token\TypeToken(RequestHandlerInterface::class))
             ->willReturn($response2);
 
         $this->process($request)->shouldReturn($response1);
@@ -48,9 +48,9 @@ class ApplicationStackSpec extends ObjectBehavior
         $this->beConstructedWith($middleware1, $middleware2);
         $clone = $this->withoutMiddleware($middleware2);
 
-        $middleware1->process($request, new Argument\Token\TypeToken(DelegateInterface::class))
+        $middleware1->process($request, new Argument\Token\TypeToken(RequestHandlerInterface::class))
             ->willReturn($response1);
-        $middleware2->process($request, new Argument\Token\TypeToken(DelegateInterface::class))
+        $middleware2->process($request, new Argument\Token\TypeToken(RequestHandlerInterface::class))
             ->willReturn($response2);
 
         $this->process($request)->shouldReturn($response2);

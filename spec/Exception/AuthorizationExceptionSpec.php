@@ -4,7 +4,6 @@ namespace spec\jschreuder\Middle\Exception;
 
 use jschreuder\Middle\Exception\AuthorizationException;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class AuthorizationExceptionSpec extends ObjectBehavior
 {

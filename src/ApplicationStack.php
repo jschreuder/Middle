@@ -2,7 +2,7 @@
 
 namespace jschreuder\Middle;
 
-use Interop\Http\ServerMiddleware\MiddlewareInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -52,7 +52,7 @@ final class ApplicationStack implements ApplicationStackInterface
 
         /** @var  MiddlewareInterface $current */
         $current = $stack->pop();
-        $response = $current->process($request, new Delegate($stack));
+        $response = $current->process($request, new RequestHandler($stack));
 
         return $response;
     }

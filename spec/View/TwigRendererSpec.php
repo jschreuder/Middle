@@ -2,10 +2,10 @@
 
 namespace spec\jschreuder\Middle\View;
 
-use Interop\Http\Factory\ResponseFactoryInterface;
 use jschreuder\Middle\View\TwigRenderer;
 use jschreuder\Middle\View\ViewInterface;
 use PhpSpec\ObjectBehavior;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;

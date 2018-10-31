@@ -4,7 +4,6 @@ namespace spec\jschreuder\Middle\Exception;
 
 use jschreuder\Middle\Exception\NotFoundException;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class NotFoundExceptionSpec extends ObjectBehavior
 {

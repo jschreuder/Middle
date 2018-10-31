@@ -11,13 +11,14 @@
     ],
     "minimum-stability": "stable",
     "require": {
+        "php": ">=7.1",
+        "ext-json": "*",
         "psr/http-message": "^1.0",
         "psr/log": "^1.0",
-        "http-interop/http-middleware": "^0.4",
-        "http-interop/http-factory": "^0.2"
+        "psr/http-server-middleware": "^1.0",
+        "psr/http-factory": "^1.0"
     },
     "require-dev": {
-        "php": ">=7.1",
         "phpspec/phpspec": "^3.0",
         "henrikbjorn/phpspec-code-coverage": "^3.0",
         "twig/twig": "^1.24",
@@ -26,7 +27,7 @@
         "dflydev/fig-cookies": "^1.0",
         "symfony/routing": "^3.1"
     },
-    "suggests": {
+    "suggest": {
         "twig/twig": "Required when using the TwigRenderer view-engine implementation",
         "symfony/routing": "Required when using the SymfonyRouter implementation",
         "zendframework/zend-session": "Required when using the ZendSession implementation",

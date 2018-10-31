@@ -2,12 +2,12 @@
 
 namespace jschreuder\Middle\ServerMiddleware;
 
-use Interop\Http\ServerMiddleware\DelegateInterface;
-use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use jschreuder\Middle\Controller\ControllerInterface;
 use jschreuder\Middle\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 final class RoutingMiddleware implements MiddlewareInterface
 {
@@ -26,7 +26,7 @@ final class RoutingMiddleware implements MiddlewareInterface
         $this->fallbackController = $fallbackController;
     }
 
-    public function process(ServerRequestInterface $request, DelegateInterface $delegate): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
         $routeMatch = $this->router->parseRequest($request);
 
@@ -42,6 +42,6 @@ final class RoutingMiddleware implements MiddlewareInterface
             $request = $request->withAttribute('controller', $this->fallbackController);
         }
 
-        return $delegate->process($request);
+        return $requestHandler->handle($request);
     }
 }

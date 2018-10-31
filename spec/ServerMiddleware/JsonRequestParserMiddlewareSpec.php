@@ -2,12 +2,12 @@
 
 namespace spec\jschreuder\Middle\ServerMiddleware;
 
-use Interop\Http\ServerMiddleware\DelegateInterface;
 use jschreuder\Middle\ServerMiddleware\JsonRequestParserMiddleware;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class JsonRequestParserMiddlewareSpec extends ObjectBehavior
 {
@@ -20,7 +20,7 @@ class JsonRequestParserMiddlewareSpec extends ObjectBehavior
         ServerRequestInterface $request1,
         ServerRequestInterface $request2,
         StreamInterface $body,
-        DelegateInterface $delegate,
+        RequestHandlerInterface $requestHandler,
         ResponseInterface $response
     )
     {
@@ -30,16 +30,16 @@ class JsonRequestParserMiddlewareSpec extends ObjectBehavior
         $request1->getHeaderLine('Content-Type')->willReturn('application/json');
         $request1->withParsedBody($array)->willReturn($request2);
 
-        $delegate->process($request2)->willReturn($response);
+        $requestHandler->handle($request2)->willReturn($response);
 
-        $this->process($request1, $delegate)->shouldReturn($response);
+        $this->process($request1, $requestHandler)->shouldReturn($response);
     }
 
     public function it_can_parse_json_with_charset(
         ServerRequestInterface $request1,
         ServerRequestInterface $request2,
         StreamInterface $body,
-        DelegateInterface $delegate,
+        RequestHandlerInterface $requestHandler,
         ResponseInterface $response
     )
     {
@@ -49,16 +49,16 @@ class JsonRequestParserMiddlewareSpec extends ObjectBehavior
         $request1->getHeaderLine('Content-Type')->willReturn('application/json;charset=utf-8');
         $request1->withParsedBody($array)->willReturn($request2);
 
-        $delegate->process($request2)->willReturn($response);
+        $requestHandler->handle($request2)->willReturn($response);
 
-        $this->process($request1, $delegate)->shouldReturn($response);
+        $this->process($request1, $requestHandler)->shouldReturn($response);
     }
 
     public function it_can_parse_non_default_json_content_types(
         ServerRequestInterface $request1,
         ServerRequestInterface $request2,
         StreamInterface $body,
-        DelegateInterface $delegate,
+        RequestHandlerInterface $requestHandler,
         ResponseInterface $response
     )
     {
@@ -70,19 +70,19 @@ class JsonRequestParserMiddlewareSpec extends ObjectBehavior
         $request1->getHeaderLine('Content-Type')->willReturn('application/vnd.api+json');
         $request1->withParsedBody($array)->willReturn($request2);
 
-        $delegate->process($request2)->willReturn($response);
+        $requestHandler->handle($request2)->willReturn($response);
 
-        $this->process($request1, $delegate)->shouldReturn($response);
+        $this->process($request1, $requestHandler)->shouldReturn($response);
     }
 
     public function it_can_do_nothing(
         ServerRequestInterface $request,
-        DelegateInterface $delegate,
+        RequestHandlerInterface $requestHandler,
         ResponseInterface $response
     )
     {
         $request->getHeaderLine('Content-Type')->willReturn('text/html');
-        $delegate->process($request)->willReturn($response);
-        $this->process($request, $delegate)->shouldReturn($response);
+        $requestHandler->handle($request)->willReturn($response);
+        $this->process($request, $requestHandler)->shouldReturn($response);
     }
 }

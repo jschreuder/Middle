@@ -2,13 +2,13 @@
 
 namespace spec\jschreuder\Middle\ServerMiddleware;
 
-use Interop\Http\ServerMiddleware\DelegateInterface;
 use jschreuder\Middle\Controller\RequestValidatorInterface;
 use jschreuder\Middle\Exception\ValidationFailedException;
 use jschreuder\Middle\ServerMiddleware\RequestValidatorMiddleware;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class RequestValidatorMiddlewareSpec extends ObjectBehavior
 {
@@ -31,41 +31,41 @@ class RequestValidatorMiddlewareSpec extends ObjectBehavior
         ServerRequestInterface $request,
         RequestValidatorInterface $validator,
         ResponseInterface $response,
-        DelegateInterface $delegate
+        RequestHandlerInterface $requestHandler
     )
     {
         $request->getAttribute('controller')->willReturn($validator);
         $validator->validateRequest($request)->shouldBeCalled();
-        $delegate->process($request)->willReturn($response);
-        $this->process($request, $delegate)->shouldReturn($response);
+        $requestHandler->handle($request)->willReturn($response);
+        $this->process($request, $requestHandler)->shouldReturn($response);
     }
 
     public function it_can_fail_to_validate_a_request(
         ServerRequestInterface $request,
         RequestValidatorInterface $validator,
         ResponseInterface $response,
-        DelegateInterface $delegate
+        RequestHandlerInterface $requestHandler
     )
     {
         $request->getAttribute('controller')->willReturn($validator);
         $validator->validateRequest($request)->willThrow(new ValidationFailedException([]));
-        $delegate->process($request)->shouldNotBeCalled();
+        $requestHandler->handle($request)->shouldNotBeCalled();
 
         $this->beConstructedWith(function () use ($response) {
             return $response->getWrappedObject();
         });
 
-        $this->process($request, $delegate)->shouldReturn($response);
+        $this->process($request, $requestHandler)->shouldReturn($response);
     }
 
     public function it_can_do_nothing(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        DelegateInterface $delegate
+        RequestHandlerInterface $requestHandler
     )
     {
         $request->getAttribute('controller')->willReturn('trim');
-        $delegate->process($request)->willReturn($response);
-        $this->process($request, $delegate)->shouldReturn($response);
+        $requestHandler->handle($request)->willReturn($response);
+        $this->process($request, $requestHandler)->shouldReturn($response);
     }
 }

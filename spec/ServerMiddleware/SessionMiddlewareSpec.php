@@ -2,12 +2,12 @@
 
 namespace spec\jschreuder\Middle\ServerMiddleware;
 
-use Interop\Http\ServerMiddleware\DelegateInterface;
 use jschreuder\Middle\ServerMiddleware\SessionMiddleware;
 use jschreuder\Middle\Session\SessionProcessorInterface;
 use PhpSpec\ObjectBehavior;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class SessionMiddlewareSpec extends ObjectBehavior
 {
@@ -30,12 +30,12 @@ class SessionMiddlewareSpec extends ObjectBehavior
         ServerRequestInterface $request2,
         ResponseInterface $response1,
         ResponseInterface $response2,
-        DelegateInterface $delegate
+        RequestHandlerInterface $requestHandler
     )
     {
         $this->processor->processRequest($request1)->willReturn($request2);
-        $delegate->process($request2)->willReturn($response1);
+        $requestHandler->handle($request2)->willReturn($response1);
         $this->processor->processResponse($request2, $response1)->willReturn($response2);
-        $this->process($request1, $delegate)->shouldReturn($response2);
+        $this->process($request1, $requestHandler)->shouldReturn($response2);
     }
 }

@@ -2,15 +2,15 @@
 
 namespace spec\jschreuder\Middle;
 
-use Interop\Http\ServerMiddleware\DelegateInterface;
-use Interop\Http\ServerMiddleware\MiddlewareInterface;
-use jschreuder\Middle\Delegate;
+use jschreuder\Middle\RequestHandler;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument\Token\TypeToken;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class DelegateSpec extends ObjectBehavior
+class RequestHandlerSpec extends ObjectBehavior
 {
     public function it_can_call_process(
         ServerRequestInterface $request,
@@ -20,11 +20,11 @@ class DelegateSpec extends ObjectBehavior
     {
         $stack = new \SplStack();
         $this->beConstructedWith($stack);
-        $this->shouldHaveType(Delegate::class);
+        $this->shouldHaveType(RequestHandler::class);
         $stack->push($middleware->getWrappedObject());
 
-        $middleware->process($request, new TypeToken(DelegateInterface::class))->willReturn($response);
-        $this->process($request)->shouldReturn($response);
+        $middleware->process($request, new TypeToken(RequestHandlerInterface::class))->willReturn($response);
+        $this->handle($request)->shouldReturn($response);
     }
 
     public function it_can_call_process_with_multiple_middlewares(
@@ -41,11 +41,11 @@ class DelegateSpec extends ObjectBehavior
         $stack->push($middleware3->getWrappedObject());
 
         $this->beConstructedWith($stack);
-        $this->shouldHaveType(Delegate::class);
+        $this->shouldHaveType(RequestHandler::class);
 
-        $middleware3->process($request, new TypeToken(DelegateInterface::class))->willReturn($response);
+        $middleware3->process($request, new TypeToken(RequestHandlerInterface::class))->willReturn($response);
 
-        $this->process($request)->shouldReturn($response);
+        $this->handle($request)->shouldReturn($response);
     }
 
     public function it_cannot_call_process_twice(
@@ -58,12 +58,12 @@ class DelegateSpec extends ObjectBehavior
         $stack->push($middleware->getWrappedObject());
 
         $this->beConstructedWith($stack);
-        $this->shouldHaveType(Delegate::class);
+        $this->shouldHaveType(RequestHandler::class);
 
-        $middleware->process($request, new TypeToken(DelegateInterface::class))->willReturn($response);
+        $middleware->process($request, new TypeToken(RequestHandlerInterface::class))->willReturn($response);
 
-        $this->process($request)->shouldReturn($response);
-        $this->shouldThrow(\RuntimeException::class)->duringProcess($request);
+        $this->handle($request)->shouldReturn($response);
+        $this->shouldThrow(\RuntimeException::class)->duringHandle($request);
     }
 
     public function it_will_error_when_called_on_empty_stack(
@@ -74,11 +74,11 @@ class DelegateSpec extends ObjectBehavior
     {
         $stack = new \SplStack();
         $this->beConstructedWith($stack);
-        $this->shouldHaveType(Delegate::class);
+        $this->shouldHaveType(RequestHandler::class);
         $stack->push($middleware->getWrappedObject());
 
-        $middleware->process($request, new TypeToken(DelegateInterface::class))->willReturn($response);
-        $this->process($request)->shouldReturn($response);
-        $this->shouldThrow(\RuntimeException::class)->duringProcess($request);
+        $middleware->process($request, new TypeToken(RequestHandlerInterface::class))->willReturn($response);
+        $this->handle($request)->shouldReturn($response);
+        $this->shouldThrow(\RuntimeException::class)->duringHandle($request);
     }
 }

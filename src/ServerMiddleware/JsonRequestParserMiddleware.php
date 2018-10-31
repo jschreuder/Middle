@@ -2,10 +2,10 @@
 
 namespace jschreuder\Middle\ServerMiddleware;
 
-use Interop\Http\ServerMiddleware\DelegateInterface;
-use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 final class JsonRequestParserMiddleware implements MiddlewareInterface
 {
@@ -20,12 +20,12 @@ final class JsonRequestParserMiddleware implements MiddlewareInterface
         $this->jsonContentTypes = $jsonContentTypes;
     }
 
-    public function process(ServerRequestInterface $request, DelegateInterface $delegate): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
         if ($this->isJsonRequest($request->getHeaderLine('Content-Type'))) {
             $request = $request->withParsedBody($this->parseBody($request));
         }
-        return $delegate->process($request);
+        return $requestHandler->handle($request);
     }
 
     private function isJsonRequest(?string $requestContentType)

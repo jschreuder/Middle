@@ -2,13 +2,13 @@
 
 namespace spec\jschreuder\Middle\ServerMiddleware;
 
-use Interop\Http\ServerMiddleware\DelegateInterface;
 use jschreuder\Middle\Controller\ControllerInterface;
 use jschreuder\Middle\ServerMiddleware\ErrorHandlerMiddleware;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 
 class ErrorHandlerMiddlewareSpec extends ObjectBehavior
@@ -34,29 +34,29 @@ class ErrorHandlerMiddlewareSpec extends ObjectBehavior
     public function it_will_do_nothing_without_an_exception(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        DelegateInterface $delegate
+        RequestHandlerInterface $requestHandler
     )
     {
-        $delegate->process($request)->willReturn($response);
+        $requestHandler->handle($request)->willReturn($response);
         $this->logger->alert(new Argument\Token\AnyValueToken(), new Argument\Token\AnyValueToken())
             ->shouldNotBeCalled();
-        $this->process($request, $delegate)->shouldReturn($response);
+        $this->process($request, $requestHandler)->shouldReturn($response);
     }
 
     public function it_will_log_and_process_exception_when_thrown(
         ServerRequestInterface $request,
         ServerRequestInterface $request2,
         ResponseInterface $response,
-        DelegateInterface $delegate
+        RequestHandlerInterface $requestHandler
     )
     {
         $exception = new \RuntimeException($msg = uniqid(), $code = 418);
-        $delegate->process($request)->willThrow($exception);
+        $requestHandler->handle($request)->willThrow($exception);
         $this->logger->alert($msg, new Argument\Token\ArrayEntryToken('file', __FILE__))->shouldBeCalled();
 
         $request->withAttribute('error', $exception)->willReturn($request2);
         $this->errorController->execute($request2)->willReturn($response);
 
-        $this->process($request, $delegate)->shouldReturn($response);
+        $this->process($request, $requestHandler)->shouldReturn($response);
     }
 }

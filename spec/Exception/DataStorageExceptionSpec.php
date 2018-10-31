@@ -4,7 +4,6 @@ namespace spec\jschreuder\Middle\Exception;
 
 use jschreuder\Middle\Exception\DataStorageException;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class DataStorageExceptionSpec extends ObjectBehavior
 {
