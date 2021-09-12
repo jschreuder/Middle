@@ -9,10 +9,8 @@ use Psr\Http\Message\ResponseInterface;
 
 final class RequestHandler implements RequestHandlerInterface
 {
-    /** @var  \SplStack */
-    private $stack;
-
-    private $called = false;
+    private \SplStack $stack;
+    private bool $called = false;
 
     public function __construct(\SplStack $stack)
     {

@@ -2,20 +2,16 @@
 
 namespace jschreuder\Middle\Session;
 
-use Zend\Session\Container;
-use Zend\Session\SessionManager;
+use Laminas\Session\Container;
+use Laminas\Session\SessionManager;
 
 final class ZendSession implements SessionInterface
 {
     const FLASH_DATA_KEY_PREFIX = '_flash_data.';
 
-    /** @var  SessionManager */
-    private $sessionManager;
-
-    /** @var  Container */
-    private $container;
-
-    private $changed = false;
+    private SessionManager $sessionManager;
+    private \ArrayAccess $container;
+    private bool $changed = false;
 
     public function __construct(SessionManager $sessionManager, Container $container)
     {
@@ -28,12 +24,11 @@ final class ZendSession implements SessionInterface
         return isset($this->container[$key]);
     }
 
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         return $this->container[$key];
     }
 
-    /** @return  void */
     public function set(string $key, $value): void
     {
         $this->changed = true;
@@ -45,12 +40,11 @@ final class ZendSession implements SessionInterface
         return isset($this->container[self::FLASH_DATA_KEY_PREFIX . $key]);
     }
 
-    public function getFlash(string $key)
+    public function getFlash(string $key): mixed
     {
         return $this->container[self::FLASH_DATA_KEY_PREFIX . $key];
     }
 
-    /** @return  void */
     public function setFlash(string $key, $value): void
     {
         $key = self::FLASH_DATA_KEY_PREFIX . $key;
@@ -59,13 +53,11 @@ final class ZendSession implements SessionInterface
         $this->container->setExpirationHops(1, [$key]);
     }
 
-    /** @return  void */
     public function destroy(): void
     {
         $this->sessionManager->destroy();
     }
 
-    /** @return  void */
     public function rotateId(): void
     {
         $this->changed = true;

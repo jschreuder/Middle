@@ -10,7 +10,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class JsonRequestParserMiddleware implements MiddlewareInterface
 {
     /** @var  string[]  array of regexes to check against content-types */
-    private $jsonContentTypes;
+    private array $jsonContentTypes;
 
     public function __construct(array $jsonContentTypes = null)
     {

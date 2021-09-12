@@ -2,16 +2,15 @@
 
 namespace jschreuder\Middle\Session;
 
+use Laminas\Session\Config\ConfigInterface;
+use Laminas\Session\Container;
+use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Session\Config\ConfigInterface;
-use Zend\Session\Container;
-use Zend\Session\SessionManager;
 
 final class ZendSessionProcessor implements SessionProcessorInterface
 {
-    /** @var  ?ConfigInterface */
-    private $zendSessionConfig;
+    private ?ConfigInterface $zendSessionConfig;
 
     public function __construct(?ConfigInterface $zendSessionConfig = null)
     {

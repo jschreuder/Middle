@@ -9,16 +9,17 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Twig\Environment;
 
 class TwigRendererSpec extends ObjectBehavior
 {
-    /** @var  \Twig_Environment */
+    /** @var  Environment */
     private $twig;
 
     /** @var  ResponseFactoryInterface */
     private $responseFactory;
 
-    public function let(\Twig_Environment $twig, ResponseFactoryInterface $responseFactory)
+    public function let(Environment $twig, ResponseFactoryInterface $responseFactory)
     {
         $this->twig = $twig;
         $this->responseFactory = $responseFactory;

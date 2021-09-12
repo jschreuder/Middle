@@ -11,7 +11,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": ">=7.1",
+        "php": ">=8.0",
         "ext-json": "*",
         "psr/http-message": "^1.0",
         "psr/log": "^1.0",
@@ -19,13 +19,13 @@
         "psr/http-factory": "^1.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "^3.0",
-        "henrikbjorn/phpspec-code-coverage": "^3.0",
-        "twig/twig": "^1.24",
-        "zendframework/zend-session": "^2.7",
-        "lcobucci/jwt": "^3.1",
-        "dflydev/fig-cookies": "^1.0",
-        "symfony/routing": "^3.1"
+        "phpspec/phpspec": "^6.2",
+        "friends-of-phpspec/phpspec-code-coverage": "^6.1",
+        "twig/twig": "^3.0",
+        "laminas/laminas-session": "^2.11",
+        "lcobucci/jwt": "^4.1",
+        "dflydev/fig-cookies": "^3.0",
+        "symfony/routing": "^5.3"
     },
     "suggest": {
         "twig/twig": "Required when using the TwigRenderer view-engine implementation",

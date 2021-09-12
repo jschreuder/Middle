@@ -7,11 +7,8 @@ final class Session implements SessionInterface
     const FLASH_DATA_META_KEY = '_flash_data_keys';
     const FLASH_DATA_KEY_PREFIX = '_flash_data.';
 
-    /** @var  array */
-    private $sessionData;
-
-    /** @var  bool */
-    private $changed = false;
+    private array $sessionData;
+    private bool $changed = false;
 
     public function __construct(array $sessionData = [])
     {
@@ -42,7 +39,7 @@ final class Session implements SessionInterface
         return isset($this->sessionData[$key]);
     }
 
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         return $this->sessionData[$key] ?? null;
     }
@@ -58,7 +55,7 @@ final class Session implements SessionInterface
         return isset($this->sessionData[self::FLASH_DATA_KEY_PREFIX . $key]);
     }
 
-    public function getFlash(string $key)
+    public function getFlash(string $key): mixed
     {
         return $this->sessionData[self::FLASH_DATA_KEY_PREFIX . $key] ?? null;
     }
@@ -70,7 +67,6 @@ final class Session implements SessionInterface
         $this->sessionData[self::FLASH_DATA_KEY_PREFIX . $key] = $value;
     }
 
-    /** @return  void */
     private function markFlashKey(string $key)
     {
         $this->sessionData[self::FLASH_DATA_META_KEY][$key] = 1;

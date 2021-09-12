@@ -10,8 +10,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class SessionMiddleware implements MiddlewareInterface
 {
-    /** @var  SessionProcessorInterface */
-    private $sessionProcessor;
+    private SessionProcessorInterface $sessionProcessor;
 
     public function __construct(SessionProcessorInterface $sessionProcessor)
     {

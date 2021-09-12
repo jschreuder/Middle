@@ -5,16 +5,14 @@ namespace jschreuder\Middle\View;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Twig\Environment;
 
 final class TwigRenderer implements RendererInterface
 {
-    /** @var  \Twig_Environment */
-    private $twig;
+    private Environment $twig;
+    private ResponseFactoryInterface $responseFactory;
 
-    /** @var  ResponseFactoryInterface */
-    private $responseFactory;
-
-    public function __construct(\Twig_Environment $twig, ResponseFactoryInterface $responseFactory)
+    public function __construct(Environment $twig, ResponseFactoryInterface $responseFactory)
     {
         $this->twig = $twig;
         $this->responseFactory = $responseFactory;

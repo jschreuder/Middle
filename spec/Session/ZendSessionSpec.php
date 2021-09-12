@@ -3,9 +3,9 @@
 namespace spec\jschreuder\Middle\Session;
 
 use jschreuder\Middle\Session\ZendSession;
+use Laminas\Session\Container;
+use Laminas\Session\SessionManager;
 use PhpSpec\ObjectBehavior;
-use Zend\Session\Container;
-use Zend\Session\SessionManager;
 
 class ZendSessionSpec extends ObjectBehavior
 {

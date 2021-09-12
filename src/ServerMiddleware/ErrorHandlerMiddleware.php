@@ -11,11 +11,8 @@ use Psr\Log\LoggerInterface;
 
 final class ErrorHandlerMiddleware implements MiddlewareInterface
 {
-    /** @var  LoggerInterface */
-    private $logger;
-
-    /** @var  ControllerInterface */
-    private $errorController;
+    private LoggerInterface $logger;
+    private ControllerInterface $errorController;
 
     public function __construct(LoggerInterface $logger, ControllerInterface $errorController)
     {

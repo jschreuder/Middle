@@ -6,15 +6,13 @@ interface SessionInterface
 {
     public function has(string $key): bool;
 
-    /** @return  mixed */
-    public function get(string $key);
+    public function get(string $key): mixed;
 
     public function set(string $key, $value): void;
 
     public function hasFlash(string $key): bool;
 
-    /** @return  mixed */
-    public function getFlash(string $key);
+    public function getFlash(string $key): mixed;
 
     public function setFlash(string $key, $value): void;
 

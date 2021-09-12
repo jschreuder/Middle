@@ -11,7 +11,6 @@ interface RequestValidatorInterface
      * Validate the request's contents and throw ValidationFailedException
      * on failure.
      *
-     * @return  void
      * @throws  ValidationFailedException
      */
     public function validateRequest(ServerRequestInterface $request): void;

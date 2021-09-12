@@ -12,14 +12,9 @@ use Symfony\Component\Routing\RouteCollection;
 
 final class SymfonyRouter implements RouterInterface
 {
-    /** @var  string */
-    private $baseUrl;
-
-    /** @var  RouteCollection */
-    private $router;
-
-    /** @var  SymfonyUrlGenerator */
-    private $generator;
+    private string $baseUrl;
+    private RouteCollection $router;
+    private SymfonyUrlGenerator $generator;
 
     public function __construct(string $baseUrl)
     {
@@ -69,7 +64,6 @@ final class SymfonyRouter implements RouterInterface
         return $this->generator;
     }
 
-    /** @return  void */
     public function registerRoutes(RoutingProviderInterface $routingProvider): void
     {
         $routingProvider->registerRoutes($this);

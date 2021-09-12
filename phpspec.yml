@@ -1,11 +1,11 @@
 suites:
-    acme_suite:
+    middle:
         namespace: jschreuder\Middle
         psr4_prefix: jschreuder\Middle
 
 extensions:
-    PhpSpecCodeCoverage\CodeCoverageExtension:
-      format:
-          - clover
-      output:
-          clover: coverage.xml
+    FriendsOfPhpSpec\PhpSpec\CodeCoverage\CodeCoverageExtension:
+        format:
+            - clover
+        output:
+            clover: coverage.xml

@@ -8,8 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class ApplicationStack implements ApplicationStackInterface
 {
-    /** @var  \SplStack | MiddlewareInterface[] */
-    private $stack;
+    private \SplStack $stack;
 
     public function __construct(MiddlewareInterface ...$middlewares)
     {

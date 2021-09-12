@@ -4,12 +4,12 @@ namespace spec\jschreuder\Middle\Session;
 
 use jschreuder\Middle\Session\SessionInterface;
 use jschreuder\Middle\Session\ZendSessionProcessor;
+use Laminas\Session\Config\ConfigInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
-use Zend\Session\Config\ConfigInterface;
 
 class ZendSessionProcessorSpec extends ObjectBehavior
 {
