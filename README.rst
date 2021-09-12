@@ -18,12 +18,12 @@ for which the default implementation can can be either replaced or decorated.
 The implementations can be atomic in nature: just performing one task. Composing
 complex capabilities by choosing which simple middlewares you decorate or add
 to the stack. Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4, PSR-7,
-PSR-15 and PSR-17; aimed at PHP 7.1.
+PSR-15 and PSR-17; as of version 2.0 aimed at PHP 8.0.
 
 Check out the `Middle skeleton <https://github.com/jschreuder/Middle-skeleton>`_
 application to get an example setup running quickly.
 
-*Note: all examples use Zend Diactoros, but any PSR-7 compatible library will
+*Note: all examples use Laminas Diactoros, but any PSR-7 compatible library will
 work as well.*
 
 ----------------------------
@@ -33,19 +33,19 @@ Running a Middle application
 The heart of an application build with Middle is the
 ``ApplicationStackInterface`` which just takes a PSR ``ServerRequestInterface``
 and must return a ``ResponseInterface``. Running it, after having set it up,
-will look as follows (using Zend Diactoros as PSR-7 implementation):
+will look as follows (using Laminas Diactoros as PSR-7 implementation):
 
 .. code-block:: php
 
     <?php
     // Create Request
-    $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+    $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
 
     // Render the response by processing the request
     $response = $app->process($request);
 
     // And output it
-    (new Zend\Diactoros\Response\SapiEmitter())->emit($response);
+    (new Laminas\Diactoros\Response\SapiEmitter())->emit($response);
 
 ---------------------
 Minimal default setup
@@ -64,7 +64,7 @@ order.
     $router = new Middle\Router\SymfonyRouter('http://localhost');
     $fallbackController = Middle\Controller\CallableController::fromCallable(
         function () {
-            return new Zend\Diactoros\Response\JsonResponse(['error'], 400);
+            return new Laminas\Diactoros\Response\JsonResponse(['error'], 400);
         }
     );
 
@@ -83,7 +83,7 @@ With that setup we can now add some routes (using the ``$router`` from above):
     // Using the convenience method for GET request on '/'
     $router->get('home', '/',
         Middle\Controller\CallableController::factoryFromCallable(function () {
-            return new Zend\Diactoros\Response\JsonResponse([
+            return new Laminas\Diactoros\Response\JsonResponse([
                 'message' => 'Welcome to our homepage',
             ]);
         })
@@ -110,7 +110,7 @@ sessions & error handling on top of the previous example.
     // Now let's also make sessions available on the request
     $app = $app->withMiddleware(
         new Middle\ServerMiddleware\SessionMiddleware(
-            new Middle\Session\ZendSessionProcessor()
+            new Middle\Session\LaminasSessionProcessor()
         )
     );
 
@@ -119,7 +119,7 @@ sessions & error handling on top of the previous example.
         new Middle\ServerMiddleware\ErrorHandlerMiddleware(
             new Monolog\Logger(...),
             function (Psr\Http\Message\ServerRequestInterface $request, \Throwable $exception) {
-                return new Zend\Diactoros\Response\JsonResponse(['error'], 500);
+                return new Laminas\Diactoros\Response\JsonResponse(['error'], 500);
             }
         )
     );
@@ -150,7 +150,7 @@ The example below uses the included Twig renderer:
     // Setup the renderer for Twig with a Twig_Environment instance and a
     // PSR-17 Response factory for generating the Response object
     $renderer = new Middle\View\TwigRenderer(
-        new Twig_Environment(...),
+        new Twig\Environment(...),
         $responseFactory
     );
 
@@ -237,13 +237,10 @@ Included services
 There's a few services included that all have their default implementations
 and may be replaced or decorated as you wish:
 
-* ``SessionProcessorInterface`` with its default option depending on either
-  ``zendframework/zend-session`` or a combination of ``lcobucci/jwt`` and
-  ``dflydev/fig-cookies`` for JWT based sessions. It allows for setting &
-  getting values, destroying the session or rotating its ID. The Zend version
-  can be loaded using the ``ZendSessionProcessor``, JWT based sessions
-  can be loaded using the ``JwtSessionProcessor``. Both are loaded through the
-  ``SessionMiddleware`` as shown above.
+* ``SessionProcessorInterface`` with its default option depending on
+  ``laminas/laminas-session``. It allows for setting & getting values, 
+  destroying the session or rotating its ID. The ``LaminasSessionProcessor``
+  can be loaded through the ``SessionMiddleware`` as shown above.
 
 * ``RouterInterface`` with its default depending on Symfony Routing component.
   It is loaded through the ``RoutingMiddleware`` as shown above. It has methods
@@ -264,9 +261,9 @@ Questions with answers
 1. *Another micro-framework... why?*
    I created an application using Silex, but it got in my way. Also I prefer
    PSR-7 over Symfony's implementation. I started refactoring it out and
-   replaced it with just its Routing component, Twig, and Zend's Diactoros and
-   Session libraries. After a while I realised I created a microframework in
-   its own right and extracted it from my application.
+   replaced it with just its Routing component, Twig, and Laminas's Diactoros 
+   and Session libraries. After a while I realised I created a microframework 
+   in its own right and extracted it from my application.
 
 2. *Why are all classes final?*
    The intend is to follow the SOLID `Open/Closed principle
@@ -279,7 +276,7 @@ Questions with answers
    replace any class, but not modify how they work internally. As such only
    the interfaces are part of this framework's API.
 
-3. *Do I have to use Twig, Symfony's router or Zend's Session library?*
+3. *Do I have to use Twig, Symfony's router or Laminas's Session library?*
    No, but there are only some batteries included. The ones provided are
    implemented using those packages. You can replace those pretty easily by
    implementing the Routing or Session interfaces using another library.

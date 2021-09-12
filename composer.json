@@ -23,16 +23,12 @@
         "friends-of-phpspec/phpspec-code-coverage": "^6.1",
         "twig/twig": "^3.0",
         "laminas/laminas-session": "^2.11",
-        "lcobucci/jwt": "^4.1",
-        "dflydev/fig-cookies": "^3.0",
         "symfony/routing": "^5.3"
     },
     "suggest": {
         "twig/twig": "Required when using the TwigRenderer view-engine implementation",
         "symfony/routing": "Required when using the SymfonyRouter implementation",
-        "zendframework/zend-session": "Required when using the ZendSession implementation",
-        "lcobucci/jwt": "Required when using the JwtSession implementation",
-        "dflydev/fig-cookies": "Required when using the JwtSession implementation"
+        "laminas/laminas-session": "Required when using the ZendSession implementation"
     },
     "config": {
         "bin-dir": "bin"
