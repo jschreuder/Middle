@@ -56,6 +56,7 @@ class RequestHandlerSpec extends ObjectBehavior
     {
         $stack = new \SplStack();
         $stack->push($middleware->getWrappedObject());
+        $stack->push($middleware->getWrappedObject());
 
         $this->beConstructedWith($stack);
         $this->shouldHaveType(RequestHandler::class);
