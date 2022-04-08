@@ -75,6 +75,20 @@ class JsonRequestParserMiddlewareSpec extends ObjectBehavior
         $this->process($request1, $requestHandler)->shouldReturn($response);
     }
 
+    public function it_cannot_parse_invalid_json(
+        ServerRequestInterface $request,
+        StreamInterface $body,
+        RequestHandlerInterface $requestHandler,
+        ResponseInterface $response
+    )
+    {
+        $body->getContents()->willReturn('{invalid,json...code}');
+        $request->getBody()->willReturn($body);
+        $request->getHeaderLine('Content-Type')->willReturn('application/json');
+
+        $this->shouldThrow(\InvalidArgumentException::class)->duringProcess($request, $requestHandler);
+    }
+
     public function it_can_do_nothing(
         ServerRequestInterface $request,
         RequestHandlerInterface $requestHandler,
