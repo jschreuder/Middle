@@ -18,16 +18,12 @@ build:
             version: 8.1
             ini:
                 'xdebug.mode': 'coverage'
-    tests:
-        override:
-            -
-                command: 'bin/phpspec run'
-                coverage:
-                    file: 'coverage.xml'
-                    format: 'php-clover'
-
     nodes:
         analysis:
             tests:
                 override:
                     - php-scrutinizer-run
+                    - command: 'bin/phpspec run'
+                        coverage:
+                            file: 'coverage.xml'
+                            format: 'php-clover'
