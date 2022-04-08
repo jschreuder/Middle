@@ -1,3 +1,16 @@
+filter:
+    excluded_paths:
+        - 'spec/*'
+
+checks:
+    php: true
+
+coding_style:
+    php:
+        spaces:
+            around_operators:
+                concatenation: true
+
 build:
     image: default-bionic
     environment:
@@ -12,3 +25,9 @@ build:
                 coverage:
                     file: 'coverage.xml'
                     format: 'php-clover'
+
+    nodes:
+        analysis:
+            tests:
+                override:
+                    - php-scrutinizer-run
