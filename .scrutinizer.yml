@@ -19,11 +19,14 @@ build:
             ini:
                 'xdebug.mode': 'coverage'
     nodes:
-        analysis:
+        my-tests-with-coverage:
             tests:
                 override:
-                    - php-scrutinizer-run
                     - command: 'bin/phpspec run'
                         coverage:
                             file: 'coverage.xml'
                             format: 'php-clover'
+        analysis:
+            tests:
+                override:
+                    - php-scrutinizer-run
