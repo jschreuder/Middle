@@ -26,7 +26,7 @@ build:
         my_tests_with_coverage:
             tests:
                 override:
-                    - command: 'bin/phpspec run'
-                        coverage:
-                            file: 'coverage.xml'
-                            format: 'php-clover'
+                  - command: 'bin/phpspec run'
+                    coverage:
+                        file: 'coverage.xml'
+                        format: 'php-clover'
