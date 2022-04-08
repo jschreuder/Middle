@@ -11,19 +11,19 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ext-json": "*",
         "psr/http-message": "^1.0",
-        "psr/log": "^1.0",
+        "psr/log": "^3.0",
         "psr/http-server-middleware": "^1.0",
         "psr/http-factory": "^1.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "^6.2",
+        "phpspec/phpspec": "^7.2",
         "friends-of-phpspec/phpspec-code-coverage": "^6.1",
         "twig/twig": "^3.0",
-        "laminas/laminas-session": "^2.11",
-        "symfony/routing": "^5.3"
+        "laminas/laminas-session": "^2.12",
+        "symfony/routing": "^6.0"
     },
     "suggest": {
         "twig/twig": "Required when using the TwigRenderer view-engine implementation",
