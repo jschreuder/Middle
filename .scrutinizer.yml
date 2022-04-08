@@ -19,6 +19,10 @@ build:
             ini:
                 'xdebug.mode': 'coverage'
     nodes:
+        analysis:
+            tests:
+                override:
+                    - php-scrutinizer-run
         my-tests-with-coverage:
             tests:
                 override:
@@ -26,7 +30,3 @@ build:
                         coverage:
                             file: 'coverage.xml'
                             format: 'php-clover'
-        analysis:
-            tests:
-                override:
-                    - php-scrutinizer-run
