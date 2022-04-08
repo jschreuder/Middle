@@ -23,7 +23,7 @@ build:
             tests:
                 override:
                     - php-scrutinizer-run
-        my-tests-with-coverage:
+        my_tests_with_coverage:
             tests:
                 override:
                     - command: 'bin/phpspec run'
