@@ -12,3 +12,9 @@ build:
                 coverage:
                     file: 'coverage.xml'
                     format: 'php-clover'
+    nodes:
+        analysis:
+            tests:
+                override:
+                  - php-scrutinizer-run
+                  - phpcs-run
