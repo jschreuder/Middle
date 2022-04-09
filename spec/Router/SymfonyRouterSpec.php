@@ -3,6 +3,7 @@
 namespace spec\jschreuder\Middle\Router;
 
 use jschreuder\Middle\Controller\ControllerInterface;
+use jschreuder\Middle\Router\NoRouteMatch;
 use jschreuder\Middle\Router\RouteMatch;
 use jschreuder\Middle\Router\RoutingProviderInterface;
 use jschreuder\Middle\Router\SymfonyRouter;
@@ -36,7 +37,7 @@ class SymfonyRouterSpec extends ObjectBehavior
         $uri->getQuery()->willReturn('');
 
         $routeMatch = $this->parseRequest($request);
-        $routeMatch->shouldHaveType(RouteMatch::class);
+        $routeMatch->shouldHaveType(NoRouteMatch::class);
         $routeMatch->isMatch()->shouldReturn(false);
     }
 

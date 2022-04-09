@@ -3,6 +3,7 @@
 namespace spec\jschreuder\Middle\ServerMiddleware;
 
 use jschreuder\Middle\Controller\ControllerInterface;
+use jschreuder\Middle\Router\NoRouteMatch;
 use jschreuder\Middle\Router\RouteMatch;
 use jschreuder\Middle\Router\RouterInterface;
 use jschreuder\Middle\ServerMiddleware\RoutingMiddleware;
@@ -42,7 +43,7 @@ class RoutingMiddlewareSpec extends ObjectBehavior
     )
     {
         $attributes = ['v1' => 1, 'v2' => 2];
-        $routeMatch = new RouteMatch(true, $controller->getWrappedObject(), $attributes);
+        $routeMatch = new RouteMatch($controller->getWrappedObject(), $attributes);
         $this->router->parseRequest($request1)->willReturn($routeMatch);
 
         $request1->withAttribute('controller', $controller)->willReturn($request2);
@@ -61,7 +62,7 @@ class RoutingMiddlewareSpec extends ObjectBehavior
         RequestHandlerInterface $requestHandler
     )
     {
-        $routeMatch = new RouteMatch(false);
+        $routeMatch = new NoRouteMatch();
         $this->router->parseRequest($request1)->willReturn($routeMatch);
 
         $request1->withAttribute('controller', $this->fallbackController)->willReturn($request2);
