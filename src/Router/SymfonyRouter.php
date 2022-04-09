@@ -68,19 +68,6 @@ final class SymfonyRouter implements RouterInterface
         $routingProvider->registerRoutes($this);
     }
 
-    public function get(
-        string $name,
-        string $path,
-        callable $controllerFactory,
-        array $defaults = [],
-        array $requirements = [],
-        ?\Closure $configCallback = null
-    ): void
-    {
-        $symfonyRoute = $this->match($name, 'GET', $path, $controllerFactory, $defaults, $requirements);
-        $configCallback && $configCallback($symfonyRoute);
-    }
-
     public function match(
         string $name,
         string $methods,
@@ -94,8 +81,22 @@ final class SymfonyRouter implements RouterInterface
         $symfonyRoute = new Route($path, $defaults, $requirements);
         $symfonyRoute->setMethods(explode('|', $methods))
             ->setDefault('controller', $controllerFactory);
+        if ($configCallback) {
+            $configCallback($symfonyRoute);
+        }
         $this->router->add($name, $symfonyRoute);
-        $configCallback && $configCallback($symfonyRoute);
+    }
+
+    public function get(
+        string $name,
+        string $path,
+        callable $controllerFactory,
+        array $defaults = [],
+        array $requirements = [],
+        ?\Closure $configCallback = null
+    ): void
+    {
+        $this->match($name, 'GET', $path, $controllerFactory, $defaults, $requirements, $configCallback);
     }
 
     public function post(
@@ -107,8 +108,7 @@ final class SymfonyRouter implements RouterInterface
         ?\Closure $configCallback = null
     ): void
     {
-        $symfonyRoute = $this->match($name, 'POST', $path, $controllerFactory, $defaults, $requirements);
-        $configCallback && $configCallback($symfonyRoute);
+        $this->match($name, 'POST', $path, $controllerFactory, $defaults, $requirements, $configCallback);
     }
 
     public function put(
@@ -120,8 +120,7 @@ final class SymfonyRouter implements RouterInterface
         ?\Closure $configCallback = null
     ): void
     {
-        $symfonyRoute = $this->match($name, 'PUT', $path, $controllerFactory, $defaults, $requirements);
-        $configCallback && $configCallback($symfonyRoute);
+        $this->match($name, 'PUT', $path, $controllerFactory, $defaults, $requirements, $configCallback);
     }
 
     public function patch(
@@ -133,8 +132,7 @@ final class SymfonyRouter implements RouterInterface
         ?\Closure $configCallback = null
     ): void
     {
-        $symfonyRoute = $this->match($name, 'PATCH', $path, $controllerFactory, $defaults, $requirements);
-        $configCallback && $configCallback($symfonyRoute);
+        $this->match($name, 'PATCH', $path, $controllerFactory, $defaults, $requirements, $configCallback);
     }
 
     public function delete(
@@ -146,7 +144,6 @@ final class SymfonyRouter implements RouterInterface
         ?\Closure $configCallback = null
     ): void
     {
-        $symfonyRoute = $this->match($name, 'DELETE', $path, $controllerFactory, $defaults, $requirements);
-        $configCallback && $configCallback($symfonyRoute);
+        $this->match($name, 'DELETE', $path, $controllerFactory, $defaults, $requirements, $configCallback);
     }
 }
