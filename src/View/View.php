@@ -4,20 +4,11 @@ namespace jschreuder\Middle\View;
 
 final class View implements ViewInterface
 {
-    /** @var  int */
-    private $statusCode;
-
-    /** @var  array */
-    private $headers;
-
-    /** @var  string */
-    private $contentType;
-
-    /** @var  string */
-    private $template;
-
-    /** @var  array */
-    private $parameters;
+    private int $statusCode;
+    private array $headers;
+    private string $contentType;
+    private string $template;
+    private array $parameters;
 
     public function __construct(
         string $template,
@@ -44,7 +35,6 @@ final class View implements ViewInterface
         return $this->headers;
     }
 
-    /** @return  void */
     public function setHeader(string $key, string $value): void
     {
         $this->headers[$key] = $value;
@@ -65,7 +55,6 @@ final class View implements ViewInterface
         return $this->parameters;
     }
 
-    /** @return  void */
     public function setParameter(string $key, $value): void
     {
         $this->parameters[$key] = $value;

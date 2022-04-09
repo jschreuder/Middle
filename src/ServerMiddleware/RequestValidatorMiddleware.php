@@ -11,10 +11,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class RequestValidatorMiddleware implements MiddlewareInterface
 {
-    /** @var  callable */
-    private $errorHandler;
+    private \Closure $errorHandler;
 
-    public function __construct(callable $errorHandler)
+    public function __construct(\Closure $errorHandler)
     {
         $this->errorHandler = $errorHandler;
     }

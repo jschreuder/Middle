@@ -4,11 +4,8 @@ namespace jschreuder\Middle\View;
 
 final class RedirectView implements ViewInterface
 {
-    /** @var  int */
-    private $statusCode;
-
-    /** @var  array */
-    private $headers = [];
+    private int $statusCode;
+    private array $headers = [];
 
     public function __construct(string $location, int $statusCode = 302)
     {

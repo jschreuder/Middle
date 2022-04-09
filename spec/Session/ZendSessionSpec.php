@@ -15,11 +15,13 @@ class ZendSessionSpec extends ObjectBehavior
     /** @var  Container */
     private $container;
 
-    public function let(SessionManager $sessionManager, Container $container)
+    public function let(SessionManager $sessionManager)
     {
+        $_SESSION = []; // fugly fix to empty session each time to test with Container
+        $this->container = new Container();
+
         $this->sessionManager = $sessionManager;
-        $this->container = $container;
-        $this->beConstructedWith($sessionManager, $container);
+        $this->beConstructedWith($sessionManager, $this->container);
     }
 
     public function it_is_initializable()
@@ -29,42 +31,28 @@ class ZendSessionSpec extends ObjectBehavior
 
     public function it_can_check()
     {
-        $this->container->offsetExists('test')->willReturn(true);
+        $this->container['test'] = 'exists';
         $this->has('test')->shouldBe(true);
+    }
+
+    public function it_can_get()
+    {
+        $this->container['test'] = 'something';
+        $this->hasFlash('test')->shouldBe(false);
+        $this->get('test')->shouldBe('something');
     }
 
     public function it_can_set()
     {
         $this->hasChanged()->shouldBe(false);
-        $this->container->offsetSet('test', 'something')->shouldBeCalled();
         $this->set('test', 'something');
+        $this->get('test')->shouldReturn('something');
         $this->hasChanged()->shouldBe(true);
-    }
-
-    public function it_can_get()
-    {
-        $this->container = new \ArrayObject();
-        $this->container->offsetSet('test', 'something');
-
-        // Prophecy balks at returning by reference, so we'll just hack another container in there
-        $uglyWorkaround = new \ReflectionProperty($this->getWrappedObject(), 'container');
-        $uglyWorkaround->setAccessible(true);
-        $uglyWorkaround->setValue($this->getWrappedObject(), $this->container);
-
-        $this->hasFlash('test')->shouldBe(false);
-        $this->get('test')->shouldBe('something');
     }
 
     public function it_can_get_flash_vars()
     {
-        $this->container = new \ArrayObject();
-        $this->container->offsetSet(ZendSession::FLASH_DATA_KEY_PREFIX . 'test', 'something');
-
-        // Prophecy balks at returning by reference, so we'll just hack another container in there
-        $uglyWorkaround = new \ReflectionProperty($this->getWrappedObject(), 'container');
-        $uglyWorkaround->setAccessible(true);
-        $uglyWorkaround->setValue($this->getWrappedObject(), $this->container);
-
+        $this->container[ZendSession::FLASH_DATA_KEY_PREFIX . 'test'] = 'something';
         $this->has('test')->shouldBe(false);
         $this->hasFlash('test')->shouldBe(true);
         $this->getFlash('test')->shouldBe('something');
@@ -72,9 +60,8 @@ class ZendSessionSpec extends ObjectBehavior
 
     public function it_can_set_flash_vars()
     {
-        $this->container->offsetSet(ZendSession::FLASH_DATA_KEY_PREFIX . 'test', 'something')->shouldBeCalled();
-        $this->container->setExpirationHops(1, [ZendSession::FLASH_DATA_KEY_PREFIX . 'test'])->shouldBeCalled();
         $this->setFlash('test', 'something');
+        $this->getFlash('test')->shouldReturn('something');
     }
 
     public function it_can_end_a_session()
@@ -91,20 +78,19 @@ class ZendSessionSpec extends ObjectBehavior
 
     public function it_can_check_if_empty()
     {
-        $this->container->count()->willReturn(0);
         $this->isEmpty()->shouldBe(true);
     }
 
     public function it_can_check_if_non_empty()
     {
-        $this->container->count()->willReturn(1);
+        $this->set('test', 'something');
         $this->isEmpty()->shouldBe(false);
     }
 
     public function it_can_get_array_representation_of_session()
     {
         $array = ['test' => 'data'];
-        $this->container->getArrayCopy()->willReturn($array);
+        $this->container->exchangeArray($array);
         $this->toArray()->shouldBe($array);
     }
 }

@@ -4,7 +4,7 @@ namespace jschreuder\Middle\Exception;
 
 final class ValidationFailedException extends InputException
 {
-    private $validationErrors;
+    private array $validationErrors;
 
     public function __construct(array $validationErrors)
     {

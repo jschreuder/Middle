@@ -10,7 +10,7 @@ final class ZendSession implements SessionInterface
     const FLASH_DATA_KEY_PREFIX = '_flash_data.';
 
     private SessionManager $sessionManager;
-    private \ArrayAccess $container;
+    private Container $container;
     private bool $changed = false;
 
     public function __construct(SessionManager $sessionManager, Container $container)
@@ -66,7 +66,7 @@ final class ZendSession implements SessionInterface
 
     public function isEmpty(): bool
     {
-        return $this->container->count() === 0;
+        return empty($this->toArray());
     }
 
     public function hasChanged(): bool
