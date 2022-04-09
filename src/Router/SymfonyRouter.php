@@ -36,12 +36,11 @@ final class SymfonyRouter implements RouterInterface
             $routeMatch = $matcher->match($request->getUri()->getPath());
 
             return new RouteMatch(
-                true,
                 ($routeMatch['controller'])(),
                 array_diff_key($routeMatch, array_flip(['controller', '_route']))
             );
         } catch (SymfonyRoutingException $exception) {
-            return new RouteMatch(false);
+            return new NoRouteMatch();
         }
     }
 
