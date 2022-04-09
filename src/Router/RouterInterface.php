@@ -22,7 +22,7 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    );
+    ): void;
 
     /** Add route for GET request */
     public function get(
@@ -31,7 +31,7 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    );
+    ): void;
 
     /** Add route for POST request */
     public function post(
@@ -40,7 +40,7 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    );
+    ): void;
 
     /** Add route for PUT request */
     public function put(
@@ -49,7 +49,7 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    );
+    ): void;
 
     /** Add route for PATCH request */
     public function patch(
@@ -58,7 +58,7 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    );
+    ): void;
 
     /** Add route for DELETE request */
     public function delete(
@@ -67,5 +67,5 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = []
-    );
+    ): void;
 }
