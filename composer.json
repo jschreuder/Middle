@@ -28,7 +28,7 @@
     "suggest": {
         "twig/twig": "Required when using the TwigRenderer view-engine implementation",
         "symfony/routing": "Required when using the SymfonyRouter implementation",
-        "laminas/laminas-session": "Required when using the ZendSession implementation"
+        "laminas/laminas-session": "Required when using the LaminasSession implementation"
     },
     "config": {
         "bin-dir": "bin"
