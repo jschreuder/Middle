@@ -8,13 +8,11 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class RedirectRendererMiddleware implements RendererInterface
 {
-    private RendererInterface $renderer;
-    private ResponseFactoryInterface $responseFactory;
-
-    public function __construct(RendererInterface $renderer, ResponseFactoryInterface $responseFactory)
+    public function __construct(
+        private RendererInterface $renderer,
+        private ResponseFactoryInterface $responseFactory
+    )
     {
-        $this->renderer = $renderer;
-        $this->responseFactory = $responseFactory;
     }
 
     public function render(ServerRequestInterface $request, ViewInterface $view): ResponseInterface

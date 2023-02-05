@@ -3,7 +3,7 @@
 namespace spec\jschreuder\Middle\Session;
 
 use jschreuder\Middle\Session\SessionInterface;
-use jschreuder\Middle\Session\ZendSessionProcessor;
+use jschreuder\Middle\Session\LaminasSessionProcessor;
 use Laminas\Session\Config\ConfigInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -11,20 +11,20 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
-class ZendSessionProcessorSpec extends ObjectBehavior
+class LaminasSessionProcessorSpec extends ObjectBehavior
 {
     /** @var  ConfigInterface */
-    private $zendSessionConfig;
+    private $laminasSessionConfig;
 
-    public function let(ConfigInterface $zendSessionConfig)
+    public function let(ConfigInterface $laminasSessionConfig)
     {
-        $this->zendSessionConfig = $zendSessionConfig;
-        $this->beConstructedWith($zendSessionConfig);
+        $this->laminasSessionConfig = $laminasSessionConfig;
+        $this->beConstructedWith($laminasSessionConfig);
     }
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType(ZendSessionProcessor::class);
+        $this->shouldHaveType(LaminasSessionProcessor::class);
     }
 
     public function it_can_process_a_request(

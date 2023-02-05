@@ -9,13 +9,11 @@ use Twig\Environment;
 
 final class TwigRenderer implements RendererInterface
 {
-    private Environment $twig;
-    private ResponseFactoryInterface $responseFactory;
-
-    public function __construct(Environment $twig, ResponseFactoryInterface $responseFactory)
+    public function __construct(
+        private Environment $twig,
+        private ResponseFactoryInterface $responseFactory
+    )
     {
-        $this->twig = $twig;
-        $this->responseFactory = $responseFactory;
     }
 
     public function render(ServerRequestInterface $request, ViewInterface $view): ResponseInterface

@@ -11,11 +11,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class RequestValidatorMiddleware implements MiddlewareInterface
 {
-    private \Closure $errorHandler;
-
-    public function __construct(\Closure $errorHandler)
+    public function __construct(
+        private \Closure $errorHandler
+    )
     {
-        $this->errorHandler = $errorHandler;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface

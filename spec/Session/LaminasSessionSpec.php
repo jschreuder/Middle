@@ -2,12 +2,12 @@
 
 namespace spec\jschreuder\Middle\Session;
 
-use jschreuder\Middle\Session\ZendSession;
+use jschreuder\Middle\Session\LaminasSession;
 use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
 use PhpSpec\ObjectBehavior;
 
-class ZendSessionSpec extends ObjectBehavior
+class LaminasSessionSpec extends ObjectBehavior
 {
     /** @var  SessionManager */
     private $sessionManager;
@@ -26,7 +26,7 @@ class ZendSessionSpec extends ObjectBehavior
 
     public function it_is_initializable()
     {
-        $this->shouldHaveType(ZendSession::class);
+        $this->shouldHaveType(LaminasSession::class);
     }
 
     public function it_can_check()
@@ -52,7 +52,7 @@ class ZendSessionSpec extends ObjectBehavior
 
     public function it_can_get_flash_vars()
     {
-        $this->container[ZendSession::FLASH_DATA_KEY_PREFIX . 'test'] = 'something';
+        $this->container[LaminasSession::FLASH_DATA_KEY_PREFIX . 'test'] = 'something';
         $this->has('test')->shouldBe(false);
         $this->hasFlash('test')->shouldBe(true);
         $this->getFlash('test')->shouldBe('something');

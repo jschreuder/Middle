@@ -5,18 +5,17 @@ namespace jschreuder\Middle\Session;
 use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
 
-final class ZendSession implements SessionInterface
+final class LaminasSession implements SessionInterface
 {
     const FLASH_DATA_KEY_PREFIX = '_flash_data.';
 
-    private SessionManager $sessionManager;
-    private Container $container;
     private bool $changed = false;
 
-    public function __construct(SessionManager $sessionManager, Container $container)
+    public function __construct(
+        private SessionManager $sessionManager,
+        private Container $container
+    )
     {
-        $this->sessionManager = $sessionManager;
-        $this->container = $container;
     }
 
     public function has(string $key): bool

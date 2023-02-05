@@ -8,21 +8,20 @@ use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class ZendSessionProcessor implements SessionProcessorInterface
+final class LaminasSessionProcessor implements SessionProcessorInterface
 {
-    private ?ConfigInterface $zendSessionConfig;
-
-    public function __construct(?ConfigInterface $zendSessionConfig = null)
+    public function __construct(
+        private ?ConfigInterface $laminasSessionConfig = null
+    )
     {
-        $this->zendSessionConfig = $zendSessionConfig;
     }
 
     public function processRequest(ServerRequestInterface $request): ServerRequestInterface
     {
-        $sessionManager = new SessionManager($this->zendSessionConfig);
+        $sessionManager = new SessionManager($this->laminasSessionConfig);
         $container = new Container(str_replace('.', '_', $request->getUri()->getHost()), $sessionManager);
 
-        $session = new ZendSession($sessionManager, $container);
+        $session = new LaminasSession($sessionManager, $container);
         return $request->withAttribute('session', $session);
     }
 

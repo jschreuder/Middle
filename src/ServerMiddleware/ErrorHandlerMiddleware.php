@@ -11,13 +11,11 @@ use Psr\Log\LoggerInterface;
 
 final class ErrorHandlerMiddleware implements MiddlewareInterface
 {
-    private LoggerInterface $logger;
-    private ControllerInterface $errorController;
-
-    public function __construct(LoggerInterface $logger, ControllerInterface $errorController)
+    public function __construct(
+        private LoggerInterface $logger,
+        private ControllerInterface $errorController
+    )
     {
-        $this->logger = $logger;
-        $this->errorController = $errorController;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface

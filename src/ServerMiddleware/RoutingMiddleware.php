@@ -11,16 +11,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class RoutingMiddleware implements MiddlewareInterface
 {
-    private RouterInterface $router;
-    private ControllerInterface $fallbackController;
-
     public function __construct(
-        RouterInterface $router,
-        ControllerInterface $fallbackController
+        private RouterInterface $router,
+        private ControllerInterface $fallbackController
     )
     {
-        $this->router = $router;
-        $this->fallbackController = $fallbackController;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
