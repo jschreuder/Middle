@@ -12,18 +12,10 @@ coding_style:
                 concatenation: true
 
 build:
-    image: default-jammy
     environment:
         php:
-            ini:
-                'xdebug.mode': 'coverage'
+            version: 8.3
     nodes:
-        analysis:
-            environment:
-                php: 8.3
-            tests:
-                override:
-                    - php-scrutinizer-run
         pest:
             environment:
                 php: 8.3

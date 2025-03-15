@@ -18,7 +18,7 @@ for which the default implementation can can be either replaced or decorated.
 The implementations can be atomic in nature: just performing one task. Composing
 complex capabilities by choosing which simple middlewares you decorate or add
 to the stack. Also every component is NIH; PSR-1, PSR-2, PSR-3, PSR-4, PSR-7,
-PSR-15 and PSR-17; as of version 2.0 aimed at PHP 8.1.
+PSR-15 and PSR-17; as of version 2.0 aimed at PHP 8.3.
 
 Check out the `Middle skeleton <https://github.com/jschreuder/Middle-skeleton>`_
 application to get an example setup running quickly.
@@ -280,21 +280,3 @@ Questions with answers
    No, but there are only some batteries included. The ones provided are
    implemented using those packages. You can replace those pretty easily by
    implementing the Routing or Session interfaces using another library.
-
------------------
-Running Tests
------------------
-
-This project uses Pest PHP for testing. To run the tests, first install the dependencies:
-
-.. code-block:: bash
-
-    composer install
-
-Then run the tests with:
-
-.. code-block:: bash
-
-    ./vendor/bin/pest
-
-The tests are organized in the ``tests/`` directory following the PSR-4 structure of the source code.
