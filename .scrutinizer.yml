@@ -1,6 +1,6 @@
 filter:
     excluded_paths:
-        - 'spec/*'
+        - 'tests/*'
 
 checks:
     php: true
@@ -12,7 +12,7 @@ coding_style:
                 concatenation: true
 
 build:
-    image: default-bionic
+    image: default-jammy
     environment:
         php:
             ini:
@@ -20,16 +20,16 @@ build:
     nodes:
         analysis:
             environment:
-                php: 8.1
+                php: 8.3
             tests:
                 override:
                     - php-scrutinizer-run
-        phpspec:
+        pest:
             environment:
-                php: 8.1
+                php: 8.3
             tests:
                 override:
-                  - command: 'bin/phpspec run'
+                  - command: 'vendor/bin/pest --coverage --coverage-clover=coverage.xml'
                     coverage:
                         file: 'coverage.xml'
                         format: 'php-clover'

@@ -280,3 +280,21 @@ Questions with answers
    No, but there are only some batteries included. The ones provided are
    implemented using those packages. You can replace those pretty easily by
    implementing the Routing or Session interfaces using another library.
+
+-----------------
+Running Tests
+-----------------
+
+This project uses Pest PHP for testing. To run the tests, first install the dependencies:
+
+.. code-block:: bash
+
+    composer install
+
+Then run the tests with:
+
+.. code-block:: bash
+
+    ./vendor/bin/pest
+
+The tests are organized in the ``tests/`` directory following the PSR-4 structure of the source code.

@@ -11,7 +11,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ext-json": "*",
         "psr/http-message": "^1.0",
         "psr/log": "^2.0 || ^3.0",
@@ -19,11 +19,11 @@
         "psr/http-factory": "^1.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "^7.2",
-        "friends-of-phpspec/phpspec-code-coverage": "^6.1",
-        "twig/twig": "^3.0",
-        "laminas/laminas-session": "^2.12",
-        "symfony/routing": "^6.0"
+        "pestphp/pest": "^2.34",
+        "mockery/mockery": "^1.6",
+        "twig/twig": "^3.8",
+        "laminas/laminas-session": "^2.17",
+        "symfony/routing": "^7.0"
     },
     "suggest": {
         "twig/twig": "Required when using the TwigRenderer view-engine implementation",
@@ -31,11 +31,21 @@
         "laminas/laminas-session": "Required when using the LaminasSession implementation"
     },
     "config": {
-        "bin-dir": "bin"
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     },
     "autoload": {
         "psr-4": {
             "jschreuder\\Middle\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "pest"
     }
 }
