@@ -1,27 +1,30 @@
+build:
+  environment:
+    php:
+      version: 8.3.3
+  nodes:
+    analysis:
+      tests:
+        override:
+          - php-scrutinizer-run
+    pest:
+      tests:
+        override:
+          - command: 'vendor/bin/pest --coverage --coverage-clover=coverage.xml'
+            coverage:
+              file: 'coverage.xml'
+              format: 'php-clover'
 filter:
-    excluded_paths:
-        - 'tests/*'
+  excluded_paths:
+    - tests/*
+    - vendor/*
 
 checks:
-    php: true
+  php: true
+
 
 coding_style:
-    php:
-        spaces:
-            around_operators:
-                concatenation: true
-
-build:
-    environment:
-        php:
-            version: 8.3
-    nodes:
-        pest:
-            environment:
-                php: 8.3
-            tests:
-                override:
-                  - command: 'vendor/bin/pest --coverage --coverage-clover=coverage.xml'
-                    coverage:
-                        file: 'coverage.xml'
-                        format: 'php-clover'
+  php:
+    spaces:
+      around_operators:
+        concatenation: true
