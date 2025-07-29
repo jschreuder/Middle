@@ -209,29 +209,48 @@ $app = $app->withMiddleware(
 
 ## Advanced Features
 
+
 ### Request Validation and Filtering
 
-Controllers can implement `RequestValidatorInterface` and `RequestFilterInterface` to handle input validation and filtering automatically:
+Controllers can implement `RequestFilterInterface` and `RequestValidatorInterface` to handle input filtering and validation automatically:
 
 ```php
-class CreateUserController implements ControllerInterface, RequestValidatorInterface 
+class CreateUserController implements ControllerInterface, RequestFilterInterface, RequestValidatorInterface 
 {
+    public function filterRequest(ServerRequestInterface $request): ServerRequestInterface 
+    {
+        $data = $request->getParsedBody();
+        if (is_array($data)) {
+            $data['textfield'] = strip_tags(trim(data['textfield']));
+            $request = $request->withParsedBody($data);
+        }
+        
+        return $request;
+    }
+    
     public function validateRequest(ServerRequestInterface $request): void 
     {
         $data = $request->getParsedBody();
         if (empty($data['email'])) {
             throw new ValidationFailedException(['email' => 'Email is required']);
         }
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            throw new ValidationFailedException(['email' => 'Invalid email format']);
+        }
     }
     
     public function execute(ServerRequestInterface $request): ResponseInterface 
     {
-        // Request is guaranteed to be valid
+        // Request is guaranteed to be filtered and valid
         $data = $request->getParsedBody();
+        // $data['name'] has been stripped of HTML tags
+        // $data['email'] has been validated
         // ... create user
     }
 }
 ```
+
+The processing order is: **Filter → Validate → Execute**. This ensures validation always runs on clean data.
 
 ### Templating with Views
 
