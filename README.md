@@ -68,6 +68,65 @@ $middleware = new RoutingMiddleware($mockRouter, $mockController);
 
 **Standards Compliance**: Full PSR-1, PSR-2, PSR-3, PSR-4, PSR-7, PSR-15, and PSR-17 compliance. Not because we have to, but because standards represent solved problems.
 
+## Composition Over Framework Lock-in
+
+Middle doesn't compete with mature frameworks - it lets you **compose their proven components on your terms**. Instead of accepting a framework's architectural decisions, you define your own interfaces and adapt battle-tested libraries to fit your domain.
+
+```php
+// Your domain interface - exactly what your application needs
+interface UserRepositoryInterface 
+{
+    public function findByEmail(string $email): ?User;
+    public function save(User $user): void;
+    public function findActiveUsers(): array;
+}
+
+// Adapter that wraps Doctrine behind your interface
+class DoctrineUserRepository implements UserRepositoryInterface 
+{
+    public function __construct(private EntityManagerInterface $em) {}
+    
+    public function findByEmail(string $email): ?User 
+    {
+        return $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
+    }
+    
+    public function save(User $user): void 
+    {
+        $this->em->persist($user);
+        $this->em->flush();
+    }
+    
+    public function findActiveUsers(): array 
+    {
+        return $this->em->createQuery('SELECT u FROM User u WHERE u.active = true')
+                         ->getResult();
+    }
+}
+
+// Your controllers depend on YOUR interface, not Doctrine's
+class UserController implements ControllerInterface 
+{
+    public function __construct(private UserRepositoryInterface $repository) {}
+    
+    public function execute(ServerRequestInterface $request): ResponseInterface 
+    {
+        // Clean, domain-focused code
+        $users = $this->repository->findActiveUsers();
+        // ...
+    }
+}
+```
+
+This approach delivers:
+
+- **Library Independence**: Replace Doctrine with another ORM by implementing your interface
+- **Domain Clarity**: Your interfaces reflect business needs, not library abstractions  
+- **Future-Proof Evolution**: Library updates only require adapter changes, not application rewrites
+- **Focused Testing**: Mock exactly what your application needs, not complex library interfaces
+
+You get mature, battle-tested components (Symfony Routing, Laminas Diactoros) with complete architectural control.
+
 ## How It Works
 
 Middle is built around the **middleware pipeline pattern**. Your application is a stack of middleware that processes requests in LIFO (last in, first out) order:
