@@ -77,6 +77,44 @@ Like other micro-frameworks, Middle is for composing applications. Unlike them, 
 
 **Minimal Attack Surface**: The framework core is tiny, reducing security vulnerabilities and update risks. Your chosen components update independently.
 
+## Security Through Architecture
+
+### 🔒 **Minimal Attack Surface**
+Middle Framework's core contains almost no security-sensitive code. The entire framework is essentially middleware orchestration—no input parsing, no template engines, no ORMs, no file handling. What can't be exploited, won't be exploited.
+
+### 🛡️ **Security by Delegation**
+Critical security functionality is handled by specialized, battle-tested libraries that you choose and control:
+
+```php
+// Security-critical components are external and replaceable
+$app = $app->withMiddleware(
+    new RoutingMiddleware(
+        new SymfonyRouter($baseUrl),          // Symfony's battle-tested routing
+        $fallbackController
+    )
+);
+
+$app = $app->withMiddleware(
+    new SessionMiddleware(
+        new LaminasSessionProcessor()         // Laminas's proven session handling
+    )
+);
+```
+
+### 🔄 **Future-Proof Security Updates**
+When security vulnerabilities are discovered, updates happen in the concrete libraries—not the framework. Your application code remains unchanged:
+
+- **Symfony Router vulnerability?** → `composer update symfony/routing`
+- **Session handling issue?** → `composer update laminas/laminas-session`
+- **Template engine exploit?** → `composer update twig/twig`
+
+No framework rewrites, no breaking changes, no security debt.
+
+### **A Framework You'll Never Replace for Security**
+Traditional frameworks become security liabilities over time—their monolithic nature means security updates can break your application. Middle's architectural approach eliminates this problem entirely. Security is handled by focused libraries that update independently, while your business logic remains protected behind stable interfaces.
+
+**The result:** A framework with virtually no inherent security vulnerabilities and a security posture that improves over time as underlying libraries mature.
+
 ## Composition Over Framework Lock-in
 
 Middle doesn't compete with mature frameworks - it lets you **compose their proven components on your terms**. Instead of accepting a framework's architectural decisions, you define your own interfaces and adapt battle-tested libraries to fit your domain.
@@ -276,7 +314,6 @@ $app = $app->withMiddleware(
 ```
 
 ## Advanced Features
-
 
 ### Request Validation and Filtering
 
