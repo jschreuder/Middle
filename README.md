@@ -6,7 +6,7 @@
 
 **A micro-framework built around one simple principle: everything should be explicit, replaceable, and safe to change.**
 
-Middle takes a different approach to web application architecture. Instead of magic and conventions, it provides clear interfaces and explicit composition. Instead of hidden coupling, it enforces clean boundaries. Instead of "getting started quickly," it optimizes for "maintaining confidently."
+Middle takes a different approach to web application architecture. Instead of magic and conventions, it provides clear interfaces and explicit composition. You can use it to build your organization's perfect framework, not be forced to fit into someone else's choices. Instead of hidden coupling, it enforces clean boundaries. Instead of "getting started quickly," it optimizes for "maintaining confidently."
 
 ## Why Middle?
 
@@ -58,6 +58,13 @@ $mockController = $this->createMock(ControllerInterface::class);
 $middleware = new RoutingMiddleware($mockRouter, $mockController);
 ```
 
+### How Middle Compares
+
+Like other micro-frameworks, Middle is for composing applications. Unlike them, Middle nudges towards architectural boundaries through interfaces, making SOLID principles and domain-driven design the path of least resistance.
+
+**Choose Middle when:** You want simplicity with architecture meant for SOLID and Domain Driven Development.  
+**Choose Others when:** You disagree with the philosophy or prefer configuration-driven development.
+
 ## Core Philosophy
 
 **Explicitness over Convenience**: Middle makes you write a bit more code upfront, but prevents the hidden complexity that accumulates in applications over time.
@@ -67,6 +74,8 @@ $middleware = new RoutingMiddleware($mockRouter, $mockController);
 **Immutability by Default**: Adding or removing middleware creates new application instances. No shared mutable state, no spooky action-at-a-distance.
 
 **Standards Compliance**: Full PSR-1, PSR-2, PSR-3, PSR-4, PSR-7, PSR-15, and PSR-17 compliance. Not because we have to, but because standards represent solved problems.
+
+**Minimal Attack Surface**: The framework core is tiny, reducing security vulnerabilities and update risks. Your chosen components update independently.
 
 ## Composition Over Framework Lock-in
 
@@ -467,6 +476,7 @@ $container->extend('app', function ($app, $c) {
 
 **Middle is ideal when you:**
 - Value long-term maintainability over short-term convenience
+- Want to build your team's standard architecture
 - Want explicit, traceable request flow
 - Need confidence when refactoring or extending functionality
 - Prefer composition over inheritance
