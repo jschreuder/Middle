@@ -50,7 +50,7 @@ Implement authentication, data persistence, API responses, and external service 
 ### Scaling and Production
 **[Chapter 7: Growing Your Application](chapter7)**  
 *Scaling from Simple to Complex*  
-Organize larger applications using service container patterns, modules, and team collaboration strategies.
+Organize larger applications into modules with their own directory, service definitions and routes.
 
 **[Chapter 8: Production and Maintenance](chapter8)**  
 *Long-term Success Strategies*  
