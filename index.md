@@ -52,10 +52,6 @@ Implement authentication, data persistence, API responses, and external service 
 *Scaling from Simple to Complex*  
 Organize larger applications into modules with their own directory, service definitions and routes.
 
-**[Chapter 8: Production and Maintenance](chapter8)**  
-*Long-term Success Strategies*  
-Deploy, monitor, and maintain Middle applications in production with confidence and reliability.
-
 ---
 
 **Ready to start?** Begin with [Chapter 1: Architecture Fundamentals](chapter1) to understand Middle's core principles.

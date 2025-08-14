@@ -439,8 +439,4 @@ class OrderProcessingService
 
 ## Next Steps
 
-With your Middle application properly organized, you're ready to deploy and maintain it in production. Chapter 8 covers deployment strategies, monitoring, and long-term maintenance approaches that leverage Middle's explicit architecture for reliable operations.
-
-The organizational patterns you've learned here scale from small teams to large organizations while preserving the architectural clarity that makes Middle applications maintainable. Remember: Middle's strength lies in explicitness and simplicity - resist the urge to add complex layers that hide what your application is actually doing.
-
-Go on with [Chapter 8](../chapter8/).
+Start building, this was it for this guide!
