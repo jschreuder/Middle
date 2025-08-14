@@ -1,6 +1,9 @@
 ---
-title: "Middle Framework - Chapter 2: Getting Started"
+title: "Chapter 2"
+description: "Getting Started"
 layout: default
+nav_order: 3
+permalink: /chapter2/
 ---
 
 # Chapter 2: Getting Started

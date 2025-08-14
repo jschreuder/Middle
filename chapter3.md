@@ -1,6 +1,9 @@
 ---
-title: "Middle Framework - Chapter 3: Interface Design Mastery"
+title: "Chapter 3"
+description: "Interface Design Mastery"
 layout: default
+nav_order: 4
+permalink: /chapter3/
 ---
 
 # Chapter 3: Interface Design Mastery

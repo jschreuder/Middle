@@ -1,6 +1,9 @@
 ---
-title: "Middle Framework - Chapter 1: Architecture Fundamentals"
+title: "Chapter 1"
+description: "Architecture Fundamentals"
 layout: default
+nav_order: 2
+permalink: /chapter1/
 ---
 
 # Chapter 1: Architecture Fundamentals

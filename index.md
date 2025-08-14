@@ -1,6 +1,9 @@
 ---
-title: "Middle Framework Guide"
 layout: default
+title: "Middle Framework Guide"
+description: "Complete guide to building maintainable web applications with explicit architecture"
+nav_order: 1
+permalink: /
 ---
 
 # Middle Framework Guide

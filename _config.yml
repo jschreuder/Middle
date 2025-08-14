@@ -1,1 +1,23 @@
-remote_theme: pages-themes/cayman@v0.2.0
+title: "Middle Framework Guide"
+description: "Complete guide to building maintainable web applications with Middle Framework"
+
+# Use remote theme instead of gem
+remote_theme: just-the-docs/just-the-docs
+
+# Navigation
+nav_sort: case_insensitive
+nav_external_links:
+  - title: "Middle Framework on GitHub"
+    url: "https://github.com/jschreuder/Middle"
+
+# Footer
+footer_content: "Middle Framework: Explicit. Replaceable. Safe."
+
+# Optional: Color scheme
+color_scheme: light
+
+# Plugins (GitHub Pages compatible)
+plugins:
+  - jekyll-remote-theme
+  - jekyll-feed
+  - jekyll-sitemap
