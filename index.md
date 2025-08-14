@@ -41,7 +41,7 @@ Create authentication, validation, caching, and other cross-cutting concerns usi
 
 **[Chapter 5: Testing Strategies](chapter5)**  
 *Confidence Through Comprehensive Coverage*  
-Build test suites that leverage Middle's architecture for reliable unit, integration, and contract testing.
+Build test suites that leverage Middle's architecture for reliable unit and integration testing.
 
 **[Chapter 6: Common Patterns and Solutions](chapter6)**  
 *Practical Implementations*  
