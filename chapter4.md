@@ -13,9 +13,14 @@ permalink: /chapter4/
 
 In previous chapters, you've seen middleware in action: parsing JSON requests, handling routing, and managing errors. But middleware's true power lies in building custom behavior that cuts across your entire application. Authentication, request validation, response transformation - these cross-cutting concerns are where middleware shines.
 
-This chapter teaches you to build sophisticated middleware using Middle's explicit composition approach. You'll learn when to use middleware versus when to leverage infrastructure, how to integrate external libraries cleanly, and how to compose middleware pipelines that are both powerful and maintainable.
+This chapter covers four essential middleware patterns that every Middle application needs:
 
-The key insight: **Middle's explicit middleware composition makes complex request processing predictable and debuggable**.
+1. **Authentication middleware** - Verifying user identity with JWT tokens
+2. **Request filtering and validation** - Using Middle's built-in interfaces with external libraries  
+3. **Response modification** - Adding CORS headers and application-level caching
+4. **Middleware composition** - Organizing middleware stacks for different environments
+
+You'll learn when to use middleware versus infrastructure, how to integrate proven libraries like Symfony Validator, and how to test middleware effectively.
 
 *Note: We recommend using `declare(strict_types = 1);` everywhere, but for brevity we did not include them in the code examples.*
 
@@ -221,6 +226,8 @@ class CreateUserController implements ControllerInterface, RequestFilterInterfac
 }
 ```
 
+*Note: We recommend abstracting this away into a Service class that does the filtering this way, but for clarity we kept this simple and inline.*
+
 ### Validation with External Libraries
 
 Controllers implementing `RequestValidatorInterface` have their `validateRequest` method called automatically. For validation, we can leverage mature libraries like Symfony Validator to implement Middle's automatic validation system:
@@ -228,7 +235,7 @@ Controllers implementing `RequestValidatorInterface` have their `validateRequest
 ```php
 <?php
 // composer require symfony/validator
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints as Assert;
 use jschreuder\Middle\Controller\RequestValidatorInterface;
 use jschreuder\Middle\Exception\ValidationFailedException;
@@ -236,8 +243,7 @@ use jschreuder\Middle\Exception\ValidationFailedException;
 class CreateUserController implements ControllerInterface, RequestValidatorInterface
 {
     public function __construct(
-        private UserService $userService,
-        private ValidatorInterface $validator
+        private UserService $userService
     ) {}
     
     public function validateRequest(ServerRequestInterface $request): void
@@ -251,7 +257,8 @@ class CreateUserController implements ControllerInterface, RequestValidatorInter
             'password' => [new Assert\Length(min: 8)]
         ]);
         
-        $violations = $this->validator->validate($data, $constraints);
+        $validator = Validation::createValidator();
+        $violations = $validator->validate($data, $constraints);
         
         if (count($violations) > 0) {
             $errors = [];
@@ -272,6 +279,8 @@ class CreateUserController implements ControllerInterface, RequestValidatorInter
     }
 }
 ```
+
+*Note: We recommend abstracting this away into a Service class that does the validation this way, but for clarity we kept this simple and inline.*
 
 The beauty of this approach is that filtering happens before validation, ensuring validation works on clean data. Both processes are automatic when the appropriate middleware is in your application stack, but the logic remains explicit and testable in your controllers.
 
@@ -362,20 +371,24 @@ class ResponseCacheMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
         
-        $cacheKey = $this->generateCacheKey($request);
+        $cacheKey = 'response:' . md5($request->getUri()->getPath());
         
         // Try cache first
         $cached = $this->cache->get($cacheKey);
         if ($cached) {
-            return $this->unserializeResponse($cached)
-                       ->withHeader('X-Cache-Status', 'HIT');
+            return (new Response($cached['body'], $cached['status'], $cached['headers']))
+                ->withHeader('X-Cache-Status', 'HIT');
         }
         
         // Generate and cache response
         $response = $handler->handle($request);
         
         if ($response->getStatusCode() === 200) {
-            $this->cache->set($cacheKey, $this->serializeResponse($response), $this->defaultTtl);
+            $this->cache->set($cacheKey, [
+                'status' => $response->getStatusCode(),
+                'headers' => $response->getHeaders(),
+                'body' => (string) $response->getBody()
+            ], $this->defaultTtl);
         }
         
         return $response->withHeader('X-Cache-Status', 'MISS');
@@ -387,26 +400,6 @@ class ResponseCacheMiddleware implements MiddlewareInterface
         return $request->getMethod() === 'GET' && 
                !$request->hasHeader('Authorization') &&
                in_array($request->getAttribute('_route'), $this->cacheableRoutes);
-    }
-    
-    private function generateCacheKey(ServerRequestInterface $request): string
-    {
-        // Application-specific cache key generation
-        return 'response:' . md5($request->getUri()->getPath());
-    }
-    
-    private function serializeResponse(ResponseInterface $response): array
-    {
-        return [
-            'status' => $response->getStatusCode(),
-            'headers' => $response->getHeaders(),
-            'body' => (string) $response->getBody()
-        ];
-    }
-    
-    private function unserializeResponse(array $cached): ResponseInterface
-    {
-        return new Response($cached['body'], $cached['status'], $cached['headers']);
     }
 }
 ```
@@ -470,51 +463,6 @@ class ServiceContainer
                 'errors' => $exception->getValidationErrors()
             ], 400);
         };
-    }
-}
-```
-
-### Layered Application Architecture
-
-For larger applications, you can create different application stacks for different purposes:
-
-```php
-<?php
-class ServiceContainer
-{
-    public function getApiApp(): ApplicationStack
-    {
-        // API-specific middleware stack
-        return new ApplicationStack(new ControllerRunner())
-            ->withMiddleware(new RequestValidatorMiddleware($this->getApiErrorHandler()))
-            ->withMiddleware(new RequestFilterMiddleware())
-            ->withMiddleware(new JsonRequestParserMiddleware())
-            ->withMiddleware(new CorsMiddleware($this->config('cors')))
-            ->withMiddleware(new JwtAuthenticationMiddleware(
-                $this->getUserRepository(),
-                $this->config('jwt.secret')
-            ));
-    }
-    
-    public function getWebApp(): ApplicationStack
-    {
-        // Web-specific middleware stack  
-        return new ApplicationStack(new ControllerRunner())
-            ->withMiddleware(new SessionMiddleware($this->getSessionProcessor()));
-    }
-    
-    public function getMainApp(): ApplicationStack
-    {
-        // Route to appropriate sub-application
-        return new ApplicationStack(new ControllerRunner())
-            ->withMiddleware(new SubApplicationRouter([
-                '/api' => $this->getApiApp(),
-                '/' => $this->getWebApp()
-            ]))
-            ->withMiddleware(new ErrorHandlerMiddleware(
-                $this->getLogger(),
-                $this->getErrorHandler()
-            ));
     }
 }
 ```
@@ -592,118 +540,6 @@ function createMockHandler(): RequestHandlerInterface
 function createUser(): User
 {
     return User::create('test@example.com', 'Test User', 'password123');
-}
-```
-
-### Testing Controllers with Built-in Middleware
-
-Testing controllers that use Middle's filtering and validation is straightforward:
-
-```php
-<?php
-// tests/Unit/Controller/CreateUserControllerTest.php
-
-beforeEach(function () {
-    $this->userService = mock(UserService::class);
-    $this->controller = new CreateUserController($this->userService);
-});
-
-test('filtering and validation work together', function () {
-    // Test that filtering cleans data appropriately
-    $request = (new ServerRequest())
-        ->withParsedBody([
-            'email' => '  TEST@EXAMPLE.COM  ',
-            'name' => '<script>alert("xss")</script>John Doe',
-            'password' => 'password123'
-        ]);
-    
-    $filteredRequest = $this->controller->filterRequest($request);
-    $filteredData = $filteredRequest->getParsedBody();
-    
-    expect($filteredData['email'])->toBe('test@example.com');
-    expect($filteredData['name'])->toBe('John Doe');
-    
-    // Test that validation passes on properly filtered data
-    expect(fn() => $this->controller->validateRequest($filteredRequest))->not->toThrow();
-});
-
-test('validation catches errors appropriately', function () {
-    $request = (new ServerRequest())
-        ->withParsedBody([
-            'email' => 'not-an-email',
-            'name' => '',
-            'password' => 'short'
-        ]);
-    
-    expect(fn() => $this->controller->validateRequest($request))
-        ->toThrow(ValidationFailedException::class);
-});
-```
-
-### Integration Testing Complete Pipelines
-
-Test the complete middleware pipeline to ensure everything works together:
-
-```php
-<?php
-// tests/Feature/MiddlewarePipelineTest.php
-
-beforeEach(function () {
-    $this->container = createTestContainer();
-    $this->app = $this->container->getApp(); // Includes all middleware
-    
-    // Register test controller
-    $router = $this->container->getRouter();
-    $router->post('users.create', '/api/users', function () {
-        return new CreateUserController($this->container->getUserService());
-    });
-});
-
-test('complete authentication and validation pipeline works together', function () {
-    $requestData = [
-        'email' => '  TEST@EXAMPLE.COM  ',
-        'name' => '<b>John</b> Doe',
-        'password' => 'password123'
-    ];
-    
-    $request = (new ServerRequest([], [], '/api/users', 'POST'))
-        ->withHeader('Content-Type', 'application/json')
-        ->withHeader('Authorization', 'Bearer ' . createValidToken())
-        ->withParsedBody($requestData);
-    
-    $response = $this->app->process($request);
-    
-    expect($response->getStatusCode())->toBe(201);
-    
-    $body = json_decode((string) $response->getBody(), true);
-    expect($body['success'])->toBeTrue();
-    
-    // Verify filtering worked (email lowercased, HTML stripped)
-    expect($body['user']['email'])->toBe('test@example.com');
-    expect($body['user']['name'])->toBe('John Doe');
-});
-
-test('pipeline rejects unauthenticated requests', function () {
-    $request = (new ServerRequest([], [], '/api/users', 'POST'))
-        ->withHeader('Content-Type', 'application/json')
-        ->withParsedBody(['email' => 'test@example.com']);
-    
-    expect(fn() => $this->app->process($request))
-        ->toThrow(AuthenticationException::class);
-});
-
-function createTestContainer(): ServiceContainer
-{
-    // Create test container with appropriate middleware configuration
-    return new TestServiceContainer([
-        'app.environment' => 'testing',
-        'features.authentication' => true
-    ]);
-}
-
-function createValidToken(): string
-{
-    return JWT::encode(['user_id' => 1], 'test-secret', 'HS256');
 }
 ```
 
