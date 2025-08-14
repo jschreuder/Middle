@@ -3,13 +3,15 @@
 
 ## Introduction
 
-At its heart, Middle is a micro-framework is built around two simple but powerful ideas: **PSR-15 middleware** and **make everything explicit**. As such it's almost more of an approach to application building than a framework. It doesn't give you a full toolbox, it gives you an approach and the barebones foundations to make decissions based on you application's needs - instead of a one-size-fits-all (or -fits-none) full scaffold. While other frameworks hide complexity behind conventions and magic methods, Middle puts all the architectural decisions directly in your code where you can see, understand, and modify them. Both now, and in another year or even 5 years on.
+At its heart, Middle is a micro-framework built around two simple but powerful ideas: **PSR-15 middleware** and **make everything explicit**. As such it's almost more of an approach to application building than a framework. It doesn't give you a full toolbox, it gives you an approach and the barebones foundations to make decisions based on you application's needs - instead of a one-size-fits-all (or -fits-none) full scaffold. While other frameworks hide complexity behind conventions and magic methods, Middle puts all the architectural decisions directly in your code where you can see, understand, and modify them. Both right now and in another year or even 5 years on.
 
 This chapter explores the fundamental concepts that make up Middle's identity: the middleware pipeline, explicit dependency injection, and interface-driven design. By the end, you'll understand not just *how* Middle works, but *why* this architectural approach can lead to more maintainable applications.
 
 *Note: We recommend using `declare(strict_types = 1);` everywhere, but for brevity we did not include them in the code examples.*
 
 ## The Middleware Pipeline: Request Processing Made Visible
+
+In Middle we make extensive use of the [PSR-7 standard](https://www.php-fig.org/psr/psr-7/) for HTTP requests & responses and the [PSR-15 standard](https://www.php-fig.org/psr/psr-15/) for server handling of those. Basic knowledge of these is assumed in the following text.
 
 ### Understanding PSR-15 Middleware
 
@@ -92,7 +94,7 @@ This explicit ordering means you can see exactly how your requests will be proce
 
 ### Service Container Philosophy
 
-Though Middle is agnostic to Dependency Injection Containers, we recommend [Middle DI](https://github.com/jschreuder/Middle-di). Middle DI's approach to dependencies is straightforward: create them explicitly in a service container that acts as the single source of truth for your application's object graph.
+Though Middle is agnostic to which Dependency Injection Container is used, we recommend [Middle DI](https://github.com/jschreuder/Middle-di). Middle DI's approach to dependencies is straightforward: create them explicitly in a service container that acts as the single source of truth for your application's object graph.
 
 ```php
 <?php
@@ -148,7 +150,7 @@ $container = (new DiCompiler(ServiceContainer::class))
 // Middle-DI for production with everything cached, remember to delete the 
 // cached file on deployment
 $container = (new DiCachedCompiler(
-    new DiCompiler(Container::class),
+    new DiCompiler(ServiceContainer::class),
     new SplFileObject('var/cache/container.php', 'c+')
 ))->compile()->newInstance($config);
 
@@ -270,27 +272,25 @@ Different environments could need different middleware stacks:
 
 ```php
 <?php
-class ServiceContainer
+// only the getApp() method shown, other methods need implementation as well
+public function getApp(): ApplicationStack
 {
-    public function getApp(): ApplicationStack
-    {
-        $app = new ApplicationStack(new ControllerRunner())
-            ->withMiddleware(new RoutingMiddleware($this->getRouter(), $this->get404Handler()));
-        
-        // Add environment-specific middleware
-        if ($this->config('app.environment') === 'development') {
-            $app = $app->withMiddleware(new DebugMiddleware($this->getDebugger()));
-        }
-        
-        if ($this->config('features.cache_responses')) {
-            $app = $app->withMiddleware(new CacheMiddleware($this->getCache()));
-        }
-        
-        // Error handling should be outermost
-        return $app->withMiddleware(
-            new ErrorHandlerMiddleware($this->getLogger(), $this->get500Handler())
-        );
+    $app = new ApplicationStack(new ControllerRunner())
+        ->withMiddleware(new RoutingMiddleware($this->getRouter(), $this->get404Handler()));
+    
+    // Add environment-specific middleware
+    if ($this->config('app.environment') === 'development') {
+        $app = $app->withMiddleware(new DebugMiddleware($this->getDebugger()));
     }
+    
+    if ($this->config('features.cache_responses')) {
+        $app = $app->withMiddleware(new CacheMiddleware($this->getCache()));
+    }
+    
+    // Error handling should be outermost
+    return $app->withMiddleware(
+        new ErrorHandlerMiddleware($this->getLogger(), $this->get500Handler())
+    );
 }
 ```
 
@@ -328,6 +328,28 @@ class ServiceContainer
         return new SymfonyRouter($this->config('site.url'));
     }
     
+    public function get404Handler(): ControllerInterface
+    {
+        // cleaner in their own file, but using anonymous class for simplicity in the example
+        return new class implements ControllerInterface {
+            public function execute(ServerRequestInterface $request): ResponseInterface
+            {
+                return new JsonResponse(['message' => 'Not found'], 404);
+            }
+        };
+    }
+    
+    public function get500Handler(): ControllerInterface
+    {
+        // cleaner in their own file, but using anonymous class for simplicity in the example
+        return new class implements ControllerInterface {
+            public function execute(ServerRequestInterface $request): ResponseInterface
+            {
+                return new JsonResponse(['message' => 'Server error'], 500);
+            }
+        };
+    }
+
     public function getAuthService(): AuthenticationServiceInterface
     {
         return new JwtAuthenticationService(
