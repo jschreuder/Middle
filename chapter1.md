@@ -443,3 +443,5 @@ interface UserAuthenticationInterface
 Now that you understand Middle's architectural foundation, you're ready to start building. The fastest way to get started is with the **Middle Skeleton** - a foundational setup that demonstrates all these architectural principles in a working application. In Chapter 2, we'll walk through creating your first Middle application from scratch, implementing a complete feature that demonstrates these architectural principles in practice.
 
 The key insight to take forward: Middle optimizes for the long term. While it requires more explicit code upfront, this investment pays dividends in maintainability, debuggability, and team collaboration as your application grows.
+
+Go on with [Chapter 2](/chapter2/).
