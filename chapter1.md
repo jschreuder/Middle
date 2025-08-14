@@ -7,6 +7,8 @@ At its heart, Middle is a micro-framework is built around two simple but powerfu
 
 This chapter explores the fundamental concepts that make up Middle's identity: the middleware pipeline, explicit dependency injection, and interface-driven design. By the end, you'll understand not just *how* Middle works, but *why* this architectural approach can lead to more maintainable applications.
 
+*Note: We recommend using `declare(strict_types = 1);` everywhere, but for brevity we did not include them in the code examples.*
+
 ## The Middleware Pipeline: Request Processing Made Visible
 
 ### Understanding PSR-15 Middleware
