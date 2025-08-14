@@ -1,3 +1,8 @@
+---
+title: "Middle Framework - Chapter 2: Getting Started"
+layout: default
+---
+
 # Chapter 2: Getting Started
 *From Installation to First Feature*
 

@@ -1,3 +1,8 @@
+---
+title: "Middle Framework - Chapter 1: Architecture Fundamentals"
+layout: default
+---
+
 # Chapter 1: Architecture Fundamentals
 *Understanding Middle's Core Concepts*
 

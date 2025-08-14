@@ -1,3 +1,8 @@
+---
+title: "Middle Framework - Chapter 3: Interface Design Mastery"
+layout: default
+---
+
 # Chapter 3: Interface Design Mastery
 *Building Maintainable Contracts*
 
