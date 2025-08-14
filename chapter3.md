@@ -575,3 +575,5 @@ interface ShoppingInterface
 With solid interface design skills, you're ready to build sophisticated middleware in Chapter 4. You'll learn how to implement authentication, validation, caching, and other cross-cutting concerns that complement your well-designed interfaces.
 
 Remember: **Interfaces are the foundation of Middle's architecture**. Time spent designing good interfaces pays dividends throughout the lifetime of your application, enabling the explicit, replaceable, and maintainable code that makes Middle applications a joy to work with.
+
+Go on with [Chapter 4](../chapter4/).

@@ -925,3 +925,5 @@ Building this feature demonstrates why Middle's explicit approach is valuable:
 You now have hands-on experience with Middle's development patterns. In Chapter 3, we'll dive deeper into interface design - the foundation that makes Middle applications maintainable as they grow in complexity.
 
 These patterns scale from simple APIs to complex applications while maintaining Middle's core promise: everything remains explicit, replaceable, and safe to change. Middle-DI's compile-time optimizations enhance performance while preserving the architectural clarity that makes Middle applications maintainable.
+
+Go on with [Chapter 3](../chapter3/).

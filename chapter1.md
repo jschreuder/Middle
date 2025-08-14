@@ -444,4 +444,4 @@ Now that you understand Middle's architectural foundation, you're ready to start
 
 The key insight to take forward: Middle optimizes for the long term. While it requires more explicit code upfront, this investment pays dividends in maintainability, debuggability, and team collaboration as your application grows.
 
-Go on with [Chapter 2](/chapter2/).
+Go on with [Chapter 2](../chapter2/).
