@@ -1,6 +1,6 @@
 ---
-title: "Chapter 4"
-description: "Middleware Deep Dive"
+title: "4. Middleware Deep Dive"
+description: "Create authentication, validation, caching, and other cross-cutting concerns using Middle's explicit composition."
 layout: default
 nav_order: 5
 permalink: /chapter4/

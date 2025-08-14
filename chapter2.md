@@ -1,6 +1,6 @@
 ---
-title: "Chapter 2"
-description: "Getting Started"
+title: "2. Getting Started"
+description: "Build your first Middle application with a complete task management API that demonstrates all core patterns."
 layout: default
 nav_order: 3
 permalink: /chapter2/

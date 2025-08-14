@@ -1,6 +1,6 @@
 ---
-title: "Chapter 3"
-description: "Interface Design Mastery"
+title: "3. Interface Design Mastery"
+description: "Design interfaces that express business intent clearly and evolve gracefully as your application grows."
 layout: default
 nav_order: 4
 permalink: /chapter3/

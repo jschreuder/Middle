@@ -1,6 +1,6 @@
 ---
-title: "Chapter 1"
-description: "Architecture Fundamentals"
+title: "1. Architecture Fundamentals"
+description: "Learn the middleware pipeline, explicit dependency injection, and interface-driven design that form Middle's foundation."
 layout: default
 nav_order: 2
 permalink: /chapter1/
