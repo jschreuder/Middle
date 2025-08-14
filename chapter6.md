@@ -844,11 +844,12 @@ public function getPaymentGateway(): PaymentGatewayInterface
 2. **UUID-Based Identifiers**: Use Ramsey's `UuidInterface` directly - it's already a well-designed standard interface that doesn't need additional abstraction.
 3. **Value Objects for Domain Primitives**: Create value objects like `Email` that encapsulate validation and domain meaning around primitive types.
 4. **Rich Entity Design**: Create domain entities with business behavior, not just data containers. Let them enforce their own invariants.
+5. **Flexible Output Formatting**: Use the View/Renderer pattern to support multiple output formats from the same business logic.
 
 ## Next Steps
 
 With these essential patterns mastered using Middle's actual architecture and best practices, you're ready to tackle application organization and growth strategies in Chapter 7. You'll learn how to structure larger Middle applications while maintaining the architectural clarity and explicit patterns demonstrated here.
 
-The key insight is that Middle's strength lies in its explicit composition and interface-driven design. By building on the skeleton's patterns and using Middle's built-in features, you create applications that are both powerful and maintainable.
+The key insight is that Middle's strength lies in its explicit composition and interface-driven design. By building on the skeleton's patterns and using Middle's built-in features, you create applications that are both powerful and maintainable. These patterns scale naturally as your application grows, because every dependency remains visible and every component boundary stays clean.
 
 Go on with [Chapter 7](../chapter7/).
