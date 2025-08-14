@@ -297,13 +297,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 ## Key Takeaways
 
 1. **No Framework Mocking**: Test your code, not the framework. Middle's explicit dependencies make this natural.
-
 2. **Interface Design Matters**: Use exceptions instead of nullable returns to ensure consistent behavior across implementations.
-
 3. **Middleware is Simple**: Each middleware is a pure function - easy to test in isolation.
-
 4. **Integration Tests Verify the Pipeline**: Use your actual service container with test implementations to verify the complete request flow.
-
 5. **Focus on Your Code**: Middle gets out of the way, letting you test your business logic directly.
 
 ## Further Reading
