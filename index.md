@@ -43,8 +43,8 @@ Design interfaces that express business intent clearly and evolve gracefully as 
 *Building Custom Application Behavior*  
 Create authentication, validation, caching, and other cross-cutting concerns using Middle's explicit composition.
 
-**[Chapter 5: Secure by Design](chapter5)**
-*Defensive Programming and Architectural Security*
+**[Chapter 5: Secure by Design](chapter5)**  
+*Defensive Programming and Architectural Security*  
 Leverage PHP's process isolation and Middle's minimal attack surface for robust security. Learn defensive programming patterns, security-first interface design, and how explicit architecture prevents common vulnerabilities.
 
 **[Chapter 6: Testing Strategies](chapter6)**  
