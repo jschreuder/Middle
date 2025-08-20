@@ -554,7 +554,7 @@ function createUser(): User
 
 ## Next Steps
 
-With sophisticated middleware patterns mastered, you're ready to explore comprehensive testing strategies in Chapter 5. You'll learn how to test middleware pipelines, create reliable test doubles, and build test suites that give you confidence to refactor and extend your Middle applications.
+With sophisticated middleware patterns mastered, you're ready to explore secure by design development in Chapter 5.
 
 The middleware patterns you've learned here handle the cross-cutting concerns that would otherwise scatter throughout your codebase. Middle's explicit composition approach means you always know exactly what's happening to each request - no hidden behaviors, no surprise side effects.
 

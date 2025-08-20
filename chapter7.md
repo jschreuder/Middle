@@ -1,442 +1,855 @@
 ---
-title: "7. Organizing Growing Applications"
-description: "Organize larger applications into modules with their own directory, service definitions and routes."
+title: "7. Common Patterns and Solutions"
+description: "Implement authentication, data persistence, API responses, and external service integration using Middle's patterns."
 layout: default
 nav_order: 8
 permalink: /chapter7/
 ---
 
-# Chapter 7: Organizing Growing Applications
-*Simple Structure for Sustainable Growth*
+# Chapter 7: Common Patterns and Solutions
+*Practical Implementations with Middle's Architecture*
 
 ## Introduction
 
-Your Middle application started simple: a few controllers, basic authentication, and straightforward business logic. But as your application succeeds, complexity inevitably grows. More features, more team members, more files to navigate.
+Every web application needs the same core functionality: authentication, data persistence, API responses, configuration management, and external service integration. The difference between frameworks lies not in what features they provide, but in how clearly you can understand, test, and modify those features.
 
-This chapter shows you how to organize growing Middle applications into modules using three simple techniques that scale with your codebase while preserving Middle's architectural clarity. These can be contained in a single repository, but also devided up into multiple repositories. As long as your autoloader knows where to find them.
+This chapter demonstrates how to implement essential application patterns using Middle's explicit architecture. We'll cover:
 
-1. **Filesystem organization** with PSR-4 namespaces
-2. **Service container traits** grouped by domain
-3. **Routing providers** for related endpoints
+**Domain Modeling:**
+- Value objects that encapsulate validation and business meaning
+- Rich entities with behavior, not just data containers
+- Entity collections for type-safe object handling
+
+**Data Persistence:**
+- Repository patterns with UUID-based identifiers
+- Domain-focused interfaces that express business needs
+
+**Authentication & Sessions:**
+- Session-based authentication using Middle's built-in session system
+- Integration with Middle's request attributes for user context
+
+**Output Formatting:**
+- Views and renderers for JSON, HTML, and any output format
+- Format-agnostic controllers that separate data from presentation
+
+**External Integration:**
+- HTTP client patterns for third-party services
+- Interface-driven design for replaceable service implementations
+
+Rather than providing complete implementations, we'll focus on the key design decisions and integration points that make these patterns maintainable and replaceable—the architectural choices that let you evolve your application confidently over time.
 
 *Note: We recommend using `declare(strict_types = 1);` everywhere, but for brevity we did not include them in the code examples.*
 
-## Filesystem Organization with PSR-4
+## Domain Entities and Value Objects
 
-### Growing Beyond Single Directories
+Before diving into specific patterns, let's establish how to represent business concepts in Middle applications using domain entities and value objects.
 
-As your application grows, organizing by domain makes navigation and maintenance easier. Instead of dumping everything into `src/Controller/` and `src/Service/`, create domain-focused namespaces:
+### Value Objects for Domain Primitives
 
-```
-src/
-├── User/                    # User management domain
-│   ├── Controller/
-│   │   ├── RegisterUserController.php
-│   │   ├── LoginController.php
-│   │   └── ProfileController.php
-│   ├── Service/
-│   │   ├── UserRegistrationService.php
-│   │   └── UserAuthenticationService.php
-│   ├── Repository/
-│   │   └── DatabaseUserRepository.php
-│   ├── Entity/
-│   │   └── User.php
-│   └── ValueObject/
-│       └── Email.php
-├── Product/                 # Product catalog domain
-│   ├── Controller/
-│   │   ├── ListProductsController.php
-│   │   └── ProductDetailsController.php
-│   ├── Service/
-│   │   └── ProductCatalogService.php
-│   ├── Repository/
-│   │   └── DatabaseProductRepository.php
-│   └── Entity/
-│       └── Product.php
-├── Order/                   # Order processing domain
-│   ├── Controller/
-│   │   ├── CreateOrderController.php
-│   │   └── OrderStatusController.php
-│   ├── Service/
-│   │   └── OrderProcessingService.php
-│   └── Entity/
-│       └── Order.php
-└── Core/                    # Main entrypoints, core application
-│   ├── Controller/
-│   │   └── IndexController.php
-└── Shared/                  # Cross-cutting concerns
-    ├── Exception/
-    │   └── ValidationException.php
-    └── Infrastructure/
-        └── DatabaseConnection.php
-```
-
-### Composer PSR-4 Configuration
-
-Update your `composer.json` to support domain namespaces:
-
-```json
-{
-    "autoload": {
-        "psr-4": {
-            "Middle\\Skeleton\\": "src/",
-            "Middle\\Skeleton\\User\\": "src/User/",
-            "Middle\\Skeleton\\Product\\": "src/Product/",
-            "Middle\\Skeleton\\Order\\": "src/Order/",
-            "Middle\\Skeleton\\Shared\\": "src/Shared/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    }
-}
-```
-
-After updating composer.json:
-```bash
-composer dump-autoload
-```
-
-Note that you can also put these in completely different directories that are not under `src/` and configure those. All that's needed is to tell your autoloader where to find them according to the [PSR-4 standard](https://www.php-fig.org/psr/psr-4/).
-
-### Testing External Modules
-
-When modules come from external repositories (vendor directories, separate repos):
-
-- **Test modules in isolation** within their own repositories
-- **Test integration points** in your main application
-- **Avoid duplicating unit tests** for external module internals
-
-This keeps testing responsibilities clear and avoids coupling your application tests to external module implementations.
-
-## Service Container Organization with Traits
-
-### Grouping Services by Domain
-
-As your service container grows, organize it using traits grouped by domain concern:
+Value objects encapsulate primitive types with domain meaning and validation, meaning you can be sure you are handling a valid value instead of just a string that might contain anything. They're not always necessary, but for things like e-mails that can only be valid in their exact formatting they are preferable to simple strings.
 
 ```php
 <?php
-// src/ServiceContainer/UserServicesTrait.php
-namespace Middle\Skeleton\ServiceContainer;
+// src/ValueObject/Email.php
+namespace Middle\Skeleton\ValueObject;
 
-use Middle\Skeleton\User\Repository\DatabaseUserRepository;
-use Middle\Skeleton\User\Repository\UserRepositoryInterface;
-use Middle\Skeleton\User\Service\UserRegistrationService;
-use Middle\Skeleton\User\Service\UserAuthenticationService;
-
-trait UserServicesTrait
+class Email
 {
-    public function getUserRepository(): UserRepositoryInterface
-    {
-        return $this->userRepository ??= new DatabaseUserRepository(
-            $this->getDatabase(),
-            $this->getLogger()
-        );
-    }
+    private string $value;
     
-    public function getUserRegistrationService(): UserRegistrationService
+    public function __construct(string $email)
     {
-        return $this->userRegistrationService ??= new UserRegistrationService(
-            $this->getUserRepository()
-        );
-    }
-    
-    public function getUserAuthenticationService(): UserAuthenticationService
-    {
-        return $this->userAuthenticationService ??= new UserAuthenticationService(
-            $this->getUserRepository(),
-            $this->config('auth.jwt.secret')
-        );
-    }
-}
-
-// src/ServiceContainer/ProductServicesTrait.php
-namespace Middle\Skeleton\ServiceContainer;
-
-use Middle\Skeleton\Product\Repository\DatabaseProductRepository;
-use Middle\Skeleton\Product\Repository\ProductRepositoryInterface;
-use Middle\Skeleton\Product\Service\ProductCatalogService;
-
-trait ProductServicesTrait
-{
-    public function getProductRepository(): ProductRepositoryInterface
-    {
-        return $this->productRepository ??= new DatabaseProductRepository(
-            $this->getDatabase()
-        );
-    }
-    
-    public function getProductCatalogService(): ProductCatalogService
-    {
-        return $this->productCatalogService ??= new ProductCatalogService(
-            $this->getProductRepository(),
-            $this->getCacheStore()
-        );
-    }
-}
-```
-
-These examples are in the same namespace as the initial ServiceContainer, but there's no reason they have to be. They can also be put somewhere completely different as the previous paragraph showed for PSR-4 namespaces.
-
-### Main Service Container Composition
-
-```php
-<?php
-// src/ServiceContainer.php
-namespace Middle\Skeleton;
-
-use jschreuder\MiddleDi\ConfigTrait;
-use Middle\Skeleton\ServiceContainer\UserServicesTrait;
-use Middle\Skeleton\ServiceContainer\ProductServicesTrait;
-use Middle\Skeleton\ServiceContainer\OrderServicesTrait;
-
-class ServiceContainer
-{
-    use ConfigTrait;
-    use UserServicesTrait;
-    use ProductServicesTrait;
-    use OrderServicesTrait;
-    
-    // Core application services
-    public function getApp(): ApplicationStack
-    {
-        $app = new ApplicationStack(new ControllerRunner());
+        $email = trim($email);
         
-        // Add core middleware
-        $app = $app->withMiddleware(new JsonRequestParserMiddleware())
-                   ->withMiddleware(new RoutingMiddleware($this->getAppRouter(), $this->get404Handler()));
-        
-        // Add authentication for protected routes
-        if ($this->config('features.authentication', true)) {
-            $app = $app->withMiddleware(new JwtAuthenticationMiddleware(
-                $this->getUserAuthenticationService(),
-                ['/api/auth/.*', '/health']
-            ));
+        if (empty($email)) {
+            throw new \InvalidArgumentException('Email address cannot be empty');
         }
         
-        // Error handling as outermost layer
-        return $app->withMiddleware(new ErrorHandlerMiddleware(
-            $this->getLogger(),
-            $this->get500Handler()
-        ));
-    }
-    
-    // Shared infrastructure services
-    public function getDatabase(): PDO
-    {
-        return $this->database ??= new PDO(
-            $this->config('db.dsn') . ';dbname=' . $this->config('db.dbname'),
-            $this->config('db.user'),
-            $this->config('db.pass'),
-            [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-            ]
-        );
-    }
-    
-    // etc.
-}
-```
-
-## Routing Providers for Related Endpoints
-
-### Domain-Specific Routing
-
-Create routing providers to group related endpoints together:
-
-```php
-<?php
-// src/User/UserRoutingProvider.php
-namespace Middle\Skeleton\User;
-
-use jschreuder\Middle\Router\RouterInterface;
-use jschreuder\Middle\Router\RoutingProviderInterface;
-use Middle\Skeleton\ServiceContainer;
-use Middle\Skeleton\User\Controller\RegisterUserController;
-use Middle\Skeleton\User\Controller\LoginController;
-
-class UserRoutingProvider implements RoutingProviderInterface
-{
-    public function __construct(private ServiceContainer $container) {}
-    
-    public function registerRoutes(RouterInterface $router): void
-    {
-        // Authentication routes
-        $router->post('auth.register', '/api/auth/register', function () {
-            return new RegisterUserController(
-                $this->container->getUserRegistrationService()
-            );
-        });
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new \InvalidArgumentException("Invalid email address: {$email}");
+        }
         
-        $router->post('auth.login', '/api/auth/login', function () {
-            return new LoginController(
-                $this->container->getUserAuthenticationService()
-            );
-        });
-
-        // etc.
+        $this->value = strtolower($email);
     }
-}
-
-// src/Product/ProductRoutingProvider.php
-namespace Middle\Skeleton\Product;
-
-use jschreuder\Middle\Router\RouterInterface;
-use jschreuder\Middle\Router\RoutingProviderInterface;
-use Middle\Skeleton\Product\Controller\ListProductsController;
-use Middle\Skeleton\Product\Controller\ProductDetailsController;
-
-class ProductRoutingProvider implements RoutingProviderInterface
-{
-    public function __construct(private ServiceContainer $container) {}
     
-    public function registerRoutes(RouterInterface $router): void
+    public function toString(): string
     {
-        // Public product routes
-        $router->get('products.list', '/api/products', function () {
-            return new ListProductsController(
-                $this->container->getProductCatalogService()
-            );
-        });
-        
-        $router->get('products.detail', '/api/products/{id}', function () {
-            return new ProductDetailsController(
-                $this->container->getProductRepository()
-            );
-        });
-
-        // etc.
+        return $this->value;
     }
-}
-```
-
-### Main Routing Configuration
-
-```php
-<?php
-// src/GeneralRoutingProvider.php - Updated to use domain providers
-namespace Middle\Skeleton;
-
-use jschreuder\Middle\Router\RouterInterface;
-use jschreuder\Middle\Router\RoutingProviderInterface;
-use Middle\Skeleton\Core\Controller\IndexController;
-use Middle\Skeleton\Order\OrderRoutingProvider;
-use Middle\Skeleton\Product\ProductRoutingProvider;
-use Middle\Skeleton\User\UserRoutingProvider;
-
-class GeneralRoutingProvider implements RoutingProviderInterface
-{
-    public function __construct(private ServiceContainer $container) {}
     
-    public function registerRoutes(RouterInterface $router): void
+    public function equals(Email $other): bool
     {
-        // Register domain-specific routes
-        (new UserRoutingProvider($this->container))->registerRoutes($router);
-        (new ProductRoutingProvider($this->container))->registerRoutes($router);
-        (new OrderRoutingProvider($this->container))->registerRoutes($router);
-
-        // Add other routes
-        $router->get('index', '/', function () {
-            return new IndexController();
-        });
-
-        // etc.
+        return $this->value === $other->value;
+    }
+    
+    public function __toString(): string
+    {
+        return $this->value;
     }
 }
 ```
 
-## Benefits of This Approach
+### Entity Design Principles
 
-### 1. **Preserves Middle's Simplicity**
-- Create the module system you need, Middle provides the tools
-- Clear, explicit service creation and routing
-- Easy to understand and debug
-
-### 2. **Maintains Architectural Clarity**
-- All dependencies remain explicit
-- Service container shows exactly what gets created
-- Routing providers make endpoint organization visible
-
-### 3. **Easy Navigation**
-- Related code lives together
-- Consistent directory structure across domains
-- Clear namespace organization
-
-### 4. **Testing Remains Straightforward**
-- Domain-specific test organization
-- Easy to mock domain services in isolation
-- Feature tests verify cross-domain integration
-
-## Common Patterns
-
-### Shared Infrastructure
-
-Some services span multiple domains. Keep these in a `Shared` or `Core` namespace:
+Entities represent core business concepts with data, identity, and autonomous behavior:
 
 ```php
 <?php
-// src/Shared/Infrastructure/CacheServicesTrait.php
-trait CacheServicesTrait
+// composer require ramsey/uuid
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
+
+// src/Entity/User.php
+namespace Middle\Skeleton\Entity;
+
+class User
 {
-    public function getCacheStore(): CacheInterface
-    {
-        return match($this->config('cache.driver')) {
-            'redis' => new RedisCache($this->getRedisConnection()),
-            'file' => new FilesystemCache($this->config('cache.path')),
-            'null' => new NullCache(),
-            default => throw new \InvalidArgumentException('Unknown cache driver')
-        };
-    }
-}
-```
-
-### Cross-Domain Communication
-
-When domains need to communicate, use explicit service injection rather than events:
-
-```php
-<?php
-// src/Order/Service/OrderProcessingService.php
-class OrderProcessingService
-{
-    public function __construct(
-        private OrderRepositoryInterface $orderRepository,
-        private ProductRepositoryInterface $productRepository, // Cross-domain dependency
-        private EmailServiceInterface $emailService
+    private function __construct(
+        private ?UuidInterface $id,
+        private Email $email,
+        private string $name,
+        private string $passwordHash,
+        private bool $isActive,
+        private \DateTimeImmutable $createdAt,
+        private \DateTimeImmutable $updatedAt
     ) {}
     
-    public function processOrder(OrderData $orderData): Order
+    public static function create(string $email, string $name, string $password): self
     {
-        // Validate products exist
-        foreach ($orderData->items as $item) {
-            if (!$this->productRepository->exists($item->productId)) {
-                throw new ValidationException(['product' => 'Product not found']);
+        return new self(
+            null, // ID assigned when saved
+            new Email($email),
+            $name,
+            password_hash($password, PASSWORD_DEFAULT),
+            true,
+            new \DateTimeImmutable(),
+            new \DateTimeImmutable()
+        );
+    }
+    
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            $data['id'] ? Uuid::fromBytes($data['id']) : null,
+            new Email($data['email']),
+            $data['name'],
+            $data['password_hash'],
+            (bool) $data['is_active'],
+            new \DateTimeImmutable($data['created_at']),
+            new \DateTimeImmutable($data['updated_at'])
+        );
+    }
+    
+    // Business methods, not just getters
+    public function changePassword(string $newPassword): self
+    {
+        $clone = clone $this;
+        $clone->passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $clone->updatedAt = new \DateTimeImmutable();
+        return $clone;
+    }
+    
+    public function changeEmail(string $newEmail): self
+    {
+        $clone = clone $this;
+        $clone->email = new Email($newEmail); // Validates automatically
+        $clone->updatedAt = new \DateTimeImmutable();
+        return $clone;
+    }
+    
+    public function deactivate(): self
+    {
+        $clone = clone $this;
+        $clone->isActive = false;
+        $clone->updatedAt = new \DateTimeImmutable();
+        return $clone;
+    }
+    
+    public function verifyPassword(string $password): bool
+    {
+        return password_verify($password, $this->passwordHash);
+    }
+    
+    public function withId(UuidInterface $id): self
+    {
+        $clone = clone $this;
+        $clone->id = $id;
+        return $clone;
+    }
+    
+    // Accessors
+    public function getId(): ?UuidInterface { return $this->id; }
+    public function getEmail(): Email { return $this->email; }
+    public function getName(): string { return $this->name; }
+    public function getPasswordHash(): string { return $this->passwordHash; }
+    public function isActive(): bool { return $this->isActive; }
+    public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
+    public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }
+    
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id?->toString(),
+            'email' => $this->email->toString(),
+            'name' => $this->name,
+            'is_active' => $this->isActive,
+            'created_at' => $this->createdAt->format('c'),
+            'updated_at' => $this->updatedAt->format('c')
+        ];
+    }
+}
+```
+
+### Entity Collections
+
+For handling multiple entities. Arrays cannot be typed as PHP has no generics (for now), to be sure a collection of entities is all of the right type you can encapsulate them in Collection objects that behave like arrays.
+
+```php
+<?php
+// src/Entity/UserCollection.php
+namespace Middle\Skeleton\Entity;
+
+class UserCollection implements \Iterator, \Countable
+{
+    private array $users;
+    private int $position = 0;
+    
+    public function __construct(array $users = [])
+    {
+        $this->users = array_values($users);
+    }
+    
+    public function add(User $user): void
+    {
+        $this->users[] = $user;
+    }
+    
+    /** @throws  \OutOfBoundsException when not found*/
+    public function findByEmail(Email $email): User
+    {
+        foreach ($this->users as $user) {
+            if ($user->getEmail()->equals($email)) {
+                return $user;
+            }
+        }
+        throw \OutOfBoundsException('E-mail address not found: '.$email->toString());
+    }
+    
+    public function activeUsers(): UserCollection
+    {
+        return new self(array_filter($this->users, fn($user) => $user->isActive()));
+    }
+    
+    public function toArray(): array
+    {
+        return array_map(fn($user) => $user->toArray(), $this->users);
+    }
+    
+    // Iterator implementation
+    public function current(): User { return $this->users[$this->position]; }
+    public function key(): int { return $this->position; }
+    public function next(): void { ++$this->position; }
+    public function rewind(): void { $this->position = 0; }
+    public function valid(): bool { return isset($this->users[$this->position]); }
+    
+    // Countable implementation
+    public function count(): int { return count($this->users); }
+}
+```
+
+## Repository Patterns with UUIDs
+
+Repository patterns abstract data access behind interfaces. For identifiers, we'll use UUIDs instead of auto-incrementing integers for several practical benefits: they prevent enumeration attacks where attackers can guess valid IDs by incrementing numbers, they eliminate accidental ID confusion between different entity types (using a User ID where an Account ID was expected), and they work naturally in distributed systems without coordination overhead. While UUIDs are larger than integers (16 bytes vs 4-8 bytes), when stored as binary the storage overhead is negligible compared to the rest of your data, and modern databases handle UUID performance with minimal impact.
+
+*Note: as `ramsey/uuid` is pragmatically a standard in PHP we won't bother abstracting it away.*
+
+### Domain-Focused Repository Interface
+
+```php
+<?php
+// src/Repository/UserRepositoryInterface.php
+interface UserRepositoryInterface
+{
+    /** @throws  \OutOfBoundsException when not found */
+    public function findById(UuidInterface $id): User;
+    /** @throws  \OutOfBoundsException when not found */
+    public function findByEmail(Email $email): User;
+    public function save(User $user): User;
+    public function findActiveUsers(): UserCollection;
+    public function emailExists(Email $email): bool;
+}
+```
+
+# Database Implementation
+
+```php
+<?php
+// src/Repository/DatabaseUserRepository.php
+class DatabaseUserRepository implements UserRepositoryInterface
+{
+    public function __construct(private PDO $db) {}
+    
+    /** @throws  \OutOfBoundsException when not found */
+    public function findById(UuidInterface $id): User
+    {
+        $stmt = $this->db->prepare('SELECT * FROM users WHERE id = ?');
+        $stmt->execute([$id->getBytes()]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$data) {
+            throw new \OutOfBoundsException('User ID not found: '.$id->toString());
+        }
+        
+        return User::fromArray($data);
+    }
+    
+    /** @throws  \OutOfBoundsException when not found */
+    public function findByEmail(Email $email): User
+    {
+        $stmt = $this->db->prepare('SELECT * FROM users WHERE email = ?');
+        $stmt->execute([$email->toString()]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$data) {
+            throw new \OutOfBoundsException('User e-mail address not found: '.$email->toString());
+        }
+        
+        return User::fromArray($data);
+    }
+    
+    public function save(User $user): User
+    {
+        if (is_null($user->getId())) {
+            return $this->insertUser($user);
+        } else {
+            return $this->updateUser($user);
+        }
+    }
+    
+    public function findActiveUsers(): UserCollection
+    {
+        $stmt = $this->db->prepare('SELECT * FROM users WHERE is_active = 1 ORDER BY created_at DESC');
+        $stmt->execute();
+        
+        $users = [];
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $users[] = User::fromArray($data);
+        }
+        
+        return new UserCollection($users);
+    }
+    
+    public function emailExists(Email $email): bool
+    {
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM users WHERE email = ?');
+        $stmt->execute([$email->toString()]);
+        return $stmt->fetchColumn() > 0;
+    }
+    
+    private function insertUser(User $user): User
+    {
+        $id = Uuid::uuid4();
+        $now = new \DateTimeImmutable();
+        
+        $stmt = $this->db->prepare('
+            INSERT INTO users (id, email, name, password_hash, is_active, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ');
+        
+        $stmt->execute([
+            $id->getBytes(),
+            $user->getEmail()->toString(),
+            $user->getName(),
+            $user->getPasswordHash(),
+            $user->isActive() ? 1 : 0,
+            $user->getCreatedAt()->format('Y-m-d H:i:s'),
+            $now->format('Y-m-d H:i:s')
+        ]);
+        
+        return $user->withId($id);
+    }
+    
+    private function updateUser(User $user): User
+    {
+        $now = new \DateTimeImmutable();
+        
+        $stmt = $this->db->prepare('
+            UPDATE users 
+            SET email = ?, name = ?, password_hash = ?, is_active = ?, updated_at = ?
+            WHERE id = ?
+        ');
+        
+        $stmt->execute([
+            $user->getEmail()->toString(),
+            $user->getName(),
+            $user->getPasswordHash(),
+            $user->isActive() ? 1 : 0,
+            $now->format('Y-m-d H:i:s'),
+            $user->getId()->getBytes()
+        ]);
+        
+        return $user;
+    }
+}
+```
+
+## Authentication Using Middle's Session System
+
+Middle provides built-in session handling through `SessionMiddleware` and `SessionInterface`. Let's implement authentication using these components. We already showed one example in [Chapter 4](https://jschreuder.github.io/Middle/chapter4/#authentication-middleware), in addition it could also be done using Sessions:
+
+### Session-Based Authentication Using Middle's Session System
+
+For traditional web applications, use Middle's built-in session handling:
+
+```php
+<?php
+// src/Service/SessionAuthenticationService.php
+class SessionAuthenticationService implements AuthenticationServiceInterface
+{
+    public function __construct(
+        private UserRepositoryInterface $userRepository
+    ) {}
+    
+    public function authenticate(string $email, string $password): AuthenticationResult
+    {
+        $emailObj = new Email($email); // Validates email format
+
+        try {
+            $user = $this->userRepository->findByEmail($emailObj);
+        } catch (\OutOfBoundsException $e) {
+            return AuthenticationResult::failure('Invalid credentials');
+        }
+        
+        if (!$user->verifyPassword($password)) {
+            return AuthenticationResult::failure('Invalid credentials');
+        }
+        
+        if (!$user->isActive()) {
+            return AuthenticationResult::failure('Account is inactive');
+        }
+        
+        return AuthenticationResult::success($user, 'session-based');
+    }
+    
+    public function loginUser(SessionInterface $session, User $user): void
+    {
+        $session->set('user_id', $user->getId()->toString());
+        $session->set('email', $user->getEmail()->toString());
+        $session->set('login_time', time());
+        $session->rotateId(); // Prevent session fixation attacks
+    }
+    
+    public function getCurrentUser(string $sessionId): ?User
+    {
+        // This method signature is for interface compatibility
+        // In practice, we get the user from the session via middleware
+        throw new \RuntimeException('Use getCurrentUserFromSession instead');
+    }
+    
+    public function getCurrentUserFromSession(SessionInterface $session): ?User
+    {
+        $userId = $session->get('user_id');
+        if (!$userId) {
+            return null;
+        }
+        
+        return $this->userRepository->findById(Uuid::fromString($userId));
+    }
+    
+    public function logoutUser(SessionInterface $session): void
+    {
+        $session->destroy();
+    }
+    
+    public function generateToken(User $user): string
+    {
+        return 'session-based'; // Not used for session auth
+    }
+}
+
+// src/ServerMiddleware/SessionAuthenticationMiddleware.php
+class SessionAuthenticationMiddleware implements MiddlewareInterface
+{
+    public function __construct(
+        private SessionAuthenticationService $authService,
+        private array $publicRoutes = []
+    ) {}
+    
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        if ($this->isPublicRoute($request)) {
+            return $handler->handle($request);
+        }
+        
+        $session = $request->getAttribute('session');
+        if (!$session instanceof SessionInterface) {
+            throw new AuthenticationException('Session required');
+        }
+        
+        $user = $this->authService->getCurrentUserFromSession($session);
+        if (!$user) {
+            throw new AuthenticationException('Authentication required');
+        }
+        
+        // Add user to request attributes, just like JWT middleware
+        $authenticatedRequest = $request->withAttribute('authenticated_user', $user);
+        return $handler->handle($authenticatedRequest);
+    }
+    
+    private function isPublicRoute(ServerRequestInterface $request): bool
+    {
+        $path = $request->getUri()->getPath();
+        foreach ($this->publicRoutes as $pattern) {
+            if (preg_match($pattern, $path)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
+
+### Application Stack Configuration
+
+Configure authentication in your service container using Middle's session system:
+
+```php
+<?php
+// In ServiceContainer.php
+use jschreuder\Middle\ServerMiddleware\SessionMiddleware;
+use jschreuder\Middle\Session\LaminasSessionProcessor;
+
+public function getApp(): ApplicationStack
+{
+    $app = new ApplicationStack(new ControllerRunner());
+    
+    // Core request processing
+    $app = $app->withMiddleware(new JsonRequestParserMiddleware());
+    
+    // Session-based authentication stack
+    $app = $app->withMiddleware(new SessionMiddleware($this->getSessionProcessor()))
+        ->withMiddleware(new SessionAuthenticationMiddleware(
+            $this->getSessionAuthService(),
+            ['/api/auth/.*', '/health', '/']
+        ));
+    
+    $app = $app->withMiddleware(new RoutingMiddleware($this->getAppRouter(), $this->get404Handler()))
+           ->withMiddleware(new ErrorHandlerMiddleware($this->getLogger(), $this->get500Handler()));
+    
+    return $app;
+}
+
+public function getSessionProcessor(): SessionProcessorInterface
+{
+    return new LaminasSessionProcessor($this->getLaminasSessionConfig());
+}
+
+public function getSessionAuthService(): SessionAuthenticationService
+{
+    return new SessionAuthenticationService($this->getUserRepository());
+}
+```
+
+## Views & Renderers: Supporting JSON, HTML, Whatever You Need
+
+Just as `TwigRenderer` takes View data and formats it as HTML using templates, you can create renderers that format the same data as JSON, XML, or any other format. The renderer pattern separates your business data from its presentation format:
+
+```php
+<?php
+// src/View/JsonRenderer.php
+class JsonRenderer implements RendererInterface
+{
+    public function __construct(
+        private ResponseFactoryInterface $responseFactory,
+        private array $transformers = []
+    ) {}
+    
+    public function render(ServerRequestInterface $request, ViewInterface $view): ResponseInterface
+    {
+        $data = $this->transformData($view->getParameters());
+        
+        $response = $this->responseFactory
+            ->createResponse($view->getStatusCode())
+            ->withHeader('Content-Type', 'application/json; charset=utf-8');
+        
+        $response->getBody()->write(json_encode($data, JSON_THROW_ON_ERROR));
+        $response->getBody()->rewind();
+        
+        return $response;
+    }
+    
+    private function transformData(array $data): array
+    {
+        $transformed = [];
+        foreach ($data as $key => $value) {
+            $transformed[$key] = $this->transformValue($value);
+        }
+        return $transformed;
+    }
+    
+    private function transformValue(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            return array_map([$this, 'transformValue'], $value);
+        }
+        
+        // Use registered transformers
+        foreach ($this->transformers as $class => $transformer) {
+            if ($value instanceof $class) {
+                return $transformer->transform($value);
             }
         }
         
-        $order = Order::create($orderData);
-        $savedOrder = $this->orderRepository->save($order);
+        // Fall back to toArray() method if available
+        if (is_object($value) && method_exists($value, 'toArray')) {
+            return $value->toArray();
+        }
         
-        // Send confirmation email
-        $this->emailService->sendOrderConfirmation($savedOrder);
-        
-        return $savedOrder;
+        return $value;
     }
+}
+
+// src/Transformer/DataTransformerInterface.php
+interface DataTransformerInterface
+{
+    public function transform(object $object): array;
+}
+
+// src/Transformer/UserApiTransformer.php
+class UserApiTransformer implements DataTransformerInterface
+{
+    public function transform(object $user): array
+    {
+        assert($user instanceof User);
+        
+        return [
+            'id' => $user->getId()->toString(),
+            'email' => $user->getEmail()->toString(),
+            'name' => $user->getName(),
+            'active' => $user->isActive(),
+            'joined_at' => $user->getCreatedAt()->format('c')
+        ];
+    }
+}
+```
+
+### Format-Agnostic Controllers
+
+Controllers can accept any renderer, making them format-agnostic. The same business logic works for HTML, JSON, or any other output format:
+
+```php
+<?php
+class GetUserController implements ControllerInterface
+{
+    public function __construct(
+        private UserRepositoryInterface $userRepository,
+        private RendererInterface $renderer  // Could be Twig, JSON, XML, etc.
+    ) {}
+    
+    public function execute(ServerRequestInterface $request): ResponseInterface
+    {
+        $userId = Uuid::fromString($request->getAttribute('id'));
+        $user = $this->userRepository->findById($userId);
+        
+        // Same data, different output format based on renderer
+        return $this->renderer->render($request, new View('user/profile.twig', [
+            'user' => $user,
+            'success' => true
+        ]));
+    }
+}
+
+// Or choose renderer based on request format
+class FlexibleUserController implements ControllerInterface
+{
+    public function __construct(
+        private UserRepositoryInterface $userRepository,
+        private RendererInterface $htmlRenderer,
+        private RendererInterface $jsonRenderer
+    ) {}
+    
+    public function execute(ServerRequestInterface $request): ResponseInterface
+    {
+        $user = $this->userRepository->findById(
+            Uuid::fromString($request->getAttribute('id'))
+        );
+        
+        $view = new View('user/profile.twig', ['user' => $user]);
+        
+        // Choose renderer based on Accept header or route
+        $format = $request->getAttribute('format', 'html');
+        $renderer = match($format) {
+            'json' => $this->jsonRenderer,
+            'html' => $this->htmlRenderer,
+            default => $this->htmlRenderer
+        };
+        
+        return $renderer->render($request, $view);
+    }
+}
+```
+
+### Service Container Setup
+
+```php
+<?php
+// In ServiceContainer.php
+public function getJsonRenderer(): RendererInterface
+{
+    $renderer = new JsonRenderer($this->getResponseFactory());
+    $renderer->registerTransformer(User::class, new UserApiTransformer());
+    return $renderer;
+}
+
+public function getHtmlRenderer(): RendererInterface
+{
+    return new TwigRenderer($this->getTwig(), $this->getResponseFactory());
+}
+
+// Controllers can be configured with specific renderers
+public function getUserController(): GetUserController
+{
+    return new GetUserController(
+        $this->getUserRepository(),
+        $this->getJsonRenderer()  // or $this->getHtmlRenderer()
+    );
+}
+
+// Or configured to handle multiple formats
+public function getFlexibleUserController(): FlexibleUserController
+{
+    return new FlexibleUserController(
+        $this->getUserRepository(),
+        $this->getHtmlRenderer(),
+        $this->getJsonRenderer()
+    );
+}
+```
+
+This approach maintains Middle's principles: whether you're templating HTML with Twig or formatting JSON with transformers, you're separating business data from presentation logic. The same View data can be rendered in multiple formats by swapping the renderer implementation.
+
+## External Service Integration
+
+Integrate external services through interfaces that hide implementation details and make services replaceable.
+
+### HTTP Client Integration
+
+Use Guzzle for HTTP communication while maintaining your interface:
+
+```php
+<?php
+// composer require guzzlehttp/guzzle
+
+// src/Service/HttpClientInterface.php
+interface HttpClientInterface
+{
+    public function get(string $url, array $headers = []): HttpResponse;
+    public function post(string $url, array $data = [], array $headers = []): HttpResponse;
+}
+
+class HttpResponse
+{
+    public function __construct(
+        private int $statusCode,
+        private string $body,
+        private array $headers = []
+    ) {}
+    
+    public function getStatusCode(): int { return $this->statusCode; }
+    public function getBody(): string { return $this->body; }
+    public function isSuccessful(): bool { return $this->statusCode >= 200 && $this->statusCode < 300; }
+    
+    public function getJsonData(): array
+    {
+        $data = json_decode($this->body, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException('Response is not valid JSON');
+        }
+        return $data;
+    }
+}
+
+// src/Service/GuzzleHttpClient.php
+use GuzzleHttp\Client;
+
+class GuzzleHttpClient implements HttpClientInterface
+{
+    public function __construct(
+        private Client $client,
+        private int $timeout = 30
+    ) {}
+    
+    public function get(string $url, array $headers = []): HttpResponse
+    {
+        return $this->makeRequest('GET', $url, [], $headers);
+    }
+    
+    public function post(string $url, array $data = [], array $headers = []): HttpResponse
+    {
+        return $this->makeRequest('POST', $url, $data, $headers);
+    }
+    
+    private function makeRequest(string $method, string $url, array $data = [], array $headers = []): HttpResponse
+    {
+        try {
+            $options = [
+                'headers' => $headers,
+                'timeout' => $this->timeout,
+                'json' => $data
+            ];
+            
+            $response = $this->client->request($method, $url, $options);
+            
+            return new HttpResponse(
+                $response->getStatusCode(),
+                $response->getBody()->getContents()
+            );
+            
+        } catch (\Exception $e) {
+            throw new ExternalServiceException("HTTP request failed: {$e->getMessage()}", 0, $e);
+        }
+    }
+}
+```
+
+### Service Container Integration
+
+Configure HTTP clients in your service container:
+
+```php
+<?php
+// In ServiceContainer.php
+public function getHttpClient(): HttpClientInterface
+{
+    return new GuzzleHttpClient(new Client(), 30);
+}
+
+public function getPaymentGateway(): PaymentGatewayInterface
+{
+    $provider = $this->config('payment.provider');
+    
+    return match($provider) {
+        'stripe' => new StripePaymentGateway(
+            $this->getHttpClient(),
+            $this->config('payment.stripe.secret_key')
+        ),
+        default => throw new \InvalidArgumentException("Unknown payment provider: {$provider}")
+    };
 }
 ```
 
 ## Key Takeaways
 
-1. **Use Filesystem Organization**: Group related code by domain using PSR-4 namespaces
-2. **Organize Service Container**: Use traits to group domain-specific services
-3. **Create Routing Providers**: Group related endpoints together for better maintainability
-4. **Keep It Simple**: Avoid complex automatic-magic module systems - Middle's explicitness is its strength
-5. **Test Domain by Domain**: Organize tests to match your source structure
+1. **Use Middle's Built-in Features**: Leverage `SessionMiddleware` and interfaces instead of building authentication from scratch.
+2. **UUID-Based Identifiers**: Use Ramsey's `UuidInterface` directly - it's already a well-designed standard interface that doesn't need additional abstraction.
+3. **Value Objects for Domain Primitives**: Create value objects like `Email` that encapsulate validation and domain meaning around primitive types.
+4. **Rich Entity Design**: Create domain entities with business behavior, not just data containers. Let them enforce their own invariants.
+5. **Flexible Output Formatting**: Use the View/Renderer pattern to support multiple output formats from the same business logic.
 
 ## Next Steps
 
-Start building, this was it for this guide!
+With these essential patterns mastered using Middle's actual architecture and best practices, you're ready to tackle application organization and growth strategies in Chapter 8. You'll learn how to structure larger Middle applications while maintaining the architectural clarity and explicit patterns demonstrated here.
+
+The key insight is that Middle's strength lies in its explicit composition and interface-driven design. By building on the skeleton's patterns and using Middle's built-in features, you create applications that are both powerful and maintainable. These patterns scale naturally as your application grows, because every dependency remains visible and every component boundary stays clean.
+
+Go on with [Chapter 8](../chapter8/).

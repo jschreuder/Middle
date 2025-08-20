@@ -19,6 +19,10 @@ Middle takes a different approach to web application architecture. Instead of ma
 - **🛡️ Safe to Change** - Clean boundaries prevent accidental coupling
 - **🧪 Built for Testing** - Explicit dependencies make comprehensive testing straightforward
 
+## Middle's Place in the PHP Ecosystem
+
+Middle is designed for teams that prioritize long-term maintainability and architectural clarity over rapid prototyping. While many popular frameworks excel at getting applications to market quickly through conventions and automation, Middle optimizes for the phase that comes after - when your application succeeds, grows complex, and needs to be maintained by multiple developers over years. This focus extends to dependency management: Middle's minimal core means you consciously choose exactly which external libraries your application depends on, rather than inheriting a large dependency tree. We embrace "Proudly Found Elsewhere" - leveraging proven libraries like Symfony Router and Twig - but only the specific components your application actually needs.
+
 ## The Complete Guide
 
 ### Core Foundations
@@ -39,16 +43,20 @@ Design interfaces that express business intent clearly and evolve gracefully as 
 *Building Custom Application Behavior*  
 Create authentication, validation, caching, and other cross-cutting concerns using Middle's explicit composition.
 
-**[Chapter 5: Testing Strategies](chapter5)**  
+**[Chapter 5: Secure by Design](chapter5)**
+*Defensive Programming and Architectural Security*
+Leverage PHP's process isolation and Middle's minimal attack surface for robust security. Learn defensive programming patterns, security-first interface design, and how explicit architecture prevents common vulnerabilities.
+
+**[Chapter 6: Testing Strategies](chapter6)**  
 *Confidence Through Comprehensive Coverage*  
 Build test suites that leverage Middle's architecture for reliable unit and integration testing.
 
-**[Chapter 6: Common Patterns and Solutions](chapter6)**  
+**[Chapter 7: Common Patterns and Solutions](chapter7)**  
 *Practical Implementations*  
 Implement authentication, data persistence, API responses, and external service integration using Middle's patterns.
 
 ### Scaling and Production
-**[Chapter 7: Growing Your Application](chapter7)**  
+**[Chapter 8: Growing Your Application](chapter8)**  
 *Scaling from Simple to Complex*  
 Organize larger applications into modules with their own directory, service definitions and routes.
 
