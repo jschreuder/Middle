@@ -13,57 +13,21 @@ Middle takes a different approach to web application architecture. Instead of ma
 ### 🔍 **No Magic, No Surprises**
 Every dependency is explicit. Every behavior is visible. No hidden auto-wiring, no surprise side effects, no debugging mysterious framework behavior at 3 AM.
 
-```php
-// You can see exactly what's happening
-$app = new ApplicationStack(
-    new ControllerRunner(),
-    new RoutingMiddleware($router, $fallbackController),
-    new SessionMiddleware($sessionProcessor),
-    new ErrorHandlerMiddleware($logger, $errorController)
-);
-```
-
 ### 🔧 **Everything is Replaceable**
 Don't like how routing works? Swap the router. Need custom session handling? Implement `SessionProcessorInterface`. Every component is designed to be replaced without touching anything else.
-
-```php
-// Custom session implementation? No problem.
-class RedisSessionProcessor implements SessionProcessorInterface 
-{
-    // Your implementation here
-}
-
-$app = $app->withMiddleware(
-    new SessionMiddleware(new RedisSessionProcessor())
-);
-```
 
 ### 🛡️ **Safe to Change and Extend**
 The architecture prevents accidental coupling. You can modify any part of your application with confidence that you're not breaking something unexpected elsewhere.
 
-```php
-// Adding middleware is safe and predictable
-$app = $app->withMiddleware(new AuthenticationMiddleware($authService));
-$app = $app->withMiddleware(new CacheMiddleware($cache));
-// Original $app is unchanged, no side effects
-```
-
 ### 🧪 **Built for Testing**
 Interface-driven design means every component can be easily mocked, tested in isolation, and verified independently. No complex test setup, no framework mocking libraries needed.
-
-```php
-// Testing is straightforward
-$mockRouter = $this->createMock(RouterInterface::class);
-$mockController = $this->createMock(ControllerInterface::class);
-$middleware = new RoutingMiddleware($mockRouter, $mockController);
-```
 
 ### How Middle Compares
 
 Like other micro-frameworks, Middle is for composing applications. Unlike them, Middle nudges towards architectural boundaries through interfaces, making SOLID principles and domain-driven design the path of least resistance.
 
 **Choose Middle when:** You want simplicity with architecture meant for SOLID and Domain Driven Development.  
-**Choose Others when:** You disagree with the philosophy or prefer configuration-driven development.
+**Choose Others when:** You disagree with the philosophy or convention- or configuration-driven frameworks.
 
 ## Core Philosophy
 
@@ -111,7 +75,7 @@ When security vulnerabilities are discovered, updates happen in the concrete lib
 No framework rewrites, no breaking changes, no security debt.
 
 ### **A Framework You'll Never Replace for Security**
-Traditional frameworks become security liabilities over time—their monolithic nature means security updates can break your application. Middle's architectural approach eliminates this problem entirely. Security is handled by focused libraries that update independently, while your business logic remains protected behind stable interfaces.
+Traditional frameworks become security liabilities over time—their monolithic nature means security updates can break your application. Middle's architectural approach minimizes this problem. Security is handled by focused libraries that update independently, while your business logic remains protected behind stable interfaces.
 
 **The result:** A framework with virtually no inherent security vulnerabilities and a security posture that improves over time as underlying libraries mature.
 
