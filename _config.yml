@@ -1,4 +1,4 @@
-title: "Middle Framework Guide"
+title: "Middle Framework"
 description: "Complete guide to building maintainable web applications with Middle Framework"
 
 # Use remote theme instead of gem
@@ -7,7 +7,7 @@ remote_theme: just-the-docs/just-the-docs
 # Navigation
 nav_sort: case_insensitive
 nav_external_links:
-  - title: "Middle Framework on GitHub"
+  - title: "Code on GitHub"
     url: "https://github.com/jschreuder/Middle"
 
 # Footer
