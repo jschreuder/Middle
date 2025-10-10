@@ -9,16 +9,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class JsonRequestParserMiddleware implements MiddlewareInterface
 {
-    /** @var  string[]  array of regexes to check against content-types */
-    private readonly array $jsonContentTypes;
-
-    public function __construct(?array $jsonContentTypes = null)
-    {
-        if (is_null($jsonContentTypes)) {
-            $jsonContentTypes = ['#^application\/json(;|$)#iD'];
-        }
-        $this->jsonContentTypes = $jsonContentTypes;
-    }
+    /** @param  string[]  $jsonContentTypes  array of regexes to check against content-types */
+    public function __construct(
+        private readonly array $jsonContentTypes = ['#^application\/json(;|$)#iD']
+    ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
