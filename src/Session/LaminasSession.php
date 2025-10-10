@@ -12,8 +12,8 @@ final class LaminasSession implements SessionInterface
     private bool $changed = false;
 
     public function __construct(
-        private SessionManager $sessionManager,
-        private Container $container
+        private readonly SessionManager $sessionManager,
+        private readonly Container $container
     )
     {
     }
