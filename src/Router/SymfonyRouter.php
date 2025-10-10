@@ -13,8 +13,8 @@ use Closure;
 
 final class SymfonyRouter implements RouterInterface
 {
-    private RouteCollection $router;
-    private SymfonyUrlGenerator $generator;
+    private readonly RouteCollection $router;
+    private readonly SymfonyUrlGenerator $generator;
 
     public function __construct(
         private readonly string $baseUrl,
