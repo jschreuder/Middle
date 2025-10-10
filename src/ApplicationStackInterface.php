@@ -8,9 +8,9 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface ApplicationStackInterface
 {
-    public function withMiddleware(MiddlewareInterface $middleware): ApplicationStack;
+    public function withMiddleware(MiddlewareInterface $middleware): self;
 
-    public function withoutMiddleware(MiddlewareInterface $middleware): ApplicationStack;
+    public function withoutMiddleware(MiddlewareInterface $middleware): self;
 
     public function process(ServerRequestInterface $request): ResponseInterface;
 }

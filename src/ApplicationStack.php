@@ -18,7 +18,7 @@ final class ApplicationStack implements ApplicationStackInterface
         }
     }
 
-    public function withMiddleware(MiddlewareInterface $middleware): ApplicationStack
+    public function withMiddleware(MiddlewareInterface $middleware): ApplicationStackInterface
     {
         $stack = clone $this;
         $stack->stack = clone $this->stack;
@@ -26,7 +26,7 @@ final class ApplicationStack implements ApplicationStackInterface
         return $stack;
     }
 
-    public function withoutMiddleware(MiddlewareInterface $middleware): ApplicationStack
+    public function withoutMiddleware(MiddlewareInterface $middleware): ApplicationStackInterface
     {
         $oldStack = clone $this->stack;
         $newStack = new \SplStack();
