@@ -290,7 +290,7 @@ class CreateUserController implements ControllerInterface, RequestFilterInterfac
     {
         $data = $request->getParsedBody();
         if (is_array($data)) {
-            $data['textfield'] = strip_tags(trim(data['textfield']));
+            $data['textfield'] = strip_tags(trim($data['textfield']));
             $request = $request->withParsedBody($data);
         }
         
