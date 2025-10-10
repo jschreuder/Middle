@@ -11,7 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class SessionMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private SessionProcessorInterface $sessionProcessor
+        private readonly SessionProcessorInterface $sessionProcessor
     )
     {
     }

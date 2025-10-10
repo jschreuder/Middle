@@ -5,7 +5,7 @@ namespace jschreuder\Middle\Router;
 final class RoutingProviderCollection implements RoutingProviderInterface
 {
     /** @var  RoutingProviderInterface[] */
-    private array $routingProviders;
+    private readonly array $routingProviders;
 
     public function __construct(RoutingProviderInterface ...$routingProviders)
     {

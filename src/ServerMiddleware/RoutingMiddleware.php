@@ -12,8 +12,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class RoutingMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private RouterInterface $router,
-        private ControllerInterface $fallbackController
+        private readonly RouterInterface $router,
+        private readonly ControllerInterface $fallbackController
     )
     {
     }

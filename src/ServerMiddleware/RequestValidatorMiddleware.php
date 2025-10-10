@@ -12,7 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class RequestValidatorMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private \Closure $errorHandler
+        private readonly \Closure $errorHandler
     )
     {
     }
