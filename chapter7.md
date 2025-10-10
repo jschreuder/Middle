@@ -110,7 +110,7 @@ namespace Middle\Skeleton\Entity;
 class User
 {
     private function __construct(
-        private readonly UuidInterface $id = null,  // readonly, should never change
+        private readonly UuidInterface $id,  // readonly, should never change
         private Email $email,
         private string $name,
         private string $passwordHash,
