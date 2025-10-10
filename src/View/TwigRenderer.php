@@ -10,8 +10,8 @@ use Twig\Environment;
 final class TwigRenderer implements RendererInterface
 {
     public function __construct(
-        private Environment $twig,
-        private ResponseFactoryInterface $responseFactory
+        private readonly Environment $twig,
+        private readonly ResponseFactoryInterface $responseFactory
     )
     {
     }

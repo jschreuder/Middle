@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 final class LaminasSessionProcessor implements SessionProcessorInterface
 {
     public function __construct(
-        private ?ConfigInterface $laminasSessionConfig = null
+        private readonly ?ConfigInterface $laminasSessionConfig = null
     )
     {
     }

@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Closure;
 
 final class SymfonyRouter implements RouterInterface
 {
@@ -75,7 +76,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?\Closure $configCallback = null
+        ?Closure $configCallback = null
     ): void
     {
         $symfonyRoute = new Route($path, $defaults, $requirements);
@@ -93,7 +94,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?\Closure $configCallback = null
+        ?Closure $configCallback = null
     ): void
     {
         $this->match($name, 'GET', $path, $controllerFactory, $defaults, $requirements, $configCallback);
@@ -105,7 +106,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?\Closure $configCallback = null
+        ?Closure $configCallback = null
     ): void
     {
         $this->match($name, 'POST', $path, $controllerFactory, $defaults, $requirements, $configCallback);
@@ -117,7 +118,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?\Closure $configCallback = null
+        ?Closure $configCallback = null
     ): void
     {
         $this->match($name, 'PUT', $path, $controllerFactory, $defaults, $requirements, $configCallback);
@@ -129,7 +130,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?\Closure $configCallback = null
+        ?Closure $configCallback = null
     ): void
     {
         $this->match($name, 'PATCH', $path, $controllerFactory, $defaults, $requirements, $configCallback);
@@ -141,7 +142,7 @@ final class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?\Closure $configCallback = null
+        ?Closure $configCallback = null
     ): void
     {
         $this->match($name, 'DELETE', $path, $controllerFactory, $defaults, $requirements, $configCallback);

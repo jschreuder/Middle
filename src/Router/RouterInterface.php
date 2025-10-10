@@ -3,6 +3,7 @@
 namespace jschreuder\Middle\Router;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Closure;
 
 interface RouterInterface
 {
@@ -21,7 +22,8 @@ interface RouterInterface
         string $path,
         callable $controllerFactory,
         array $defaults = [],
-        array $requirements = []
+        array $requirements = [],
+        ?Closure $configCallback = null
     ): void;
 
     /** Add route for GET request */
@@ -30,7 +32,8 @@ interface RouterInterface
         string $path,
         callable $controllerFactory,
         array $defaults = [],
-        array $requirements = []
+        array $requirements = [],
+        ?Closure $configCallback = null
     ): void;
 
     /** Add route for POST request */
@@ -39,7 +42,8 @@ interface RouterInterface
         string $path,
         callable $controllerFactory,
         array $defaults = [],
-        array $requirements = []
+        array $requirements = [],
+        ?Closure $configCallback = null
     ): void;
 
     /** Add route for PUT request */
@@ -48,7 +52,8 @@ interface RouterInterface
         string $path,
         callable $controllerFactory,
         array $defaults = [],
-        array $requirements = []
+        array $requirements = [],
+        ?Closure $configCallback = null
     ): void;
 
     /** Add route for PATCH request */
@@ -57,7 +62,8 @@ interface RouterInterface
         string $path,
         callable $controllerFactory,
         array $defaults = [],
-        array $requirements = []
+        array $requirements = [],
+        ?Closure $configCallback = null
     ): void;
 
     /** Add route for DELETE request */
@@ -66,6 +72,7 @@ interface RouterInterface
         string $path,
         callable $controllerFactory,
         array $defaults = [],
-        array $requirements = []
+        array $requirements = [],
+        ?Closure $configCallback = null
     ): void;
 }

@@ -4,16 +4,14 @@ namespace jschreuder\Middle\View;
 
 final class RedirectView implements ViewInterface
 {
-    private int $statusCode;
     private array $headers = [];
 
-    public function __construct(string $location, int $statusCode = 302)
+    public function __construct(string $location, private readonly int $statusCode = 302)
     {
         if ($statusCode < 300 || $statusCode >= 400) {
             throw new \InvalidArgumentException('Redirect must have status code between 300-399');
         }
 
-        $this->statusCode = $statusCode;
         $this->setHeader('Location', $location);
     }
 

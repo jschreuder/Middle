@@ -7,11 +7,9 @@ use jschreuder\Middle\Controller\ControllerInterface;
 final class RouteMatch implements RouteMatchInterface
 {
     public function __construct(
-        private ControllerInterface $controller,
-        private array $attributes = []
-    )
-    {
-    }
+        private readonly ControllerInterface $controller,
+        private readonly array $attributes = []
+    ) {}
 
     public function isMatch(): bool
     {

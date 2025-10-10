@@ -4,12 +4,11 @@ namespace jschreuder\Middle\Exception;
 
 final class ValidationFailedException extends InputException
 {
-    private array $validationErrors;
-
-    public function __construct(array $validationErrors)
+    public function __construct(
+        private readonly array $validationErrors
+    )
     {
         parent::__construct('Validation failed');
-        $this->validationErrors = $validationErrors;
     }
 
     public function getValidationErrors(): array

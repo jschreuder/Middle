@@ -5,10 +5,10 @@ namespace jschreuder\Middle\View;
 final class View implements ViewInterface
 {
     public function __construct(
-        private string $template,
+        private readonly string $template,
         private array $parameters = [],
-        private int $statusCode = 200,
-        private string $contentType = self::CONTENT_TYPE_HTML,
+        private readonly int $statusCode = 200,
+        private readonly string $contentType = self::CONTENT_TYPE_HTML,
         private array $headers = []
     )
     {

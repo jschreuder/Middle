@@ -12,7 +12,7 @@ final class JsonRequestParserMiddleware implements MiddlewareInterface
     /** @var  string[]  array of regexes to check against content-types */
     private array $jsonContentTypes;
 
-    public function __construct(array $jsonContentTypes = null)
+    public function __construct(?array $jsonContentTypes = null)
     {
         if (is_null($jsonContentTypes)) {
             $jsonContentTypes = ['#^application\/json(;|$)#iD'];

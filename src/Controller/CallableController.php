@@ -19,12 +19,9 @@ final class CallableController implements ControllerInterface
         };
     }
 
-    private \Closure $closure;
-
-    private function __construct(\Closure $closure)
-    {
-        $this->closure = $closure;
-    }
+    private function __construct(
+        private readonly \Closure $closure
+    ) {}
 
     public function execute(ServerRequestInterface $request): ResponseInterface
     {
