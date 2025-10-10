@@ -13,7 +13,7 @@ final class ControllerRunner implements MiddlewareInterface
     {
         $controller = $request->getAttribute('controller');
         if (!$controller instanceof ControllerInterface) {
-            throw new \RuntimeException('Invalid controller type: ' . get_class($controller));
+            throw new \RuntimeException('Invalid controller type: ' . get_debug_type($controller));
         }
 
         return $controller->execute($request);
