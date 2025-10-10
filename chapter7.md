@@ -53,7 +53,7 @@ Value objects encapsulate primitive types with domain meaning and validation, me
 // src/ValueObject/Email.php
 namespace Middle\Skeleton\ValueObject;
 
-class Email
+readonly class Email
 {
     private string $value;
     
@@ -89,6 +89,11 @@ class Email
 }
 ```
 
+**Why `readonly` for Value Objects:**
+Value objects represent immutable values in your domain. The `readonly` keyword (PHP 8.1) or `readonly class` (PHP 8.2) enforces this immutability at the language level, preventing accidental mutation and making your intent explicit. This is particularly important for security-sensitive values like Email, where mutation could bypass validation.
+
+Note: `readonly` properties can only be initialized once, during construction. This is why we validate and transform the input before assigning to `$value`.
+
 ### Entity Design Principles
 
 Entities represent core business concepts with data, identity, and autonomous behavior:
@@ -105,19 +110,20 @@ namespace Middle\Skeleton\Entity;
 class User
 {
     private function __construct(
-        private ?UuidInterface $id,
+        private readonly UuidInterface $id = null,  // readonly, should never change
         private Email $email,
         private string $name,
         private string $passwordHash,
         private bool $isActive,
-        private \DateTimeImmutable $createdAt,
+        private readonly \DateTimeImmutable $createdAt, // readonly, should never change
         private \DateTimeImmutable $updatedAt
-    ) {}
+    )
+    {}
     
     public static function create(string $email, string $name, string $password): self
     {
         return new self(
-            null, // ID assigned when saved
+            Uuid::uuid4(), // UUID is guaranteed unique, can thus be created in runtime
             new Email($email),
             $name,
             password_hash($password, PASSWORD_DEFAULT),
@@ -130,7 +136,7 @@ class User
     public static function fromArray(array $data): self
     {
         return new self(
-            $data['id'] ? Uuid::fromBytes($data['id']) : null,
+            Uuid::fromBytes($data['id']),
             new Email($data['email']),
             $data['name'],
             $data['password_hash'],
@@ -141,44 +147,31 @@ class User
     }
     
     // Business methods, not just getters
-    public function changePassword(string $newPassword): self
+    public function setPassword(string $newPassword): void
     {
-        $clone = clone $this;
-        $clone->passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
-        $clone->updatedAt = new \DateTimeImmutable();
-        return $clone;
+        $this->passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $this->updatedAt = new \DateTimeImmutable();
     }
     
-    public function changeEmail(string $newEmail): self
+    public function setEmail(string $newEmail): void
     {
-        $clone = clone $this;
-        $clone->email = new Email($newEmail); // Validates automatically
-        $clone->updatedAt = new \DateTimeImmutable();
-        return $clone;
+        $this->email = new Email($newEmail); // Validates automatically
+        $this->updatedAt = new \DateTimeImmutable();
     }
     
-    public function deactivate(): self
+    public function deactivate(): void
     {
-        $clone = clone $this;
-        $clone->isActive = false;
-        $clone->updatedAt = new \DateTimeImmutable();
-        return $clone;
+        $this->isActive = false;
+        $this->updatedAt = new \DateTimeImmutable();
     }
     
-    public function verifyPassword(string $password): bool
+    public function verifyPassword(string $inputPassword): bool
     {
-        return password_verify($password, $this->passwordHash);
-    }
-    
-    public function withId(UuidInterface $id): self
-    {
-        $clone = clone $this;
-        $clone->id = $id;
-        return $clone;
+        return password_verify($inputPassword, $this->passwordHash);
     }
     
     // Accessors
-    public function getId(): ?UuidInterface { return $this->id; }
+    public function getId(): UuidInterface { return $this->id; }
     public function getEmail(): Email { return $this->email; }
     public function getName(): string { return $this->name; }
     public function getPasswordHash(): string { return $this->passwordHash; }
@@ -189,7 +182,7 @@ class User
     public function toArray(): array
     {
         return [
-            'id' => $this->id?->toString(),
+            'id' => $this->id->toString(),
             'email' => $this->email->toString(),
             'name' => $this->name,
             'is_active' => $this->isActive,
@@ -287,7 +280,9 @@ interface UserRepositoryInterface
 // src/Repository/DatabaseUserRepository.php
 class DatabaseUserRepository implements UserRepositoryInterface
 {
-    public function __construct(private PDO $db) {}
+    public function __construct(
+        private readonly PDO $db
+    ) {}
     
     /** @throws  \OutOfBoundsException when not found */
     public function findById(UuidInterface $id): User
@@ -317,15 +312,6 @@ class DatabaseUserRepository implements UserRepositoryInterface
         return User::fromArray($data);
     }
     
-    public function save(User $user): User
-    {
-        if (is_null($user->getId())) {
-            return $this->insertUser($user);
-        } else {
-            return $this->updateUser($user);
-        }
-    }
-    
     public function findActiveUsers(): UserCollection
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE is_active = 1 ORDER BY created_at DESC');
@@ -346,30 +332,27 @@ class DatabaseUserRepository implements UserRepositoryInterface
         return $stmt->fetchColumn() > 0;
     }
     
-    private function insertUser(User $user): User
+    public function insertUser(User $user): User
     {
-        $id = Uuid::uuid4();
-        $now = new \DateTimeImmutable();
-        
         $stmt = $this->db->prepare('
             INSERT INTO users (id, email, name, password_hash, is_active, created_at, updated_at) 
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ');
         
         $stmt->execute([
-            $id->getBytes(),
+            $user->getId()->getBytes(),
             $user->getEmail()->toString(),
             $user->getName(),
             $user->getPasswordHash(),
             $user->isActive() ? 1 : 0,
             $user->getCreatedAt()->format('Y-m-d H:i:s'),
-            $now->format('Y-m-d H:i:s')
+            $user->getUpdatedAt()->format('Y-m-d H:i:s')
         ]);
         
-        return $user->withId($id);
+        return $user;
     }
     
-    private function updateUser(User $user): User
+    public function updateUser(User $user): User
     {
         $now = new \DateTimeImmutable();
         
