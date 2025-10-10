@@ -8,7 +8,9 @@ use jschreuder\Middle\Router\SymfonyRouter;
 use jschreuder\Middle\Router\SymfonyUrlGenerator;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
 beforeEach(function () {
     $this->baseUrl = 'http://some.ho.st';
@@ -17,6 +19,15 @@ beforeEach(function () {
 
 test('it can be initialized', function () {
     expect($this->router)->toBeInstanceOf(SymfonyRouter::class);
+});
+
+
+test('it can be initialized with premade Symfony instances', function () {
+    $routeCollection = Mockery::mock(RouteCollection::class);
+    $routeGenerator = new SymfonyUrlGenerator(Mockery::mock(UrlGenerator::class));
+    $router = new SymfonyRouter($this->baseUrl, $routeCollection, $routeGenerator);
+
+    expect($router)->toBeInstanceOf(SymfonyRouter::class);
 });
 
 test('it can handle parsing a non match', function () {

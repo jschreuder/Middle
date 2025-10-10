@@ -13,16 +13,17 @@ use Closure;
 
 final class SymfonyRouter implements RouterInterface
 {
-    private string $baseUrl;
     private RouteCollection $router;
     private SymfonyUrlGenerator $generator;
 
-    public function __construct(string $baseUrl)
+    public function __construct(
+        private readonly string $baseUrl,
+        ?RouteCollection $router = null,
+        ?SymfonyUrlGenerator $generator = null
+    )
     {
-        $this->baseUrl = $baseUrl;
-
-        $this->router = new RouteCollection();
-        $this->generator = new SymfonyUrlGenerator(
+        $this->router = $router ?? new RouteCollection();
+        $this->generator = $generator ?? new SymfonyUrlGenerator(
             new UrlGenerator(
                 $this->router,
                 new RequestContext($this->baseUrl, 'GET', parse_url($this->baseUrl, PHP_URL_HOST) ?: 'localhost')

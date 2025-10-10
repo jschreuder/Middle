@@ -6,12 +6,9 @@ use Symfony\Component\Routing\Generator\UrlGenerator as UrlGenerator;
 
 final class SymfonyUrlGenerator implements UrlGeneratorInterface
 {
-    private readonly UrlGenerator $generator;
-
-    public function __construct(UrlGenerator $generator)
-    {
-        $this->generator = $generator;
-    }
+    public function __construct(
+        private readonly UrlGenerator $generator
+    ) {}
 
     public function generatePath(string $name, array $options = []): string
     {
