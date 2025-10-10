@@ -20,10 +20,10 @@ final class RequestHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         if ($this->stack->count() === 0) {
-            throw new \RuntimeException('No more middleware\'s to call on.');
+            throw new \RuntimeException('No more middlewares to call on.');
         }
         if ($this->called) {
-            throw new \RuntimeException('Already processed, cannot be ran twice.');
+            throw new \RuntimeException('Already processed, cannot be run twice.');
         }
 
         /** @var  MiddlewareInterface $next */
