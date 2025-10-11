@@ -38,6 +38,9 @@ final class JsonRequestParserMiddleware implements MiddlewareInterface
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \InvalidArgumentException('Could not decode JSON body: ' . json_last_error_msg());
         }
+        if (!is_array($parsedBody)) {
+            throw new \InvalidArgumentException('JSON body must be an object or array');
+        }
 
         return $parsedBody;
     }

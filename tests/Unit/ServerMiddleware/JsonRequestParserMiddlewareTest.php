@@ -98,14 +98,31 @@ test('it can parse non default json content types', function () {
     expect($middleware->process($request1, $requestHandler))->toBe($response);
 });
 
+test('it cannot parse non-array json', function () {
+    $request = Mockery::mock(ServerRequestInterface::class);
+    $body = Mockery::mock(StreamInterface::class);
+    $requestHandler = Mockery::mock(RequestHandlerInterface::class);
+    
+    $body->shouldReceive('getContents')
+        ->andReturn('{invalid,json...code}');
+    
+    $request->shouldReceive('getBody')
+        ->andReturn($body);
+    $request->shouldReceive('getHeaderLine')
+        ->with('Content-Type')
+        ->andReturn('application/json');
+    
+    $middleware = new JsonRequestParserMiddleware();
+    expect(fn() => $middleware->process($request, $requestHandler))->toThrow(InvalidArgumentException::class);
+});
+
 test('it cannot parse invalid json', function () {
     $request = Mockery::mock(ServerRequestInterface::class);
     $body = Mockery::mock(StreamInterface::class);
     $requestHandler = Mockery::mock(RequestHandlerInterface::class);
-    $response = Mockery::mock(ResponseInterface::class);
     
     $body->shouldReceive('getContents')
-        ->andReturn('{invalid,json...code}');
+        ->andReturn('"just a string"');
     
     $request->shouldReceive('getBody')
         ->andReturn($body);
