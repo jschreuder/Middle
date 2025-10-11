@@ -120,7 +120,7 @@ test('it can process a complete request through the full middleware stack', func
         'Content-Type' => 'application/json'
     ]);
     
-    // Process request through the entire stack, test wether we got the right response
+    // Process request through the entire stack and verify correct response
     $response = $app->process($request);
     expect($response)->not->toBe($errorResponse);
     expect($response)->not->toBe($fallbackResponse);
@@ -179,4 +179,77 @@ test('it handles exceptions through error handler middleware', function () {
     $response = $app->process($request);
     
     expect($response)->toBe($errorResponse);
+});
+
+test('it handles validation failure through the full stack', function () {
+    $router = new SymfonyRouter('http://localhost');
+    
+    $validationErrorResponse = Mockery::mock(ResponseInterface::class);
+    $validatingController = new class($validationErrorResponse) implements 
+        ControllerInterface, 
+        RequestValidatorInterface 
+    {
+        public function __construct(private ResponseInterface $response) {}
+        
+        public function validateRequest(ServerRequestInterface $request): void {
+            throw new ValidationFailedException(['email' => 'Invalid email']);
+        }
+        
+        public function execute(ServerRequestInterface $request): ResponseInterface {
+            throw new \RuntimeException('Should not execute');
+        }
+    };
+    
+    $router->post('test', '/test', fn() => $validatingController);
+    
+    $fallback = CallableController::fromCallable(fn() => 
+        Mockery::mock(ResponseInterface::class)
+    );
+    
+    $errorController = CallableController::fromCallable(fn() => 
+        Mockery::mock(ResponseInterface::class)
+    );
+    
+    $app = new ApplicationStack(new ControllerRunner());
+    $app = $app->withMiddleware(new RequestValidatorMiddleware(
+        function($request, $exception) use ($validationErrorResponse) {
+            expect($exception)->toBeInstanceOf(ValidationFailedException::class);
+            return $validationErrorResponse;
+        }
+    ));
+    $app = $app->withMiddleware(new RoutingMiddleware($router, $fallback));
+    $app = $app->withMiddleware(new ErrorHandlerMiddleware(new NullLogger(), $errorController));
+    
+    $request = new ServerRequest([], [], new Uri('http://localhost/test'), 'POST');
+    $response = $app->process($request);
+    
+    expect($response)->toBe($validationErrorResponse);
+});
+
+test('it passes route parameters to controllers', function () {
+    $router = new SymfonyRouter('http://localhost');
+    
+    $capturedId = null;
+    $expectedResponse = Mockery::mock(ResponseInterface::class);
+    $controller = CallableController::fromCallable(
+        function(ServerRequestInterface $request) use (&$capturedId, $expectedResponse) {
+            $capturedId = $request->getAttribute('id');
+            return $expectedResponse;
+        }
+    );
+    
+    $router->get('user.show', '/users/{id}', fn() => $controller, [], ['id' => '\d+']);
+    
+    $fallback = CallableController::fromCallable(fn() => 
+        Mockery::mock(ResponseInterface::class)
+    );
+    
+    $app = new ApplicationStack(new ControllerRunner());
+    $app = $app->withMiddleware(new RoutingMiddleware($router, $fallback));
+    
+    $request = new ServerRequest([], [], new Uri('http://localhost/users/123'), 'GET');
+    $response = $app->process($request);
+    
+    expect($capturedId)->toBe('123');
+    expect($response)->toBe($expectedResponse);
 });
