@@ -490,11 +490,14 @@ $container->extend('app', function ($app, $c) {
 - You want a large ecosystem of plug-and-play components
 - You're building simple, short-lived applications
 
-## Requirements
+## Required, recommended and optional
 
 - PHP 8.3+
-- PSR-7 implementation (like Laminas Diactoros)
-- Symfony Routing component (for the included router)
+- PSR-7 HTTP message interfaces and PSR-17 HTTP Factories implementations (like Laminas Diactoros)
+- (recommended) Symfony Routing component (for the included `SymfonyRouter`)
+- (recommended) A PSR-3 logging implementation for the `ErrorHandlerMiddleware`
+- (optional) Twig when using the `TwigRenderer`
+- (optional) Laminas Session when using the `LaminasSession`
 
 *Note: All examples use Laminas Diactoros, but any PSR-7 compatible library will work.*
 
