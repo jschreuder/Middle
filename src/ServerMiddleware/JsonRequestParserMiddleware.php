@@ -22,7 +22,7 @@ final class JsonRequestParserMiddleware implements MiddlewareInterface
         return $requestHandler->handle($request);
     }
 
-    private function isJsonRequest(?string $requestContentType) : bool
+    private function isJsonRequest(string $requestContentType) : bool
     {
         foreach ($this->jsonContentTypes as $jsonContentType) {
             if (preg_match($jsonContentType, $requestContentType) > 0) {
