@@ -16,10 +16,13 @@ use jschreuder\Middle\Session\SessionProcessorInterface;
 use jschreuder\Middle\Controller\RequestFilterInterface;
 use jschreuder\Middle\Controller\RequestValidatorInterface;
 use jschreuder\Middle\Exception\ValidationFailedException;
+use jschreuder\Middle\Session\LaminasSession;
 use jschreuder\Middle\Session\SessionInterface;
 use Laminas\Diactoros\ServerRequest;
 use Laminas\Diactoros\StreamFactory;
 use Laminas\Diactoros\Uri;
+use Laminas\Session\Container;
+use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\NullLogger;
@@ -95,7 +98,7 @@ test('it can process a complete request through the full middleware stack', func
     $sessionProcessor = new class implements SessionProcessorInterface {
         public function processRequest(ServerRequestInterface $request): ServerRequestInterface 
         {
-            return $request->withAttribute('session', new Session());
+            return $request->withAttribute('session', new LaminasSession(new SessionManager(), new Container()));
         }
         
         public function processResponse(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface 

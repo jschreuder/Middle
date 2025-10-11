@@ -22,8 +22,8 @@
         "pestphp/pest": "^2.34",
         "mockery/mockery": "^1.6",
         "twig/twig": "^3.8",
-        "laminas/laminas-session": "^2.17",
-        "laminas/laminas-diactoros": "^3.6.0",
+        "laminas/laminas-session": "^2.25",
+        "laminas/laminas-diactoros": "^3.6",
         "symfony/routing": "^7.0"
     },
     "suggest": {

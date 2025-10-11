@@ -54,6 +54,7 @@ final class LaminasSession implements SessionInterface
 
     public function destroy(): void
     {
+        $this->container->exchangeArray([]);
         $this->sessionManager->destroy();
     }
 
