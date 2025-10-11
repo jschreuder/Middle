@@ -4,8 +4,8 @@ namespace jschreuder\Middle\View;
 
 interface ViewInterface
 {
-    const CONTENT_TYPE_HTML = 'text/html';
-    const CONTENT_TYPE_JSON = 'application/json';
+    const string CONTENT_TYPE_HTML = 'text/html';
+    const string CONTENT_TYPE_JSON = 'application/json';
 
     public function getStatusCode(): int;
 

@@ -7,7 +7,7 @@ use Laminas\Session\SessionManager;
 
 final class LaminasSession implements SessionInterface
 {
-    const FLASH_DATA_KEY_PREFIX = '_flash_data.';
+    const string FLASH_DATA_KEY_PREFIX = '_flash_data.';
 
     private bool $changed = false;
 
