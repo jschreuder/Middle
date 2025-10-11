@@ -5,6 +5,9 @@ use jschreuder\Middle\Router\SymfonyRouter;
 use jschreuder\Middle\Router\RoutingProviderInterface;
 use jschreuder\Middle\Router\RouterInterface;
 use jschreuder\Middle\Controller\CallableController;
+use Laminas\Diactoros\ServerRequest;
+use Laminas\Diactoros\StreamFactory;
+use Laminas\Diactoros\Uri;
 
 test('it can use routing providers to organize routes', function () {
     $router = new SymfonyRouter('http://localhost');
@@ -41,17 +44,7 @@ test('it can use routing providers to organize routes', function () {
     $router->registerRoutes($webProvider);
     
     // Test API route
-    $request = Mockery::mock(\Psr\Http\Message\ServerRequestInterface::class);
-    $uri = Mockery::mock(\Psr\Http\Message\UriInterface::class);
-    
-    $uri->shouldReceive('getPath')->andReturn('/api/status');
-    $uri->shouldReceive('getHost')->andReturn('localhost');
-    $uri->shouldReceive('getScheme')->andReturn('http');
-    $uri->shouldReceive('getQuery')->andReturn('');
-    
-    $request->shouldReceive('getUri')->andReturn($uri);
-    $request->shouldReceive('getMethod')->andReturn('GET');
-    
+    $request = new ServerRequest([], [], new Uri('http://localhost/api/status'), 'GET', (new StreamFactory)->createStream(''), []);
     $match = $router->parseRequest($request);
     expect($match->isMatch())->toBeTrue();
 });

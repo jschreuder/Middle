@@ -115,7 +115,7 @@ test('it can process a complete request through the full middleware stack', func
     $app = $app->withMiddleware(new JsonRequestParserMiddleware());
     $app = $app->withMiddleware(new ErrorHandlerMiddleware(new NullLogger(), $errorController));
     
-    // Create mock request
+    // Create request
     $request = new ServerRequest([], [], new Uri('http://localhost/test'), 'POST', (new StreamFactory)->createStream('{"name":"  John Doe  "}'), [
         'Content-Type' => 'application/json'
     ]);
@@ -134,50 +134,30 @@ test('it can process a complete request through the full middleware stack', func
 test('it handles routing to fallback when no route matches', function () {
     $router = new SymfonyRouter('http://localhost');
     
-    $fallbackExecuted = false;
-    $fallback = CallableController::fromCallable(function () use (&$fallbackExecuted) {
-        $fallbackExecuted = true;
-        $response = Mockery::mock(ResponseInterface::class);
-        return $response;
+    $fallbackResponse = Mockery::mock(ResponseInterface::class);
+    $fallback = CallableController::fromCallable(function () use ($fallbackResponse) {
+        return $fallbackResponse;
     });
     
     $app = new ApplicationStack(new ControllerRunner());
     $app = $app->withMiddleware(new RoutingMiddleware($router, $fallback));
     
-    $request = Mockery::mock(ServerRequestInterface::class);
-    $uri = Mockery::mock(\Psr\Http\Message\UriInterface::class);
-    
-    $uri->shouldReceive('getPath')->andReturn('/nonexistent');
-    $uri->shouldReceive('getHost')->andReturn('localhost');
-    $uri->shouldReceive('getScheme')->andReturn('http');
-    $uri->shouldReceive('getQuery')->andReturn('');
-    
-    $request->shouldReceive('getUri')->andReturn($uri);
-    $request->shouldReceive('getMethod')->andReturn('GET');
-    $request->shouldReceive('withAttribute')->andReturnUsing(function ($key, $value) use ($request) {
-        $newRequest = clone $request;
-        $newRequest->shouldReceive('getAttribute')->with($key)->andReturn($value);
-        $newRequest->shouldReceive('withAttribute')->andReturnSelf();
-        return $newRequest;
-    });
+    $request = new ServerRequest([], [], new Uri('http://localhost/nonexistent'), 'GET', (new StreamFactory)->createStream(''), []);
     
     $response = $app->process($request);
-    
-    expect($fallbackExecuted)->toBeTrue();
+    expect($response)->toBe($fallbackResponse);
 });
 
 test('it handles exceptions through error handler middleware', function () {
     $router = new SymfonyRouter('http://localhost');
     
-    $errorHandled = false;
-    $errorController = CallableController::fromCallable(function ($request) use (&$errorHandled) {
-        $errorHandled = true;
+    $errorResponse = Mockery::mock(ResponseInterface::class);
+    $errorController = CallableController::fromCallable(function ($request) use ($errorResponse) {
         $error = $request->getAttribute('error');
         expect($error)->toBeInstanceOf(\RuntimeException::class);
         expect($error->getMessage())->toBe('Test exception');
         
-        $response = Mockery::mock(ResponseInterface::class);
-        return $response;
+        return $errorResponse;
     });
     
     $throwingController = CallableController::fromCallable(function () {
@@ -195,24 +175,8 @@ test('it handles exceptions through error handler middleware', function () {
     $app = $app->withMiddleware(new RoutingMiddleware($router, $fallback));
     $app = $app->withMiddleware(new ErrorHandlerMiddleware(new NullLogger(), $errorController));
     
-    $request = Mockery::mock(ServerRequestInterface::class);
-    $uri = Mockery::mock(\Psr\Http\Message\UriInterface::class);
-    
-    $uri->shouldReceive('getPath')->andReturn('/test');
-    $uri->shouldReceive('getHost')->andReturn('localhost');
-    $uri->shouldReceive('getScheme')->andReturn('http');
-    $uri->shouldReceive('getQuery')->andReturn('');
-    
-    $request->shouldReceive('getUri')->andReturn($uri);
-    $request->shouldReceive('getMethod')->andReturn('GET');
-    $request->shouldReceive('withAttribute')->andReturnUsing(function ($key, $value) use ($request) {
-        $newRequest = clone $request;
-        $newRequest->shouldReceive('getAttribute')->with($key)->andReturn($value);
-        $newRequest->shouldReceive('withAttribute')->andReturnSelf();
-        return $newRequest;
-    });
-    
+    $request = new ServerRequest([], [], new Uri('http://localhost/test'), 'GET', (new StreamFactory)->createStream(''), []);
     $response = $app->process($request);
     
-    expect($errorHandled)->toBeTrue();
+    expect($response)->toBe($errorResponse);
 });
