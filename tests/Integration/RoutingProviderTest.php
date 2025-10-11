@@ -1,41 +1,44 @@
 
 <?php
 
+use jschreuder\Middle\ApplicationStack;
 use jschreuder\Middle\Router\SymfonyRouter;
 use jschreuder\Middle\Router\RoutingProviderInterface;
 use jschreuder\Middle\Router\RouterInterface;
 use jschreuder\Middle\Controller\CallableController;
+use jschreuder\Middle\Controller\ControllerRunner;
+use jschreuder\Middle\ServerMiddleware\RoutingMiddleware;
 use Laminas\Diactoros\ServerRequest;
-use Laminas\Diactoros\StreamFactory;
 use Laminas\Diactoros\Uri;
+use Psr\Http\Message\ResponseInterface;
 
 test('it can use routing providers to organize routes', function () {
     $router = new SymfonyRouter('http://localhost');
     
     // Create an API routing provider
-    $apiProvider = new class implements RoutingProviderInterface {
+    $apiResponse = Mockery::mock(ResponseInterface::class);
+    $apiProvider = new class($apiResponse) implements RoutingProviderInterface {
+        public function __construct(private ResponseInterface $response) {}
+        
         public function registerRoutes(RouterInterface $router): void {
             $router->get('api.status', '/api/status', 
-                CallableController::factoryFromCallable(fn() => 
-                    Mockery::mock(\Psr\Http\Message\ResponseInterface::class)
-                )
-            );
-            
-            $router->post('api.users', '/api/users',
-                CallableController::factoryFromCallable(fn() => 
-                    Mockery::mock(\Psr\Http\Message\ResponseInterface::class)
-                )
+                CallableController::factoryFromCallable(function() {
+                    return $this->response;
+                })
             );
         }
     };
     
     // Create a web routing provider
-    $webProvider = new class implements RoutingProviderInterface {
+    $webResponse = Mockery::mock(ResponseInterface::class);
+    $webProvider = new class($webResponse) implements RoutingProviderInterface {
+        public function __construct(private ResponseInterface $response) {}
+        
         public function registerRoutes(RouterInterface $router): void {
             $router->get('home', '/',
-                CallableController::factoryFromCallable(fn() => 
-                    Mockery::mock(\Psr\Http\Message\ResponseInterface::class)
-                )
+                CallableController::factoryFromCallable(function() {
+                    return $this->response;
+                })
             );
         }
     };
@@ -43,8 +46,14 @@ test('it can use routing providers to organize routes', function () {
     $router->registerRoutes($apiProvider);
     $router->registerRoutes($webProvider);
     
-    // Test API route
-    $request = new ServerRequest([], [], new Uri('http://localhost/api/status'), 'GET', (new StreamFactory)->createStream(''), []);
-    $match = $router->parseRequest($request);
-    expect($match->isMatch())->toBeTrue();
+    $fallback = CallableController::fromCallable(fn() => Mockery::mock(ResponseInterface::class));
+    
+    $app = new ApplicationStack(new ControllerRunner());
+    $app = $app->withMiddleware(new RoutingMiddleware($router, $fallback));
+    
+    // Test API route actually executes
+    $request = new ServerRequest([], [], new Uri('http://localhost/api/status'), 'GET');
+    $response = $app->process($request);
+    expect($response)->toBe($apiResponse);
+    expect($response)->not->toBe($webResponse);
 });
