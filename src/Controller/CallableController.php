@@ -5,7 +5,7 @@ namespace jschreuder\Middle\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class CallableController implements ControllerInterface
+final readonly class CallableController implements ControllerInterface
 {
     public static function fromCallable(\Closure $closure): self
     {
@@ -20,7 +20,7 @@ final class CallableController implements ControllerInterface
     }
 
     private function __construct(
-        private readonly \Closure $closure
+        private \Closure $closure
     ) {}
 
     #[\Override]

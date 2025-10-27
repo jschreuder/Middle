@@ -7,11 +7,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class JsonRequestParserMiddleware implements MiddlewareInterface
+final readonly class JsonRequestParserMiddleware implements MiddlewareInterface
 {
     /** @param  string[]  $jsonContentTypes  array of regexes to check against content-types */
     public function __construct(
-        private readonly array $jsonContentTypes = ['#^application\/json(;|$)#iD']
+        private array $jsonContentTypes = ['#^application\/json(;|$)#iD']
     ) {}
 
     #[\Override]

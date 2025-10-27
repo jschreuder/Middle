@@ -4,7 +4,7 @@ namespace jschreuder\Middle\Router;
 
 use jschreuder\Middle\Controller\ControllerInterface;
 
-final class RouteMatch implements RouteMatchInterface
+final readonly class RouteMatch implements RouteMatchInterface
 {
     public function __construct(
         private readonly ControllerInterface $controller,

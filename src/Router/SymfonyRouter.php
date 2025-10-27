@@ -11,13 +11,13 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Closure;
 
-final class SymfonyRouter implements RouterInterface
+final readonly class SymfonyRouter implements RouterInterface
 {
-    private readonly RouteCollection $router;
-    private readonly SymfonyUrlGenerator $generator;
+    private RouteCollection $router;
+    private SymfonyUrlGenerator $generator;
 
     public function __construct(
-        private readonly string $baseUrl,
+        private string $baseUrl,
         ?RouteCollection $router = null,
         ?SymfonyUrlGenerator $generator = null
     )

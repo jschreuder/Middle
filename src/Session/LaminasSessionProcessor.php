@@ -8,10 +8,10 @@ use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class LaminasSessionProcessor implements SessionProcessorInterface
+final readonly class LaminasSessionProcessor implements SessionProcessorInterface
 {
     public function __construct(
-        private readonly ?ConfigInterface $laminasSessionConfig = null
+        private ?ConfigInterface $laminasSessionConfig = null
     )
     {
     }

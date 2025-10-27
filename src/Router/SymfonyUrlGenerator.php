@@ -4,10 +4,10 @@ namespace jschreuder\Middle\Router;
 
 use Symfony\Component\Routing\Generator\UrlGenerator as UrlGenerator;
 
-final class SymfonyUrlGenerator implements UrlGeneratorInterface
+final readonly class SymfonyUrlGenerator implements UrlGeneratorInterface
 {
     public function __construct(
-        private readonly UrlGenerator $generator
+        private UrlGenerator $generator
     ) {}
 
     #[\Override]

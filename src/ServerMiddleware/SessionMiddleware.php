@@ -8,10 +8,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class SessionMiddleware implements MiddlewareInterface
+final readonly class SessionMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private readonly SessionProcessorInterface $sessionProcessor
+        private SessionProcessorInterface $sessionProcessor
     )
     {
     }

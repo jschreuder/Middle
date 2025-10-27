@@ -4,7 +4,7 @@ namespace jschreuder\Middle\Router;
 
 use jschreuder\Middle\Controller\ControllerInterface;
 
-final class NoRouteMatch implements RouteMatchInterface
+final readonly class NoRouteMatch implements RouteMatchInterface
 {
     #[\Override]
     public function isMatch(): bool
