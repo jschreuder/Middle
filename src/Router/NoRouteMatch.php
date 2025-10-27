@@ -7,7 +7,7 @@ use jschreuder\Middle\Controller\ControllerInterface;
 final readonly class NoRouteMatch implements RouteMatchInterface
 {
     #[\Override]
-    public function isMatch(): bool
+    public function isMatch(): false
     {
         return false;
     }

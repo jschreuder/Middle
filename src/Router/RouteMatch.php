@@ -12,7 +12,7 @@ final readonly class RouteMatch implements RouteMatchInterface
     ) {}
 
     #[\Override]
-    public function isMatch(): bool
+    public function isMatch(): true
     {
         return true;
     }
