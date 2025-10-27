@@ -16,6 +16,7 @@ final class LaminasSessionProcessor implements SessionProcessorInterface
     {
     }
 
+    #[\Override]
     public function processRequest(ServerRequestInterface $request): ServerRequestInterface
     {
         $sessionManager = new SessionManager($this->laminasSessionConfig);
@@ -25,6 +26,7 @@ final class LaminasSessionProcessor implements SessionProcessorInterface
         return $request->withAttribute('session', $session);
     }
 
+    #[\Override]
     public function processResponse(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         return $response;

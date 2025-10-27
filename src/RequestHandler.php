@@ -18,6 +18,7 @@ final class RequestHandler implements RequestHandlerInterface
         private readonly ?LoggerInterface $logger = null
     ) {}
 
+    #[\Override]
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         if ($this->stack->count() === 0) {

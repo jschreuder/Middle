@@ -31,6 +31,7 @@ final class SymfonyRouter implements RouterInterface
         );
     }
 
+    #[\Override]
     public function parseRequest(ServerRequestInterface $request): RouteMatchInterface
     {
         try {
@@ -60,16 +61,19 @@ final class SymfonyRouter implements RouterInterface
         );
     }
 
+    #[\Override]
     public function getGenerator(): UrlGeneratorInterface
     {
         return $this->generator;
     }
 
+    #[\Override]
     public function registerRoutes(RoutingProviderInterface $routingProvider): void
     {
         $routingProvider->registerRoutes($this);
     }
 
+    #[\Override]
     public function match(
         string $name,
         string $methods,
@@ -89,6 +93,7 @@ final class SymfonyRouter implements RouterInterface
         $this->router->add($name, $symfonyRoute);
     }
 
+    #[\Override]
     public function get(
         string $name,
         string $path,
@@ -101,6 +106,7 @@ final class SymfonyRouter implements RouterInterface
         $this->match($name, 'GET', $path, $controllerFactory, $defaults, $requirements, $configCallback);
     }
 
+    #[\Override]
     public function post(
         string $name,
         string $path,
@@ -113,6 +119,7 @@ final class SymfonyRouter implements RouterInterface
         $this->match($name, 'POST', $path, $controllerFactory, $defaults, $requirements, $configCallback);
     }
 
+    #[\Override]
     public function put(
         string $name,
         string $path,
@@ -125,6 +132,7 @@ final class SymfonyRouter implements RouterInterface
         $this->match($name, 'PUT', $path, $controllerFactory, $defaults, $requirements, $configCallback);
     }
 
+    #[\Override]
     public function patch(
         string $name,
         string $path,
@@ -137,6 +145,7 @@ final class SymfonyRouter implements RouterInterface
         $this->match($name, 'PATCH', $path, $controllerFactory, $defaults, $requirements, $configCallback);
     }
 
+    #[\Override]
     public function delete(
         string $name,
         string $path,

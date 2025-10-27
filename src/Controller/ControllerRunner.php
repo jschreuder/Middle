@@ -9,6 +9,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class ControllerRunner implements MiddlewareInterface
 {
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
         $controller = $request->getAttribute('controller');

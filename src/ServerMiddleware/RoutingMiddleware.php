@@ -18,6 +18,7 @@ final class RoutingMiddleware implements MiddlewareInterface
     {
     }
 
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
         $routeMatch = $this->router->parseRequest($request);

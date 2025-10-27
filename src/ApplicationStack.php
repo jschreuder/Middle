@@ -20,6 +20,7 @@ final class ApplicationStack implements ApplicationStackInterface
         }
     }
 
+    #[\Override]
     public function withLogger(LoggerInterface $logger): ApplicationStackInterface
     {
         $stack = clone $this;
@@ -27,6 +28,7 @@ final class ApplicationStack implements ApplicationStackInterface
         return $stack;
     }
 
+    #[\Override]
     public function withMiddleware(MiddlewareInterface $middleware): ApplicationStackInterface
     {
         $stack = clone $this;
@@ -35,6 +37,7 @@ final class ApplicationStack implements ApplicationStackInterface
         return $stack;
     }
 
+    #[\Override]
     public function withoutMiddleware(MiddlewareInterface $middleware): ApplicationStackInterface
     {
         $oldStack = clone $this->stack;
@@ -51,6 +54,7 @@ final class ApplicationStack implements ApplicationStackInterface
         return $stack;
     }
 
+    #[\Override]
     public function process(ServerRequestInterface $request): ResponseInterface
     {
         if ($this->stack->count() === 0) {

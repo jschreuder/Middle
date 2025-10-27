@@ -16,6 +16,7 @@ final class SessionMiddleware implements MiddlewareInterface
     {
     }
 
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
         $request = $this->sessionProcessor->processRequest($request);

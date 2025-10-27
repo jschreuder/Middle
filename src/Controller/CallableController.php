@@ -23,6 +23,7 @@ final class CallableController implements ControllerInterface
         private readonly \Closure $closure
     ) {}
 
+    #[\Override]
     public function execute(ServerRequestInterface $request): ResponseInterface
     {
         return ($this->closure)($request);

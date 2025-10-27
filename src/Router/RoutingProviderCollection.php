@@ -12,6 +12,7 @@ final class RoutingProviderCollection implements RoutingProviderInterface
         $this->routingProviders = $routingProviders;
     }
 
+    #[\Override]
     public function registerRoutes(RouterInterface $router): void
     {
         foreach ($this->routingProviders as $routingProvider) {

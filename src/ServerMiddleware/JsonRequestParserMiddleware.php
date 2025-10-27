@@ -14,6 +14,7 @@ final class JsonRequestParserMiddleware implements MiddlewareInterface
         private readonly array $jsonContentTypes = ['#^application\/json(;|$)#iD']
     ) {}
 
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
         if ($this->isJsonRequest($request->getHeaderLine('Content-Type'))) {

@@ -10,11 +10,13 @@ final class SymfonyUrlGenerator implements UrlGeneratorInterface
         private readonly UrlGenerator $generator
     ) {}
 
+    #[\Override]
     public function generatePath(string $name, array $options = []): string
     {
         return $this->generator->generate($name, $options, UrlGenerator::ABSOLUTE_PATH);
     }
 
+    #[\Override]
     public function generateUrl(string $name, array $options = []): string
     {
         return $this->generator->generate($name, $options, UrlGenerator::ABSOLUTE_URL);
