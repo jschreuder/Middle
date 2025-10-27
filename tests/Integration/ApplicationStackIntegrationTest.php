@@ -25,6 +25,7 @@ use Laminas\Session\Container;
 use Laminas\Session\SessionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 test('it can process a complete request through the full middleware stack', function () {
@@ -252,7 +253,104 @@ test('it passes route parameters to controllers', function () {
     
     $request = new ServerRequest([], [], new Uri('http://localhost/users/123'), 'GET');
     $response = $app->process($request);
-    
+
     expect($capturedId)->toBe('123');
+    expect($response)->toBe($expectedResponse);
+});
+
+test('it logs all middleware execution through the full stack', function () {
+    $router = new SymfonyRouter('http://localhost');
+    $logger = Mockery::mock(LoggerInterface::class);
+
+    $expectedResponse = Mockery::mock(ResponseInterface::class);
+    $expectedResponse->shouldReceive('withHeader')->andReturnSelf();
+
+    $controller = CallableController::fromCallable(function () use ($expectedResponse) {
+        return $expectedResponse;
+    });
+
+    $router->get('test', '/test', fn() => $controller);
+
+    $fallback = CallableController::fromCallable(fn() =>
+        Mockery::mock(ResponseInterface::class)
+    );
+
+    $errorController = CallableController::fromCallable(fn() =>
+        Mockery::mock(ResponseInterface::class)
+    );
+
+    $sessionProcessor = new class implements SessionProcessorInterface {
+        public function processRequest(ServerRequestInterface $request): ServerRequestInterface
+        {
+            return $request->withAttribute('session', new LaminasSession(new SessionManager(), new Container()));
+        }
+
+        public function processResponse(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+        {
+            return $response;
+        }
+    };
+
+    // Build the full application stack
+    $app = new ApplicationStack(new ControllerRunner());
+    $app = $app->withMiddleware(new RoutingMiddleware($router, $fallback));
+    $app = $app->withMiddleware(new SessionMiddleware($sessionProcessor));
+    $app = $app->withMiddleware(new JsonRequestParserMiddleware());
+    $app = $app->withMiddleware(new ErrorHandlerMiddleware(new NullLogger(), $errorController));
+    $app = $app->withLogger($logger);
+
+    // Expect all middlewares to be logged in the correct order
+    // Note: The outermost middleware (ErrorHandlerMiddleware) is called directly
+    // by ApplicationStack->process(), so it is NOT logged. Only middlewares called
+    // through RequestHandler are logged.
+
+    // JsonRequestParserMiddleware (first to be logged)
+    $logger->shouldReceive('debug')
+        ->with(Mockery::pattern('/Middleware started: .*JsonRequestParserMiddleware/'))
+        ->once()
+        ->ordered();
+
+    // SessionMiddleware
+    $logger->shouldReceive('debug')
+        ->with(Mockery::pattern('/Middleware started: .*SessionMiddleware/'))
+        ->once()
+        ->ordered();
+
+    // RoutingMiddleware
+    $logger->shouldReceive('debug')
+        ->with(Mockery::pattern('/Middleware started: .*RoutingMiddleware/'))
+        ->once()
+        ->ordered();
+
+    // ControllerRunner (innermost, logged)
+    $logger->shouldReceive('debug')
+        ->with(Mockery::pattern('/Middleware started: .*ControllerRunner/'))
+        ->once()
+        ->ordered();
+
+    // Finished messages in reverse order
+    $logger->shouldReceive('debug')
+        ->with(Mockery::pattern('/Middleware finished: .*ControllerRunner/'))
+        ->once()
+        ->ordered();
+
+    $logger->shouldReceive('debug')
+        ->with(Mockery::pattern('/Middleware finished: .*RoutingMiddleware/'))
+        ->once()
+        ->ordered();
+
+    $logger->shouldReceive('debug')
+        ->with(Mockery::pattern('/Middleware finished: .*SessionMiddleware/'))
+        ->once()
+        ->ordered();
+
+    $logger->shouldReceive('debug')
+        ->with(Mockery::pattern('/Middleware finished: .*JsonRequestParserMiddleware/'))
+        ->once()
+        ->ordered();
+
+    $request = new ServerRequest([], [], new Uri('http://localhost/test'), 'GET');
+    $response = $app->process($request);
+
     expect($response)->toBe($expectedResponse);
 });

@@ -6,16 +6,17 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
+use SplStack;
 
 final class RequestHandler implements RequestHandlerInterface
 {
-    private \SplStack $stack;
     private bool $called = false;
 
-    public function __construct(\SplStack $stack)
-    {
-        $this->stack = $stack;
-    }
+    public function __construct(
+        private readonly SplStack $stack,
+        private readonly ?LoggerInterface $logger = null
+    ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -30,6 +31,9 @@ final class RequestHandler implements RequestHandlerInterface
         $next = $this->stack->pop();
         $this->called = true;
 
-        return $next->process($request, new self($this->stack));
+        $this->logger?->debug('Middleware started: ' . get_class($next));
+        $response = $next->process($request, new self($this->stack, $this->logger));
+        $this->logger?->debug('Middleware finished: ' . get_class($next));
+        return $response;
     }
 }

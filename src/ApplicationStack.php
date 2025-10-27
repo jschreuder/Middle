@@ -5,10 +5,12 @@ namespace jschreuder\Middle;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 final class ApplicationStack implements ApplicationStackInterface
 {
     private \SplStack $stack;
+    private ?LoggerInterface $logger = null;
 
     public function __construct(MiddlewareInterface ...$middlewares)
     {
@@ -16,6 +18,13 @@ final class ApplicationStack implements ApplicationStackInterface
         foreach ($middlewares as $middleware) {
             $this->stack->push($middleware);
         }
+    }
+
+    public function withLogger(LoggerInterface $logger): ApplicationStackInterface
+    {
+        $stack = clone $this;
+        $stack->logger = $logger;
+        return $stack;
     }
 
     public function withMiddleware(MiddlewareInterface $middleware): ApplicationStackInterface
@@ -51,7 +60,7 @@ final class ApplicationStack implements ApplicationStackInterface
 
         /** @var  MiddlewareInterface $current */
         $current = $stack->pop();
-        $response = $current->process($request, new RequestHandler($stack));
+        $response = $current->process($request, new RequestHandler($stack, $this->logger));
 
         return $response;
     }
