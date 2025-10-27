@@ -2,8 +2,6 @@
 
 namespace jschreuder\Middle\Router;
 
-use jschreuder\Middle\Controller\ControllerInterface;
-
 final readonly class NoRouteMatch implements RouteMatchInterface
 {
     #[\Override]
@@ -13,13 +11,13 @@ final readonly class NoRouteMatch implements RouteMatchInterface
     }
     
     #[\Override]
-    public function getController(): ControllerInterface
+    public function getController(): never
     {
         throw new \RuntimeException('An unmatched route does not have a controller');
     }
 
     #[\Override]
-    public function getAttributes(): array
+    public function getAttributes(): never
     {
         throw new \RuntimeException('An unmatched route does not have attributes');
     }
