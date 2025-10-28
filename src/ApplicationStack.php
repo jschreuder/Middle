@@ -2,6 +2,7 @@
 
 namespace jschreuder\Middle;
 
+use jschreuder\Middle\Exception\ApplicationStackException;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -58,14 +59,12 @@ final class ApplicationStack implements ApplicationStackInterface
     public function process(ServerRequestInterface $request): ResponseInterface
     {
         if ($this->stack->count() === 0) {
-            throw new \RuntimeException('Cannot process with an empty stack');
+            throw new ApplicationStackException('Cannot process with an empty stack');
         }
         $stack = clone $this->stack;
 
         /** @var  MiddlewareInterface $current */
         $current = $stack->pop();
-        $response = $current->process($request, new RequestHandler($stack, $this->logger));
-
-        return $response;
+        return $current->process($request, new RequestHandler($stack, $this->logger));
     }
 }

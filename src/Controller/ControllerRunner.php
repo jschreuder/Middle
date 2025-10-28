@@ -2,6 +2,7 @@
 
 namespace jschreuder\Middle\Controller;
 
+use jschreuder\Middle\Exception\ApplicationStackException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -14,7 +15,7 @@ final readonly class ControllerRunner implements MiddlewareInterface
     {
         $controller = $request->getAttribute('controller');
         if (!$controller instanceof ControllerInterface) {
-            throw new \RuntimeException('Invalid controller type: ' . get_debug_type($controller));
+            throw new ApplicationStackException('Invalid controller type: ' . get_debug_type($controller));
         }
 
         return $controller->execute($request);
