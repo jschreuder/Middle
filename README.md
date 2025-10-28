@@ -1,8 +1,8 @@
 # Middle Framework
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jschreuder/Middle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/jschreuder/Middle/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/jschreuder/Middle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/jschreuder/Middle/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/jschreuder/Middle/badges/build.png?b=master)](https://scrutinizer-ci.com/g/jschreuder/Middle/?branch=master)
+![Build](https://github.com/jschreuder/middle/actions/workflows/ci.yml/badge.svg)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=jschreuder_Middle&metric=alert_status)](https://sonarcloud.io/dashboard?id=jschreuder_Middle)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=jschreuder_Middle&metric=coverage)](https://sonarcloud.io/dashboard?id=jschreuder_Middle)
 
 **A micro-framework built around one simple principle: everything should be explicit, replaceable, and safe to change.**
 
@@ -26,7 +26,7 @@ Interface-driven design means every component can be easily mocked, tested in is
 
 Like other micro-frameworks, Middle is for composing applications. Unlike them, Middle nudges towards architectural boundaries through interfaces, making SOLID principles and domain-driven design the path of least resistance.
 
-**Choose Middle when:** You want simplicity with architecture meant for SOLID and Domain Driven Development.  
+**Choose Middle when:** You want simplicity with architecture meant for SOLID and Domain Driven Development.
 **Choose Others when:** You disagree with the philosophy or convention- or configuration-driven frameworks.
 
 ## Core Philosophy
@@ -85,7 +85,7 @@ Middle doesn't compete with mature frameworks - it lets you **compose their prov
 
 ```php
 // Your domain interface - exactly what your application needs
-interface UserRepositoryInterface 
+interface UserRepositoryInterface
 {
     public function findByEmail(string $email): ?User;
     public function save(User $user): void;
@@ -93,22 +93,22 @@ interface UserRepositoryInterface
 }
 
 // Adapter that wraps Doctrine behind your interface
-class DoctrineUserRepository implements UserRepositoryInterface 
+class DoctrineUserRepository implements UserRepositoryInterface
 {
     public function __construct(private EntityManagerInterface $em) {}
-    
-    public function findByEmail(string $email): ?User 
+
+    public function findByEmail(string $email): ?User
     {
         return $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
     }
-    
-    public function save(User $user): void 
+
+    public function save(User $user): void
     {
         $this->em->persist($user);
         $this->em->flush();
     }
-    
-    public function findActiveUsers(): array 
+
+    public function findActiveUsers(): array
     {
         return $this->em->createQuery('SELECT u FROM User u WHERE u.active = true')
                          ->getResult();
@@ -116,11 +116,11 @@ class DoctrineUserRepository implements UserRepositoryInterface
 }
 
 // Your controllers depend on YOUR interface, not Doctrine's
-class UserController implements ControllerInterface 
+class UserController implements ControllerInterface
 {
     public function __construct(private UserRepositoryInterface $repository) {}
-    
-    public function execute(ServerRequestInterface $request): ResponseInterface 
+
+    public function execute(ServerRequestInterface $request): ResponseInterface
     {
         // Clean, domain-focused code
         $users = $this->repository->findActiveUsers();
@@ -132,7 +132,7 @@ class UserController implements ControllerInterface
 This approach delivers:
 
 - **Library Independence**: Replace Doctrine with another ORM by implementing your interface
-- **Domain Clarity**: Your interfaces reflect business needs, not library abstractions  
+- **Domain Clarity**: Your interfaces reflect business needs, not library abstractions
 - **Future-Proof Evolution**: Library updates only require adapter changes, not application rewrites
 - **Focused Testing**: Mock exactly what your application needs, not complex library interfaces
 
@@ -190,7 +190,7 @@ $app = new Middle\ApplicationStack(
 );
 
 // Add a route
-$router->get('home', '/', 
+$router->get('home', '/',
     Middle\Controller\CallableController::factoryFromCallable(function () {
         return new Laminas\Diactoros\Response\JsonResponse([
             'message' => 'Welcome to Middle Framework'
@@ -228,7 +228,7 @@ Routes are added directly to the router instance using HTTP method helpers:
 
 ```php
 // Simple routes with closures
-$router->get('home', '/', 
+$router->get('home', '/',
     Middle\Controller\CallableController::factoryFromCallable(function () {
         return new Laminas\Diactoros\Response\JsonResponse(['message' => 'Hello World']);
     })
@@ -284,20 +284,20 @@ $app = $app->withMiddleware(
 Controllers can implement `RequestFilterInterface` and `RequestValidatorInterface` to handle input filtering and validation automatically:
 
 ```php
-class CreateUserController implements ControllerInterface, RequestFilterInterface, RequestValidatorInterface 
+class CreateUserController implements ControllerInterface, RequestFilterInterface, RequestValidatorInterface
 {
-    public function filterRequest(ServerRequestInterface $request): ServerRequestInterface 
+    public function filterRequest(ServerRequestInterface $request): ServerRequestInterface
     {
         $data = $request->getParsedBody();
         if (is_array($data)) {
             $data['textfield'] = strip_tags(trim($data['textfield']));
             $request = $request->withParsedBody($data);
         }
-        
+
         return $request;
     }
-    
-    public function validateRequest(ServerRequestInterface $request): void 
+
+    public function validateRequest(ServerRequestInterface $request): void
     {
         $data = $request->getParsedBody();
         if (empty($data['email'])) {
@@ -307,8 +307,8 @@ class CreateUserController implements ControllerInterface, RequestFilterInterfac
             throw new ValidationFailedException(['email' => 'Invalid email format']);
         }
     }
-    
-    public function execute(ServerRequestInterface $request): ResponseInterface 
+
+    public function execute(ServerRequestInterface $request): ResponseInterface
     {
         // Request is guaranteed to be filtered and valid
         $data = $request->getParsedBody();
@@ -376,7 +376,7 @@ class RedisSessionProcessor implements SessionProcessorInterface {
     public function processRequest(ServerRequestInterface $request): ServerRequestInterface {
         // Add session to request attributes
     }
-    
+
     public function processResponse(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface {
         // Handle session persistence, cookies, etc.
     }
@@ -442,7 +442,7 @@ $app = $app->withMiddleware(
     new Middle\ServerMiddleware\RequestValidatorMiddleware($validationErrorHandler)
 );
 
-// Automatically filter requests if controller implements RequestFilterInterface  
+// Automatically filter requests if controller implements RequestFilterInterface
 $app = $app->withMiddleware(
     new Middle\ServerMiddleware\RequestFilterMiddleware()
 );
