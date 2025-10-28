@@ -2,9 +2,10 @@
 
 namespace jschreuder\Middle\Exception;
 
+use RuntimeException;
 use Throwable;
 
-class ApplicationStackException extends \Exception
+class ApplicationStackException extends RuntimeException
 {
     public function __construct(string $message = '', ?Throwable $previous = null)
     {

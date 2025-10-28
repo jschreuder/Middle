@@ -1,6 +1,7 @@
 <?php
 
 use jschreuder\Middle\ApplicationStack;
+use jschreuder\Middle\Exception\ApplicationStackException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -11,7 +12,7 @@ test('it can be initialized', function () {
     $stack = new ApplicationStack(
         Mockery::mock(MiddlewareInterface::class)
     );
-    
+
     expect($stack)->toBeInstanceOf(ApplicationStack::class);
 });
 
@@ -28,7 +29,7 @@ test('it can clone with middleware', function () {
     $middleware1->shouldReceive('process')
         ->with($request, Mockery::type(RequestHandlerInterface::class))
         ->andReturn($response1);
-    
+
     $middleware2->shouldReceive('process')
         ->with($request, Mockery::type(RequestHandlerInterface::class))
         ->andReturn($response2);
@@ -50,7 +51,7 @@ test('it can clone without middleware', function () {
     $middleware1->shouldReceive('process')
         ->with($request, Mockery::type(RequestHandlerInterface::class))
         ->andReturn($response1);
-    
+
     $middleware2->shouldReceive('process')
         ->with($request, Mockery::type(RequestHandlerInterface::class))
         ->andReturn($response2);
@@ -63,7 +64,7 @@ test('it throws error on empty stack', function () {
     $stack = new ApplicationStack();
     $request = Mockery::mock(ServerRequestInterface::class);
 
-    expect(fn() => $stack->process($request))->toThrow(RuntimeException::class);
+    expect(fn() => $stack->process($request))->toThrow(ApplicationStackException::class);
 });
 
 test('it can clone with logger', function () {
