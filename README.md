@@ -1,7 +1,9 @@
 # Middle Framework
 
 ![Build](https://github.com/jschreuder/middle/actions/workflows/ci.yml/badge.svg)
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=jschreuder_Middle&metric=alert_status)](https://sonarcloud.io/dashboard?id=jschreuder_Middle)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=jschreuder_Middle&metric=security_rating)](https://sonarcloud.io/dashboard?id=jschreuder_Middle)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=jschreuder_Middle&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=jschreuder_Middle)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=jschreuder_Middle&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=jschreuder_Middle)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=jschreuder_Middle&metric=coverage)](https://sonarcloud.io/dashboard?id=jschreuder_Middle)
 
 **A micro-framework built around one simple principle: everything should be explicit, replaceable, and safe to change.**
