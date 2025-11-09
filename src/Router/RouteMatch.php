@@ -7,9 +7,16 @@ use jschreuder\Middle\Controller\ControllerInterface;
 final readonly class RouteMatch implements RouteMatchInterface
 {
     public function __construct(
+        private readonly string $name,
         private readonly ControllerInterface $controller,
-        private readonly array $attributes = []
+        private readonly array $attributes = [],
     ) {}
+
+    #[\Override]
+    public function getName(): string
+    {
+        return $this->name;
+    }
 
     #[\Override]
     public function isMatch(): true

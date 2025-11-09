@@ -19,36 +19,50 @@ final readonly class SymfonyRouter implements RouterInterface
     public function __construct(
         private string $baseUrl,
         ?RouteCollection $router = null,
-        ?SymfonyUrlGenerator $generator = null
-    )
-    {
+        ?SymfonyUrlGenerator $generator = null,
+    ) {
         $this->router = $router ?? new RouteCollection();
-        $this->generator = $generator ?? new SymfonyUrlGenerator(
-            new UrlGenerator(
-                $this->router,
-                new RequestContext($this->baseUrl, 'GET', parse_url($this->baseUrl, PHP_URL_HOST) ?: 'localhost')
-            )
-        );
+        $this->generator =
+            $generator ??
+            new SymfonyUrlGenerator(
+                new UrlGenerator(
+                    $this->router,
+                    new RequestContext(
+                        $this->baseUrl,
+                        "GET",
+                        parse_url($this->baseUrl, PHP_URL_HOST) ?: "localhost",
+                    ),
+                ),
+            );
     }
 
     #[\Override]
-    public function parseRequest(ServerRequestInterface $request): RouteMatchInterface
-    {
+    public function parseRequest(
+        ServerRequestInterface $request,
+    ): RouteMatchInterface {
         try {
-            $matcher = new UrlMatcher($this->router, $this->getRequestContext($request));
+            $matcher = new UrlMatcher(
+                $this->router,
+                $this->getRequestContext($request),
+            );
             $routeMatch = $matcher->match($request->getUri()->getPath());
 
             return new RouteMatch(
-                ($routeMatch['controller'])(),
-                array_diff_key($routeMatch, array_flip(['controller', '_route']))
+                $routeMatch["_route"],
+                $routeMatch["controller"](),
+                array_diff_key(
+                    $routeMatch,
+                    array_flip(["controller", "_route"]),
+                ),
             );
         } catch (SymfonyRoutingException $exception) {
             return new NoRouteMatch();
         }
     }
 
-    private function getRequestContext(ServerRequestInterface $request): RequestContext
-    {
+    private function getRequestContext(
+        ServerRequestInterface $request,
+    ): RequestContext {
         return new RequestContext(
             $this->baseUrl,
             $request->getMethod(),
@@ -57,7 +71,7 @@ final readonly class SymfonyRouter implements RouterInterface
             80,
             443,
             $request->getUri()->getPath(),
-            $request->getUri()->getQuery()
+            $request->getUri()->getQuery(),
         );
     }
 
@@ -68,8 +82,9 @@ final readonly class SymfonyRouter implements RouterInterface
     }
 
     #[\Override]
-    public function registerRoutes(RoutingProviderInterface $routingProvider): void
-    {
+    public function registerRoutes(
+        RoutingProviderInterface $routingProvider,
+    ): void {
         $routingProvider->registerRoutes($this);
     }
 
@@ -81,12 +96,12 @@ final readonly class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
-    ): void
-    {
+        ?Closure $configCallback = null,
+    ): void {
         $symfonyRoute = new Route($path, $defaults, $requirements);
-        $symfonyRoute->setMethods(explode('|', $methods))
-            ->setDefault('controller', $controllerFactory);
+        $symfonyRoute
+            ->setMethods(explode("|", $methods))
+            ->setDefault("controller", $controllerFactory);
         if ($configCallback) {
             $configCallback($symfonyRoute);
         }
@@ -100,10 +115,17 @@ final readonly class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
-    ): void
-    {
-        $this->match($name, 'GET', $path, $controllerFactory, $defaults, $requirements, $configCallback);
+        ?Closure $configCallback = null,
+    ): void {
+        $this->match(
+            $name,
+            "GET",
+            $path,
+            $controllerFactory,
+            $defaults,
+            $requirements,
+            $configCallback,
+        );
     }
 
     #[\Override]
@@ -113,10 +135,17 @@ final readonly class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
-    ): void
-    {
-        $this->match($name, 'POST', $path, $controllerFactory, $defaults, $requirements, $configCallback);
+        ?Closure $configCallback = null,
+    ): void {
+        $this->match(
+            $name,
+            "POST",
+            $path,
+            $controllerFactory,
+            $defaults,
+            $requirements,
+            $configCallback,
+        );
     }
 
     #[\Override]
@@ -126,10 +155,17 @@ final readonly class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
-    ): void
-    {
-        $this->match($name, 'PUT', $path, $controllerFactory, $defaults, $requirements, $configCallback);
+        ?Closure $configCallback = null,
+    ): void {
+        $this->match(
+            $name,
+            "PUT",
+            $path,
+            $controllerFactory,
+            $defaults,
+            $requirements,
+            $configCallback,
+        );
     }
 
     #[\Override]
@@ -139,10 +175,17 @@ final readonly class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
-    ): void
-    {
-        $this->match($name, 'PATCH', $path, $controllerFactory, $defaults, $requirements, $configCallback);
+        ?Closure $configCallback = null,
+    ): void {
+        $this->match(
+            $name,
+            "PATCH",
+            $path,
+            $controllerFactory,
+            $defaults,
+            $requirements,
+            $configCallback,
+        );
     }
 
     #[\Override]
@@ -152,9 +195,16 @@ final readonly class SymfonyRouter implements RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
-    ): void
-    {
-        $this->match($name, 'DELETE', $path, $controllerFactory, $defaults, $requirements, $configCallback);
+        ?Closure $configCallback = null,
+    ): void {
+        $this->match(
+            $name,
+            "DELETE",
+            $path,
+            $controllerFactory,
+            $defaults,
+            $requirements,
+            $configCallback,
+        );
     }
 }

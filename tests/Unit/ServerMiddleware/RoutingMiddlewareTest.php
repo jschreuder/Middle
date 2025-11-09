@@ -12,14 +12,18 @@ use Psr\Http\Server\RequestHandlerInterface;
 beforeEach(function () {
     $this->router = Mockery::mock(RouterInterface::class);
     $this->fallbackController = Mockery::mock(ControllerInterface::class);
-    $this->middleware = new RoutingMiddleware($this->router, $this->fallbackController);
+    $this->middleware = new RoutingMiddleware(
+        $this->router,
+        $this->fallbackController,
+    );
 });
 
-test('it can be initialized', function () {
+test("it can be initialized", function () {
     expect($this->middleware)->toBeInstanceOf(RoutingMiddleware::class);
 });
 
-test('it can assign a controller and attributes', function () {
+test("it can assign a controller and attributes", function () {
+    $name = "test";
     $controller = Mockery::mock(ControllerInterface::class);
     $request1 = Mockery::mock(ServerRequestInterface::class);
     $request2 = Mockery::mock(ServerRequestInterface::class);
@@ -27,52 +31,64 @@ test('it can assign a controller and attributes', function () {
     $request4 = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $requestHandler = Mockery::mock(RequestHandlerInterface::class);
-    
-    $attributes = ['v1' => 1, 'v2' => 2];
-    $routeMatch = new RouteMatch($controller, $attributes);
-    
-    $this->router->shouldReceive('parseRequest')
+
+    $attributes = ["v1" => 1, "v2" => 2];
+    $routeMatch = new RouteMatch($name, $controller, $attributes);
+
+    $this->router
+        ->shouldReceive("parseRequest")
         ->with($request1)
         ->andReturn($routeMatch);
-    
-    $request1->shouldReceive('withAttribute')
-        ->with('controller', $controller)
+
+    $request1
+        ->shouldReceive("withAttribute")
+        ->with("controller", $controller)
         ->andReturn($request2);
-    
-    $request2->shouldReceive('withAttribute')
-        ->with('v1', $attributes['v1'])
+
+    $request2
+        ->shouldReceive("withAttribute")
+        ->with("v1", $attributes["v1"])
         ->andReturn($request3);
-    
-    $request3->shouldReceive('withAttribute')
-        ->with('v2', $attributes['v2'])
+
+    $request3
+        ->shouldReceive("withAttribute")
+        ->with("v2", $attributes["v2"])
         ->andReturn($request4);
-    
-    $requestHandler->shouldReceive('handle')
+
+    $requestHandler
+        ->shouldReceive("handle")
         ->with($request4)
         ->andReturn($response);
-    
-    expect($this->middleware->process($request1, $requestHandler))->toBe($response);
+
+    expect($this->middleware->process($request1, $requestHandler))->toBe(
+        $response,
+    );
 });
 
-test('it can assign fallback controller without a match', function () {
+test("it can assign fallback controller without a match", function () {
     $request1 = Mockery::mock(ServerRequestInterface::class);
     $request2 = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $requestHandler = Mockery::mock(RequestHandlerInterface::class);
-    
+
     $routeMatch = new NoRouteMatch();
-    
-    $this->router->shouldReceive('parseRequest')
+
+    $this->router
+        ->shouldReceive("parseRequest")
         ->with($request1)
         ->andReturn($routeMatch);
-    
-    $request1->shouldReceive('withAttribute')
-        ->with('controller', $this->fallbackController)
+
+    $request1
+        ->shouldReceive("withAttribute")
+        ->with("controller", $this->fallbackController)
         ->andReturn($request2);
-    
-    $requestHandler->shouldReceive('handle')
+
+    $requestHandler
+        ->shouldReceive("handle")
         ->with($request2)
         ->andReturn($response);
-    
-    expect($this->middleware->process($request1, $requestHandler))->toBe($response);
-}); 
+
+    expect($this->middleware->process($request1, $requestHandler))->toBe(
+        $response,
+    );
+});

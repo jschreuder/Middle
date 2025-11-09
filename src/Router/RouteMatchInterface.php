@@ -6,6 +6,9 @@ use jschreuder\Middle\Controller\ControllerInterface;
 
 interface RouteMatchInterface
 {
+    /** Name of the matched route */
+    public function getName(): string;
+
     /** Whether it contains an actual matched route */
     public function isMatch(): bool;
 
