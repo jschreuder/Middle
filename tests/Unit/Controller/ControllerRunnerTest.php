@@ -7,40 +7,42 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-test('it can be initialized', function () {
+test("it can be initialized", function () {
     $runner = new ControllerRunner();
     expect($runner)->toBeInstanceOf(ControllerRunner::class);
 });
 
-test('it can execute a controller', function () {
+test("it can execute a controller", function () {
     $request = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $requestHandler = Mockery::mock(RequestHandlerInterface::class);
 
-    $controller = CallableController::fromCallable(function () use ($response): ResponseInterface {
-        return $response;
-    });
+    $controller = CallableController::fromCallable(
+        fn(): ResponseInterface => $response,
+    );
 
-    $request->shouldReceive('getAttribute')
-        ->with('controller')
+    $request
+        ->shouldReceive("getAttribute")
+        ->with("controller")
         ->andReturn($controller);
 
     $runner = new ControllerRunner();
     expect($runner->process($request, $requestHandler))->toBe($response);
 });
 
-test('it will error on invalid controller', function () {
+test("it will error on invalid controller", function () {
     $request = Mockery::mock(ServerRequestInterface::class);
     $requestHandler = Mockery::mock(RequestHandlerInterface::class);
 
-    $controller = function () {
-        return 'an invalid response';
-    };
+    $controller = fn() => "an invalid response";
 
-    $request->shouldReceive('getAttribute')
-        ->with('controller')
+    $request
+        ->shouldReceive("getAttribute")
+        ->with("controller")
         ->andReturn($controller);
 
     $runner = new ControllerRunner();
-    expect(fn() => $runner->process($request, $requestHandler))->toThrow(ApplicationStackException::class);
+    expect(fn() => $runner->process($request, $requestHandler))->toThrow(
+        ApplicationStackException::class,
+    );
 });

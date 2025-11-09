@@ -8,7 +8,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 
-test('it can call process', function () {
+test("it can call process", function () {
     $request = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $middleware = Mockery::mock(MiddlewareInterface::class);
@@ -17,14 +17,15 @@ test('it can call process', function () {
     $handler = new RequestHandler($stack);
     $stack->push($middleware);
 
-    $middleware->shouldReceive('process')
+    $middleware
+        ->shouldReceive("process")
         ->with($request, Mockery::type(RequestHandlerInterface::class))
         ->andReturn($response);
 
     expect($handler->handle($request))->toBe($response);
 });
 
-test('it can call process with multiple middlewares', function () {
+test("it can call process with multiple middlewares", function () {
     $request = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $middleware1 = Mockery::mock(MiddlewareInterface::class);
@@ -38,14 +39,15 @@ test('it can call process with multiple middlewares', function () {
 
     $handler = new RequestHandler($stack);
 
-    $middleware3->shouldReceive('process')
+    $middleware3
+        ->shouldReceive("process")
         ->with($request, Mockery::type(RequestHandlerInterface::class))
         ->andReturn($response);
 
     expect($handler->handle($request))->toBe($response);
 });
 
-test('it cannot call process twice', function () {
+test("it cannot call process twice", function () {
     $request = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $middleware = Mockery::mock(MiddlewareInterface::class);
@@ -56,15 +58,18 @@ test('it cannot call process twice', function () {
 
     $handler = new RequestHandler($stack);
 
-    $middleware->shouldReceive('process')
+    $middleware
+        ->shouldReceive("process")
         ->with($request, Mockery::type(RequestHandlerInterface::class))
         ->andReturn($response);
 
     expect($handler->handle($request))->toBe($response);
-    expect(fn() => $handler->handle($request))->toThrow(ApplicationStackException::class);
+    expect(fn() => $handler->handle($request))->toThrow(
+        ApplicationStackException::class,
+    );
 });
 
-test('it will error when called on empty stack', function () {
+test("it will error when called on empty stack", function () {
     $request = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $middleware = Mockery::mock(MiddlewareInterface::class);
@@ -73,41 +78,50 @@ test('it will error when called on empty stack', function () {
     $handler = new RequestHandler($stack);
     $stack->push($middleware);
 
-    $middleware->shouldReceive('process')
+    $middleware
+        ->shouldReceive("process")
         ->with($request, Mockery::type(RequestHandlerInterface::class))
         ->andReturn($response);
 
     expect($handler->handle($request))->toBe($response);
-    expect(fn() => $handler->handle($request))->toThrow(ApplicationStackException::class);
+    expect(fn() => $handler->handle($request))->toThrow(
+        ApplicationStackException::class,
+    );
 });
 
-test('it logs middleware start and finish when logger is provided', function () {
-    $request = Mockery::mock(ServerRequestInterface::class);
-    $response = Mockery::mock(ResponseInterface::class);
-    $middleware = Mockery::mock(MiddlewareInterface::class);
-    $logger = Mockery::mock(LoggerInterface::class);
+test(
+    "it logs middleware start and finish when logger is provided",
+    function () {
+        $request = Mockery::mock(ServerRequestInterface::class);
+        $response = Mockery::mock(ResponseInterface::class);
+        $middleware = Mockery::mock(MiddlewareInterface::class);
+        $logger = Mockery::mock(LoggerInterface::class);
 
-    $stack = new \SplStack();
-    $stack->push($middleware);
+        $stack = new \SplStack();
+        $stack->push($middleware);
 
-    $handler = new RequestHandler($stack, $logger);
+        $handler = new RequestHandler($stack, $logger);
 
-    $logger->shouldReceive('debug')
-        ->with('Middleware started: ' . get_class($middleware))
-        ->once();
+        $logger
+            ->shouldReceive("debug")
+            ->with("Middleware started: " . get_class($middleware))
+            ->once();
 
-    $logger->shouldReceive('debug')
-        ->with('Middleware finished: ' . get_class($middleware))
-        ->once();
+        $logger
+            ->shouldReceive("debug")
+            ->with("Middleware finished: " . get_class($middleware))
+            ->once();
 
-    $middleware->shouldReceive('process')
-        ->with($request, Mockery::type(RequestHandlerInterface::class))
-        ->andReturn($response);
+        $middleware
+            ->shouldReceive("process")
+            ->with($request, Mockery::type(RequestHandlerInterface::class))
+            ->andReturn($response);
 
-    expect($handler->handle($request))->toBe($response);
-});
+        expect($handler->handle($request))->toBe($response);
+    },
+);
 
-test('it logs multiple middlewares in execution order', function () {
+test("it logs multiple middlewares in execution order", function () {
     $request = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $middleware1 = Mockery::mock(MiddlewareInterface::class);
@@ -121,40 +135,44 @@ test('it logs multiple middlewares in execution order', function () {
     $handler = new RequestHandler($stack, $logger);
 
     // middleware2 executes first (LIFO), then middleware1
-    $logger->shouldReceive('debug')
-        ->with('Middleware started: ' . get_class($middleware2))
+    $logger
+        ->shouldReceive("debug")
+        ->with("Middleware started: " . get_class($middleware2))
         ->once()
         ->ordered();
 
-    $logger->shouldReceive('debug')
-        ->with('Middleware started: ' . get_class($middleware1))
+    $logger
+        ->shouldReceive("debug")
+        ->with("Middleware started: " . get_class($middleware1))
         ->once()
         ->ordered();
 
-    $logger->shouldReceive('debug')
-        ->with('Middleware finished: ' . get_class($middleware1))
+    $logger
+        ->shouldReceive("debug")
+        ->with("Middleware finished: " . get_class($middleware1))
         ->once()
         ->ordered();
 
-    $logger->shouldReceive('debug')
-        ->with('Middleware finished: ' . get_class($middleware2))
+    $logger
+        ->shouldReceive("debug")
+        ->with("Middleware finished: " . get_class($middleware2))
         ->once()
         ->ordered();
 
-    $middleware2->shouldReceive('process')
+    $middleware2
+        ->shouldReceive("process")
         ->with($request, Mockery::type(RequestHandlerInterface::class))
-        ->andReturnUsing(function ($req, $handler) use ($response) {
-            return $handler->handle($req);
-        });
+        ->andReturnUsing(fn($req, $handler) => $handler->handle($req));
 
-    $middleware1->shouldReceive('process')
+    $middleware1
+        ->shouldReceive("process")
         ->with($request, Mockery::type(RequestHandlerInterface::class))
         ->andReturn($response);
 
     expect($handler->handle($request))->toBe($response);
 });
 
-test('it does not log when logger is not provided', function () {
+test("it does not log when logger is not provided", function () {
     $request = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $middleware = Mockery::mock(MiddlewareInterface::class);
@@ -165,7 +183,8 @@ test('it does not log when logger is not provided', function () {
     // No logger provided - should work without errors
     $handler = new RequestHandler($stack);
 
-    $middleware->shouldReceive('process')
+    $middleware
+        ->shouldReceive("process")
         ->with($request, Mockery::type(RequestHandlerInterface::class))
         ->andReturn($response);
 

@@ -10,53 +10,69 @@ use Psr\Log\LoggerInterface;
 beforeEach(function () {
     $this->logger = Mockery::mock(LoggerInterface::class);
     $this->errorController = Mockery::mock(ControllerInterface::class);
-    $this->middleware = new ErrorHandlerMiddleware($this->logger, $this->errorController);
+    $this->middleware = new ErrorHandlerMiddleware(
+        $this->logger,
+        $this->errorController,
+    );
 });
 
-test('it can be initialized', function () {
+test("it can be initialized", function () {
     expect($this->middleware)->toBeInstanceOf(ErrorHandlerMiddleware::class);
 });
 
-test('it will do nothing without an exception', function () {
+test("it will do nothing without an exception", function () {
     $request = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $requestHandler = Mockery::mock(RequestHandlerInterface::class);
-    
-    $requestHandler->shouldReceive('handle')
+
+    $requestHandler
+        ->shouldReceive("handle")
         ->with($request)
         ->andReturn($response);
-    
-    $this->logger->shouldNotReceive('alert');
-    
-    expect($this->middleware->process($request, $requestHandler))->toBe($response);
+
+    $this->logger->shouldNotReceive("alert");
+
+    expect($this->middleware->process($request, $requestHandler))->toBe(
+        $response,
+    );
 });
 
-test('it will log and process exception when thrown', function () {
+test("it will log and process exception when thrown", function () {
     $request = Mockery::mock(ServerRequestInterface::class);
     $request2 = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $requestHandler = Mockery::mock(RequestHandlerInterface::class);
-    
+
     $msg = uniqid();
     $code = 418;
     $exception = new RuntimeException($msg, $code);
-    
-    $requestHandler->shouldReceive('handle')
+
+    $requestHandler
+        ->shouldReceive("handle")
         ->with($request)
         ->andThrow($exception);
-    
-    $this->logger->shouldReceive('alert')
-        ->with($msg, Mockery::on(function ($context) {
-            return isset($context['file']) && $context['file'] === __FILE__;
-        }));
-    
-    $request->shouldReceive('withAttribute')
-        ->with('error', $exception)
+
+    $this->logger
+        ->shouldReceive("alert")
+        ->with(
+            $msg,
+            Mockery::on(
+                fn($context) => isset($context["file"]) &&
+                    $context["file"] === __FILE__,
+            ),
+        );
+
+    $request
+        ->shouldReceive("withAttribute")
+        ->with("error", $exception)
         ->andReturn($request2);
-    
-    $this->errorController->shouldReceive('execute')
+
+    $this->errorController
+        ->shouldReceive("execute")
         ->with($request2)
         ->andReturn($response);
-    
-    expect($this->middleware->process($request, $requestHandler))->toBe($response);
-}); 
+
+    expect($this->middleware->process($request, $requestHandler))->toBe(
+        $response,
+    );
+});
