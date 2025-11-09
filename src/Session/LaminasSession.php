@@ -7,16 +7,14 @@ use Laminas\Session\SessionManager;
 
 final class LaminasSession implements SessionInterface
 {
-    const string FLASH_DATA_KEY_PREFIX = '_flash_data.';
+    const string FLASH_DATA_KEY_PREFIX = "_flash_data.";
 
     private bool $changed = false;
 
     public function __construct(
         private readonly SessionManager $sessionManager,
-        private readonly Container $container
-    )
-    {
-    }
+        private readonly Container $container,
+    ) {}
 
     #[\Override]
     public function has(string $key): bool

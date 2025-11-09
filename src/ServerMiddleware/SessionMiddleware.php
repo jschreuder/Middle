@@ -11,14 +11,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 final readonly class SessionMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private SessionProcessorInterface $sessionProcessor
-    )
-    {
-    }
+        private SessionProcessorInterface $sessionProcessor,
+    ) {}
 
     #[\Override]
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
-    {
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $requestHandler,
+    ): ResponseInterface {
         $request = $this->sessionProcessor->processRequest($request);
         $response = $requestHandler->handle($request);
         return $this->sessionProcessor->processResponse($request, $response);

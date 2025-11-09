@@ -14,14 +14,10 @@ final readonly class CallableController implements ControllerInterface
 
     public static function factoryFromCallable(\Closure $closure): callable
     {
-        return function() use ($closure) {
-            return self::fromCallable($closure);
-        };
+        return fn() => self::fromCallable($closure);
     }
 
-    private function __construct(
-        private \Closure $closure
-    ) {}
+    private function __construct(private \Closure $closure) {}
 
     #[\Override]
     public function execute(ServerRequestInterface $request): ResponseInterface

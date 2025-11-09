@@ -13,26 +13,32 @@ final readonly class RoutingMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private RouterInterface $router,
-        private ControllerInterface $fallbackController
-    )
-    {
-    }
+        private ControllerInterface $fallbackController,
+    ) {}
 
     #[\Override]
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
-    {
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $requestHandler,
+    ): ResponseInterface {
         $routeMatch = $this->router->parseRequest($request);
 
         if ($routeMatch->isMatch()) {
             // Register Controller to the request object
-            $request = $request->withAttribute('controller', $routeMatch->getController());
+            $request = $request->withAttribute(
+                "controller",
+                $routeMatch->getController(),
+            );
 
             // Add all routing attributes to request
             foreach ($routeMatch->getAttributes() as $key => $value) {
                 $request = $request->withAttribute($key, $value);
             }
         } else {
-            $request = $request->withAttribute('controller', $this->fallbackController);
+            $request = $request->withAttribute(
+                "controller",
+                $this->fallbackController,
+            );
         }
 
         return $requestHandler->handle($request);

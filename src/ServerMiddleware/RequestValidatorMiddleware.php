@@ -11,16 +11,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final readonly class RequestValidatorMiddleware implements MiddlewareInterface
 {
-    public function __construct(
-        private \Closure $errorHandler
-    )
-    {
-    }
+    public function __construct(private \Closure $errorHandler) {}
 
     #[\Override]
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
-    {
-        $controller = $request->getAttribute('controller');
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $requestHandler,
+    ): ResponseInterface {
+        $controller = $request->getAttribute("controller");
 
         if ($controller instanceof RequestValidatorInterface) {
             // Execute the request-validator from the controller

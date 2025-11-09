@@ -9,7 +9,9 @@ use Psr\Log\LoggerInterface;
 
 interface ApplicationStackInterface
 {
-    public function withLogger(LoggerInterface $logger): ApplicationStackInterface;
+    public function withLogger(
+        LoggerInterface $logger,
+    ): ApplicationStackInterface;
 
     public function withMiddleware(MiddlewareInterface $middleware): self;
 

@@ -7,7 +7,12 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface SessionProcessorInterface
 {
-    public function processRequest(ServerRequestInterface $request): ServerRequestInterface;
+    public function processRequest(
+        ServerRequestInterface $request,
+    ): ServerRequestInterface;
 
-    public function processResponse(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface;
+    public function processResponse(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface;
 }

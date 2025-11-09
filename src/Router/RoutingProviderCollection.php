@@ -2,10 +2,11 @@
 
 namespace jschreuder\Middle\Router;
 
-final readonly class RoutingProviderCollection implements RoutingProviderInterface
+final readonly class RoutingProviderCollection implements
+    RoutingProviderInterface
 {
     /** @var  RoutingProviderInterface[] */
-    private readonly array $routingProviders;
+    private array $routingProviders;
 
     public function __construct(RoutingProviderInterface ...$routingProviders)
     {

@@ -8,12 +8,16 @@ use Closure;
 interface RouterInterface
 {
     /** Parses ServerRequest and returns the routing information */
-    public function parseRequest(ServerRequestInterface $request): RouteMatchInterface;
+    public function parseRequest(
+        ServerRequestInterface $request,
+    ): RouteMatchInterface;
 
     /** Returns UrlGenerator for reverse routing */
     public function getGenerator(): UrlGeneratorInterface;
 
-    public function registerRoutes(RoutingProviderInterface $routingProvider): void;
+    public function registerRoutes(
+        RoutingProviderInterface $routingProvider,
+    ): void;
 
     /** Generic method for adding routes with arbitrary or multiple methods */
     public function match(
@@ -23,7 +27,7 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
+        ?Closure $configCallback = null,
     ): void;
 
     /** Add route for GET request */
@@ -33,7 +37,7 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
+        ?Closure $configCallback = null,
     ): void;
 
     /** Add route for POST request */
@@ -43,7 +47,7 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
+        ?Closure $configCallback = null,
     ): void;
 
     /** Add route for PUT request */
@@ -53,7 +57,7 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
+        ?Closure $configCallback = null,
     ): void;
 
     /** Add route for PATCH request */
@@ -63,7 +67,7 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
+        ?Closure $configCallback = null,
     ): void;
 
     /** Add route for DELETE request */
@@ -73,6 +77,6 @@ interface RouterInterface
         callable $controllerFactory,
         array $defaults = [],
         array $requirements = [],
-        ?Closure $configCallback = null
+        ?Closure $configCallback = null,
     ): void;
 }

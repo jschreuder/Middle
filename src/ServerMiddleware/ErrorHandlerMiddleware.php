@@ -13,23 +13,25 @@ final readonly class ErrorHandlerMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private LoggerInterface $logger,
-        private ControllerInterface $errorController
-    )
-    {
-    }
+        private ControllerInterface $errorController,
+    ) {}
 
     #[\Override]
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
-    {
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $requestHandler,
+    ): ResponseInterface {
         try {
             return $requestHandler->handle($request);
         } catch (\Throwable $exception) {
             $this->logger->alert($exception->getMessage(), [
-                'line' => $exception->getLine(),
-                'file' => $exception->getFile(),
-                'backtrace' => $exception->getTrace()
+                "line" => $exception->getLine(),
+                "file" => $exception->getFile(),
+                "backtrace" => $exception->getTrace(),
             ]);
-            return $this->errorController->execute($request->withAttribute('error', $exception));
+            return $this->errorController->execute(
+                $request->withAttribute("error", $exception),
+            );
         }
     }
 }

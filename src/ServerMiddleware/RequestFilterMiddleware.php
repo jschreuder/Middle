@@ -11,9 +11,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 final readonly class RequestFilterMiddleware implements MiddlewareInterface
 {
     #[\Override]
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
-    {
-        $controller = $request->getAttribute('controller');
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $requestHandler,
+    ): ResponseInterface {
+        $controller = $request->getAttribute("controller");
 
         if ($controller instanceof RequestFilterInterface) {
             // Execute the request-filter from the controller

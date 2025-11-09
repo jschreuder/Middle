@@ -22,16 +22,18 @@ final class ApplicationStack implements ApplicationStackInterface
     }
 
     #[\Override]
-    public function withLogger(LoggerInterface $logger): ApplicationStackInterface
-    {
+    public function withLogger(
+        LoggerInterface $logger,
+    ): ApplicationStackInterface {
         $stack = clone $this;
         $stack->logger = $logger;
         return $stack;
     }
 
     #[\Override]
-    public function withMiddleware(MiddlewareInterface $middleware): ApplicationStackInterface
-    {
+    public function withMiddleware(
+        MiddlewareInterface $middleware,
+    ): ApplicationStackInterface {
         $stack = clone $this;
         $stack->stack = clone $this->stack;
         $stack->stack->push($middleware);
@@ -39,8 +41,9 @@ final class ApplicationStack implements ApplicationStackInterface
     }
 
     #[\Override]
-    public function withoutMiddleware(MiddlewareInterface $middleware): ApplicationStackInterface
-    {
+    public function withoutMiddleware(
+        MiddlewareInterface $middleware,
+    ): ApplicationStackInterface {
         $oldStack = clone $this->stack;
         $newStack = new \SplStack();
         while (!$oldStack->isEmpty()) {
@@ -59,12 +62,17 @@ final class ApplicationStack implements ApplicationStackInterface
     public function process(ServerRequestInterface $request): ResponseInterface
     {
         if ($this->stack->count() === 0) {
-            throw new ApplicationStackException('Cannot process with an empty stack');
+            throw new ApplicationStackException(
+                "Cannot process with an empty stack",
+            );
         }
         $stack = clone $this->stack;
 
         /** @var  MiddlewareInterface $current */
         $current = $stack->pop();
-        return $current->process($request, new RequestHandler($stack, $this->logger));
+        return $current->process(
+            $request,
+            new RequestHandler($stack, $this->logger),
+        );
     }
 }
