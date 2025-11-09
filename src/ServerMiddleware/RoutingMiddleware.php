@@ -25,6 +25,7 @@ final readonly class RoutingMiddleware implements MiddlewareInterface
 
         if ($routeMatch->isMatch()) {
             // Register Controller to the request object
+            $request = $request->withAttribute("route", $routeMatch->getName());
             $request = $request->withAttribute(
                 "controller",
                 $routeMatch->getController(),

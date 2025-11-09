@@ -29,6 +29,7 @@ test("it can assign a controller and attributes", function () {
     $request2 = Mockery::mock(ServerRequestInterface::class);
     $request3 = Mockery::mock(ServerRequestInterface::class);
     $request4 = Mockery::mock(ServerRequestInterface::class);
+    $request5 = Mockery::mock(ServerRequestInterface::class);
     $response = Mockery::mock(ResponseInterface::class);
     $requestHandler = Mockery::mock(RequestHandlerInterface::class);
 
@@ -42,22 +43,27 @@ test("it can assign a controller and attributes", function () {
 
     $request1
         ->shouldReceive("withAttribute")
-        ->with("controller", $controller)
+        ->with("route", $name)
         ->andReturn($request2);
 
     $request2
         ->shouldReceive("withAttribute")
-        ->with("v1", $attributes["v1"])
+        ->with("controller", $controller)
         ->andReturn($request3);
 
     $request3
         ->shouldReceive("withAttribute")
-        ->with("v2", $attributes["v2"])
+        ->with("v1", $attributes["v1"])
         ->andReturn($request4);
+
+    $request4
+        ->shouldReceive("withAttribute")
+        ->with("v2", $attributes["v2"])
+        ->andReturn($request5);
 
     $requestHandler
         ->shouldReceive("handle")
-        ->with($request4)
+        ->with($request5)
         ->andReturn($response);
 
     expect($this->middleware->process($request1, $requestHandler))->toBe(
