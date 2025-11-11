@@ -45,7 +45,10 @@ final readonly class SymfonyRouter implements RouterInterface
                 $this->router,
                 $this->getRequestContext($request),
             );
-            $routeMatch = $matcher->match($request->getUri()->getPath());
+            $relativePath = $this->stripBasePathFromRequestPath(
+                $request->getUri()->getPath(),
+            );
+            $routeMatch = $matcher->match($relativePath);
 
             return new RouteMatch(
                 $routeMatch["_route"],
@@ -73,6 +76,26 @@ final readonly class SymfonyRouter implements RouterInterface
             $request->getUri()->getPath(),
             $request->getUri()->getQuery(),
         );
+    }
+
+    private function stripBasePathFromRequestPath(string $requestPath): string
+    {
+        $basePath = parse_url($this->baseUrl, PHP_URL_PATH) ?: "/";
+
+        // If basePath is just '/', return the request path as-is
+        if ($basePath === "/") {
+            return $requestPath;
+        }
+
+        // If the request path starts with the base path, strip it
+        if (str_starts_with($requestPath, $basePath)) {
+            $relativePath = substr($requestPath, strlen($basePath));
+            // Ensure the relative path starts with '/'
+            return $relativePath === "" ? "/" : $relativePath;
+        }
+
+        // If no stripping occurred, return the request path as-is
+        return $requestPath;
     }
 
     #[\Override]

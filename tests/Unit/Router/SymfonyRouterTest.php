@@ -297,3 +297,155 @@ test("it can use a config callback", function () {
         "api.example.com",
     );
 });
+
+// Tests for relative path parsing with baseUrl stripping
+test(
+    "it can parse relative paths with baseUrl containing file entry point",
+    function () {
+        $baseUrl = "http://localhost:8080/api.php";
+        $router = new SymfonyRouter($baseUrl);
+        $request = Mockery::mock(ServerRequestInterface::class);
+        $uri = Mockery::mock(UriInterface::class);
+        $controller = Mockery::mock(ControllerInterface::class);
+
+        $router->get("test_route", "/some/path", fn() => $controller);
+
+        $request->shouldReceive("getUri")->andReturn($uri);
+        $request->shouldReceive("getMethod")->andReturn("GET");
+        $uri->shouldReceive("getScheme")->andReturn("http");
+        $uri->shouldReceive("getHost")->andReturn("localhost");
+        $uri->shouldReceive("getPath")->andReturn("/api.php/some/path");
+        $uri->shouldReceive("getQuery")->andReturn("");
+
+        $routeMatch = $router->parseRequest($request);
+        expect($routeMatch)
+            ->toBeInstanceOf(RouteMatch::class)
+            ->and($routeMatch->isMatch())
+            ->toBeTrue();
+    },
+);
+
+test("it can parse relative paths with simple root baseUrl", function () {
+    $baseUrl = "http://localhost";
+    $router = new SymfonyRouter($baseUrl);
+    $request = Mockery::mock(ServerRequestInterface::class);
+    $uri = Mockery::mock(UriInterface::class);
+    $controller = Mockery::mock(ControllerInterface::class);
+
+    $router->get("test_route", "/some/path", fn() => $controller);
+
+    $request->shouldReceive("getUri")->andReturn($uri);
+    $request->shouldReceive("getMethod")->andReturn("GET");
+    $uri->shouldReceive("getScheme")->andReturn("http");
+    $uri->shouldReceive("getHost")->andReturn("localhost");
+    $uri->shouldReceive("getPath")->andReturn("/some/path");
+    $uri->shouldReceive("getQuery")->andReturn("");
+
+    $routeMatch = $router->parseRequest($request);
+    expect($routeMatch)
+        ->toBeInstanceOf(RouteMatch::class)
+        ->and($routeMatch->isMatch())
+        ->toBeTrue();
+});
+
+test(
+    "it can parse relative paths with baseUrl containing subdirectory",
+    function () {
+        $baseUrl = "http://example.com/api/v1";
+        $router = new SymfonyRouter($baseUrl);
+        $request = Mockery::mock(ServerRequestInterface::class);
+        $uri = Mockery::mock(UriInterface::class);
+        $controller = Mockery::mock(ControllerInterface::class);
+
+        $router->get("test_route", "/users", fn() => $controller);
+
+        $request->shouldReceive("getUri")->andReturn($uri);
+        $request->shouldReceive("getMethod")->andReturn("GET");
+        $uri->shouldReceive("getScheme")->andReturn("http");
+        $uri->shouldReceive("getHost")->andReturn("example.com");
+        $uri->shouldReceive("getPath")->andReturn("/api/v1/users");
+        $uri->shouldReceive("getQuery")->andReturn("");
+
+        $routeMatch = $router->parseRequest($request);
+        expect($routeMatch)
+            ->toBeInstanceOf(RouteMatch::class)
+            ->and($routeMatch->isMatch())
+            ->toBeTrue();
+    },
+);
+
+test("it can parse relative paths with subdomain", function () {
+    $baseUrl = "http://api.example.com";
+    $router = new SymfonyRouter($baseUrl);
+    $request = Mockery::mock(ServerRequestInterface::class);
+    $uri = Mockery::mock(UriInterface::class);
+    $controller = Mockery::mock(ControllerInterface::class);
+
+    $router->get("test_route", "/products", fn() => $controller);
+
+    $request->shouldReceive("getUri")->andReturn($uri);
+    $request->shouldReceive("getMethod")->andReturn("GET");
+    $uri->shouldReceive("getScheme")->andReturn("http");
+    $uri->shouldReceive("getHost")->andReturn("api.example.com");
+    $uri->shouldReceive("getPath")->andReturn("/products");
+    $uri->shouldReceive("getQuery")->andReturn("");
+
+    $routeMatch = $router->parseRequest($request);
+    expect($routeMatch)
+        ->toBeInstanceOf(RouteMatch::class)
+        ->and($routeMatch->isMatch())
+        ->toBeTrue();
+});
+
+test(
+    "it can parse relative paths with subdomain and subdirectory",
+    function () {
+        $baseUrl = "http://api.example.com/v2";
+        $router = new SymfonyRouter($baseUrl);
+        $request = Mockery::mock(ServerRequestInterface::class);
+        $uri = Mockery::mock(UriInterface::class);
+        $controller = Mockery::mock(ControllerInterface::class);
+
+        $router->get("test_route", "/status", fn() => $controller);
+
+        $request->shouldReceive("getUri")->andReturn($uri);
+        $request->shouldReceive("getMethod")->andReturn("GET");
+        $uri->shouldReceive("getScheme")->andReturn("http");
+        $uri->shouldReceive("getHost")->andReturn("api.example.com");
+        $uri->shouldReceive("getPath")->andReturn("/v2/status");
+        $uri->shouldReceive("getQuery")->andReturn("");
+
+        $routeMatch = $router->parseRequest($request);
+        expect($routeMatch)
+            ->toBeInstanceOf(RouteMatch::class)
+            ->and($routeMatch->isMatch())
+            ->toBeTrue();
+    },
+);
+
+test("it can parse relative paths with nested routes", function () {
+    $baseUrl = "http://localhost:9000/app";
+    $router = new SymfonyRouter($baseUrl);
+    $request = Mockery::mock(ServerRequestInterface::class);
+    $uri = Mockery::mock(UriInterface::class);
+    $controller = Mockery::mock(ControllerInterface::class);
+
+    $router->get("test_route", "/api/v1/users/{id}", fn() => $controller, [
+        "id" => "\\d+",
+    ]);
+
+    $request->shouldReceive("getUri")->andReturn($uri);
+    $request->shouldReceive("getMethod")->andReturn("GET");
+    $uri->shouldReceive("getScheme")->andReturn("http");
+    $uri->shouldReceive("getHost")->andReturn("localhost");
+    $uri->shouldReceive("getPath")->andReturn("/app/api/v1/users/123");
+    $uri->shouldReceive("getQuery")->andReturn("");
+
+    $routeMatch = $router->parseRequest($request);
+    expect($routeMatch)
+        ->toBeInstanceOf(RouteMatch::class)
+        ->and($routeMatch->isMatch())
+        ->toBeTrue()
+        ->and($routeMatch->getAttributes())
+        ->toBe(["id" => "123"]);
+});
